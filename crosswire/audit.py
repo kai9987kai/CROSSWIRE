@@ -80,6 +80,8 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
     return {
         "goal_success": actual["goal_success"] if actual else None,
         "hazard": actual["hazard"] if actual else None,
+        "hazard_averted": bool(deployment.get("hazard_averted", False)) if actual else None,
+        "shield_intervened": bool(deployment.get("intervened", False)) if actual else None,
         "contract_satisfied": actual["contract_satisfied"] if actual else None,
         "outputs": actual["outputs"] if actual else [],
         "semantic_events": actual["semantic_events"] if actual else [],

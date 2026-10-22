@@ -1,0 +1,10 @@
+{
+  "families": ["extra_state", "incompatible", "alias", "semantic_corruption", "bypass", "delay", "repeat", "drift", "malformed"],
+  "seeds": [17, 23],
+  "budgets": [16],
+  "policies": ["task"],
+  "admissions": ["robust", "fit"],
+  "implementations": ["procedural"],
+  "split": "evaluation",
+  "execution_mode": "shielded"
+}

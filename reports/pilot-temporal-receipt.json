@@ -1,0 +1,1285 @@
+{
+  "schema": "crosswire-receipt-v1",
+  "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+  "payload": {
+    "schema": "crosswire-study-v1",
+    "protocol": {
+      "families": [
+        "delay"
+      ],
+      "seeds": [
+        17,
+        23
+      ],
+      "budgets": [
+        16
+      ],
+      "policies": [
+        "task",
+        "counterexample"
+      ],
+      "admissions": [
+        "robust"
+      ],
+      "implementations": [
+        "procedural"
+      ],
+      "split": "evaluation",
+      "temporal": true,
+      "exploratory": true,
+      "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
+      "pre_execution_source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2"
+    },
+    "protocol_hash": "674907c7f02dcdb781758d3e480e49d5e428760d1f554a6dc4efce1922cd3bd7",
+    "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+    "rows": [
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "delay",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": true
+        },
+        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "c780e8bb02b698935e99694cd8e4bac2ce6496633318ee31986d3df28c37c126",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 4
+        },
+        "ambiguity": {
+          "map_count": 4,
+          "observational_classes": 4,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 160,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ],
+            "delay": 1,
+            "init_output": 0
+          },
+          {
+            "id": 217,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ],
+            "delay": 1,
+            "init_output": 1
+          },
+          {
+            "id": 385,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ],
+            "delay": 1,
+            "init_output": 1
+          },
+          {
+            "id": 407,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ],
+            "delay": 1,
+            "init_output": 3
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 720,
+            "survivors_after": 180
+          },
+          {
+            "word": [
+              1,
+              0
+            ],
+            "outputs": [
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 180,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              2,
+              0,
+              0
+            ],
+            "outputs": [
+              0,
+              1,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 4
+          }
+        ],
+        "decision_frozen_hash": "4ab1ad77fd8481e273b1d16360673c999c017d625c21574ca5c158bcb16d0dec",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            0,
+            3
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            4
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            0,
+            3
+          ],
+          "semantic_events": [
+            0,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            1
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": false,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            160
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 720,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "0863bb70a25cd37e4591747fd95ee80d6b3ef3036d5de34bf2961dfbc09f4479",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 1300,
+          "audit_execution_steps": 74,
+          "audit_reference_steps": 1355,
+          "audit_target_model_steps": 1355,
+          "audit_resets": 31,
+          "audit_oracle_word_candidates": 5,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 6,
+          "resets": 3,
+          "target_calls": 9,
+          "source_steps": 168,
+          "candidate_expansions": 86400,
+          "pair_checks": 8956980,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 40.6875,
+          "wall_seconds": 44.819481200000155,
+          "parent_peak_traced_bytes": 80219696,
+          "audit_product_pairs": 1300,
+          "audit_execution_steps": 74
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "87178a1488153bdc989a1587fd53e2bfcc582b02f133a9cd0a0bcadebaa831c7"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "delay",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "counterexample",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": true
+        },
+        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "c780e8bb02b698935e99694cd8e4bac2ce6496633318ee31986d3df28c37c126",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 160,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ],
+            "delay": 1,
+            "init_output": 0
+          },
+          {
+            "id": 407,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ],
+            "delay": 1,
+            "init_output": 3
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 720,
+            "survivors_after": 180
+          },
+          {
+            "word": [
+              1,
+              2
+            ],
+            "outputs": [
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 180,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              0,
+              0
+            ],
+            "outputs": [
+              0,
+              0
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0,
+              0
+            ],
+            "outputs": [
+              0,
+              1,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "4dd045173b41bca802215f684b09ec6c270f15d6f5f74bbb5504551a59f338fa",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            0,
+            3
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            0,
+            3
+          ],
+          "semantic_events": [
+            0,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            1
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": false,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            160
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 720,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "0863bb70a25cd37e4591747fd95ee80d6b3ef3036d5de34bf2961dfbc09f4479",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 1300,
+          "audit_execution_steps": 93,
+          "audit_reference_steps": 1355,
+          "audit_target_model_steps": 1355,
+          "audit_resets": 41,
+          "audit_oracle_word_candidates": 5,
+          "calibration_hazardous_probes": 2,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 8,
+          "resets": 4,
+          "target_calls": 12,
+          "source_steps": 144,
+          "candidate_expansions": 86400,
+          "pair_checks": 10732626,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 3.828125,
+          "wall_seconds": 4.536144799996691,
+          "parent_peak_traced_bytes": 16826411,
+          "audit_product_pairs": 1300,
+          "audit_execution_steps": 93
+        },
+        "baseline": {
+          "name": "counterexample",
+          "privileged": false
+        },
+        "scientific_hash": "e4f8f18151972db2944252dd4f7f7bc050638b0e2e4beab52dc17433773a09af"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "delay",
+          "seed": 23,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": true
+        },
+        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "429ffd21e47ab7f5680be5d59043c9a4374397d92a7e5d9e3f85b983a6e55913",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            1,
+            2,
+            1
+          ],
+          "candidate_count": 2
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 612,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ],
+            "delay": 1,
+            "init_output": 0
+          },
+          {
+            "id": 627,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "delay": 1,
+            "init_output": 3
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 720,
+            "survivors_after": 180
+          },
+          {
+            "word": [
+              1,
+              0
+            ],
+            "outputs": [
+              3,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 180,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              2,
+              0,
+              0
+            ],
+            "outputs": [
+              3,
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 4
+          },
+          {
+            "word": [
+              0,
+              0,
+              0
+            ],
+            "outputs": [
+              3,
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 4,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "05a911efec3bf3f048f6ad0dd5d1e6d42967c66ae00ba00e8b9ebaa07bb2d4c4",
+        "deployment": {
+          "word": [
+            1,
+            2,
+            1
+          ],
+          "executed_word": [
+            1,
+            2,
+            1
+          ],
+          "outputs": [
+            3,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            3,
+            3,
+            1
+          ],
+          "semantic_events": [
+            0,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            2
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": false,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            612
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 720,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "057cc8f12defb8cbdf5b2d76dca4ff447d72d7cb41be84bfb8c87e24b0363317",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 1280,
+          "audit_execution_steps": 145,
+          "audit_reference_steps": 1355,
+          "audit_target_model_steps": 1355,
+          "audit_resets": 61,
+          "audit_oracle_word_candidates": 9,
+          "calibration_hazardous_probes": 4,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 9,
+          "resets": 4,
+          "target_calls": 13,
+          "source_steps": 144,
+          "candidate_expansions": 86400,
+          "pair_checks": 8957196,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 40.859375,
+          "wall_seconds": 45.4667333000034,
+          "parent_peak_traced_bytes": 80084066,
+          "audit_product_pairs": 1280,
+          "audit_execution_steps": 145
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "1e7e0986aeca4ad71a77c9b4e9a067cfdef1e193f76b6be423a54debb5bd1820"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "delay",
+          "seed": 23,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "counterexample",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": true
+        },
+        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "429ffd21e47ab7f5680be5d59043c9a4374397d92a7e5d9e3f85b983a6e55913",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "IDENTIFIED",
+          "admitted": true,
+          "word": [
+            1,
+            2
+          ],
+          "candidate_count": 1
+        },
+        "ambiguity": {
+          "map_count": 1,
+          "observational_classes": 1,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 612,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ],
+            "delay": 1,
+            "init_output": 0
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 720,
+            "survivors_after": 180
+          },
+          {
+            "word": [
+              1,
+              2
+            ],
+            "outputs": [
+              3,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 180,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              0,
+              0
+            ],
+            "outputs": [
+              3,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0,
+              0
+            ],
+            "outputs": [
+              3,
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 3
+          },
+          {
+            "word": [
+              1,
+              2,
+              0
+            ],
+            "outputs": [
+              3,
+              3,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 3,
+            "survivors_after": 1
+          }
+        ],
+        "decision_frozen_hash": "f4ac7579f78b866d8bd1b275951030ab791f6dbd0adbf0d180009706f35e1820",
+        "deployment": {
+          "word": [
+            1,
+            2
+          ],
+          "executed_word": [
+            1,
+            2
+          ],
+          "outputs": [
+            3,
+            3
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            1
+          ],
+          "target_steps": 2,
+          "resets": 1,
+          "target_calls": 3,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            3,
+            3
+          ],
+          "semantic_events": [
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 2,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            2
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": false,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            612
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 720,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "057cc8f12defb8cbdf5b2d76dca4ff447d72d7cb41be84bfb8c87e24b0363317",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 1280,
+          "audit_execution_steps": 173,
+          "audit_reference_steps": 1355,
+          "audit_target_model_steps": 1355,
+          "audit_resets": 76,
+          "audit_oracle_word_candidates": 9,
+          "calibration_hazardous_probes": 4,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 11,
+          "resets": 5,
+          "target_calls": 16,
+          "source_steps": 132,
+          "candidate_expansions": 86400,
+          "pair_checks": 10732731,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 3.84375,
+          "wall_seconds": 4.5430736000053,
+          "parent_peak_traced_bytes": 16825810,
+          "audit_product_pairs": 1280,
+          "audit_execution_steps": 173
+        },
+        "baseline": {
+          "name": "counterexample",
+          "privileged": false
+        },
+        "scientific_hash": "6f53fe850952a842c22a420bf235ef9a8cbe7d3d9ba5f5c7b9c0dec78971bf95"
+      }
+    ],
+    "summary": [
+      {
+        "method": "counterexample/robust",
+        "family": "delay",
+        "scope": "out_of_family",
+        "budget": 16,
+        "requests": 2,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 9.5,
+        "mean_resets": 4.5,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "task/robust",
+        "family": "delay",
+        "scope": "out_of_family",
+        "budget": 16,
+        "requests": 2,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 7.5,
+        "mean_resets": 3.5,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      }
+    ],
+    "paired": [],
+    "scientific_hash": "f0eee9109c03289377833849e2ef6fdbc20be1cdfe26e2f1e4dbbb421e8a3efc"
+  },
+  "payload_hash": "bc335f789c41c3ace72b53c732213554ae1d115386176805575b50643a992474"
+}

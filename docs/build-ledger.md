@@ -46,3 +46,12 @@ Ruling: parallelize disjoint core, target-protocol and browser files — active 
   - Wheel build & clean environment parity: verified.
   - `docs/paper.md` and `docs/verification.md`: authored.
   - `README.md` and `Run-CROSSWIRE.ps1`: operational.
+- [x] **Task 6 (Closed-Loop Dynamic Runtime Shield, Temporal Adapter Synthesis, & CEGP):**
+  - Closed-Loop Dynamic Runtime Shield (`crosswire/shield.py`): monitors deployment step responses; halts on empty survivor set or pre-emptively intercepts latent hazard suffixes; verified with 3 tests in `tests/test_shield.py`.
+  - Temporal Latency-Aware Adapter Algebra (`crosswire/core.py`): expands candidate space to 720 models supporting 1-step pipeline delay and initial buffer search; 3-tuple synchronized product comparison; verified with 3 tests in `tests/test_temporal.py`.
+  - Counterexample-Guided Active Probing (`crosswire/core.py`): optimized $O(W \cdot N)$ marginal frequency counting for pair disagreement; verified with 2 tests in `tests/test_cegp.py`.
+  - Integrated full test suite passing (88/88 passed in 44.55s).
+  - Open-Loop vs. Shielded Comparative Benchmark (`reports/pilot-shield-openloop-receipt.json` & `reports/pilot-shield-shielded-receipt.json`, 72 runs): empirically verified 8 hazards averted on misspecified targets.
+  - Temporal Adapter Benchmark (`reports/pilot-temporal-receipt.json`, 4 runs): achieved 100% useful coverage with 0% selective harm on pipeline-delayed interfaces.
+  - Total verified empirical evaluations: 669 runs.
+  - Research paper and verification report updated with empirical tables and mathematical formulations.

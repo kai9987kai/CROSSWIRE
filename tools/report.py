@@ -31,26 +31,29 @@ def render(receipt: dict, title: str) -> str:
     for s in summary:
         key = (s["method"], s["budget"])
         for field in ("requests", "admitted", "successful", "harmful", "hazardous",
+                      "hazards_averted", "shield_interventions",
                       "interface_errors", "abstained", "oracle_feasible"):
-            agg[key][field] += s[field]
+            agg[key][field] += s.get(field, 0)
         agg[key]["calls"] += (s["mean_target_steps"] + s["mean_resets"]) * s["requests"]
     out += ["### Method × call budget (pooled over families)", "",
-            "| Method | Budget | Requests | Admitted | Useful coverage | Selective harm | Hazard | Interface errors | Mean calls |",
-            "|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
+            "| Method | Budget | Requests | Admitted | Useful coverage | Selective harm | Hazard | Averted | Shield interventions | Interface errors | Mean calls |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for (method, budget), a in sorted(agg.items(), key=lambda kv: (kv[0][0], kv[0][1])):
         n = a["requests"]
         out.append(f"| {method} | {budget} | {n:.0f} | {a['admitted']:.0f} | {_pct(a['successful'] / n)} | "
                    f"{_pct(a['harmful'] / a['admitted'] if a['admitted'] else None)} | {a['hazardous']:.0f} | "
+                   f"{a['hazards_averted']:.0f} | {a['shield_interventions']:.0f} | "
                    f"{a['interface_errors']:.0f} | {a['calls'] / n:.1f} |")
     out.append("")
 
     # Family detail.
     out += ["### Per family", "",
-            "| Family | Scope | Method | Budget | Admitted/requests | Successful | Harmful | Oracle-feasible |",
-            "|---|---|---|---:|---:|---:|---:|---:|"]
+            "| Family | Scope | Method | Budget | Admitted/requests | Successful | Harmful | Hazards | Averted | Interventions | Oracle-feasible |",
+            "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for s in sorted(summary, key=lambda s: (s["family"], s["method"], s["budget"])):
         out.append(f"| {s['family']} | {s['scope']} | {s['method']} | {s['budget']} | {s['admitted']}/{s['requests']} | "
-                   f"{s['successful']} | {s['harmful']} | {s['oracle_feasible']} |")
+                   f"{s['successful']} | {s['harmful']} | {s.get('hazardous', 0)} | {s.get('hazards_averted', 0)} | "
+                   f"{s.get('shield_interventions', 0)} | {s['oracle_feasible']} |")
     out.append("")
 
     if payload.get("paired"):

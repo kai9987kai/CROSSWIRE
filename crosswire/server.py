@@ -13,7 +13,7 @@ import uuid
 from . import __version__
 from .fixtures import catalog
 from .receipts import check_envelope, pack, replay, validate
-from .study import ADMISSIONS, POLICIES, Cancelled, RunConfig, run, run_study
+from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, Cancelled, RunConfig, run, run_study
 
 MAX_BODY = 20 * 1024 * 1024
 
@@ -169,7 +169,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path == '/api/catalog':
                 self._json(200, {'version': __version__, 'families': catalog(), 'policies': POLICIES,
-                                 'admissions': ADMISSIONS, 'defaults': asdict(RunConfig())})
+                                 'admissions': ADMISSIONS, 'execution_modes': EXECUTION_MODES,
+                                 'defaults': asdict(RunConfig())})
             elif path.startswith('/api/runs/'):
                 parts = path.strip('/').split('/')
                 if len(parts) == 3:

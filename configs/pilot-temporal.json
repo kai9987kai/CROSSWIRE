@@ -1,0 +1,10 @@
+{
+  "families": ["delay"],
+  "seeds": [17, 23],
+  "budgets": [16],
+  "policies": ["task", "counterexample"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"],
+  "split": "evaluation",
+  "temporal": true
+}

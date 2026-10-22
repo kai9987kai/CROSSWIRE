@@ -104,9 +104,13 @@ class Adapter:
     id: int
     input_map: tuple
     output_map: tuple
+    delay: int = 0
+    init_output: int = 0
 
     def __post_init__(self):
         _integer(self.id, 'adapter id')
+        _integer(self.delay, 'delay', minimum=0, maximum=1)
+        _integer(self.init_output, 'init_output', minimum=0)
         for name in ('input_map', 'output_map'):
             mapping = tuple(getattr(self, name))
             if not mapping:
@@ -118,7 +122,11 @@ class Adapter:
             object.__setattr__(self, name, mapping)
 
     def to_dict(self):
-        return {'id': self.id, 'input_map': list(self.input_map), 'output_map': list(self.output_map)}
+        result = {'id': self.id, 'input_map': list(self.input_map), 'output_map': list(self.output_map)}
+        if self.delay:
+            result['delay'] = self.delay
+            result['init_output'] = self.init_output
+        return result
 
 
 def words(inputs, max_length):
@@ -128,14 +136,22 @@ def words(inputs, max_length):
 
 
 class CandidateSpace:
-    def __init__(self, machine, contract):
+    def __init__(self, machine, contract, temporal=False):
         if not isinstance(machine, Machine) or not isinstance(contract, Contract):
             raise TypeError('CandidateSpace requires a Machine and Contract')
         if max(contract.goal, contract.hazard) >= machine.outputs:
             raise ValueError('contract symbols exceed source alphabet')
         self.machine, self.contract = machine, contract
-        self.adapters = tuple(Adapter(i, a, b) for i, (a, b) in enumerate(
-            product(permutations(range(machine.inputs)), permutations(range(machine.outputs)))))
+        self.temporal = bool(temporal)
+        adapters = [Adapter(i, a, b) for i, (a, b) in enumerate(
+            product(permutations(range(machine.inputs)), permutations(range(machine.outputs))))]
+        if self.temporal:
+            idx = len(adapters)
+            for a, b in product(permutations(range(machine.inputs)), permutations(range(machine.outputs))):
+                for init_o in range(machine.outputs):
+                    adapters.append(Adapter(idx, a, b, delay=1, init_output=init_o))
+                    idx += 1
+        self.adapters = tuple(adapters)
         self.work = {'source_steps': 0, 'candidate_expansions': 0, 'pair_checks': 0}
         self._source = {(): (machine.initial, ())}
         self._predictions = {}
@@ -175,7 +191,16 @@ class CandidateSpace:
         if key not in self._predictions:
             semantic = self._source_trace(tuple(adapter.input_map[i] for i in word))
             self._semantics[key] = semantic
-            self._predictions[key] = tuple(adapter.output_map[o] for o in semantic)
+            if adapter.delay == 1:
+                preds = []
+                for t in range(len(semantic)):
+                    if t == 0:
+                        preds.append(adapter.output_map[adapter.init_output])
+                    else:
+                        preds.append(adapter.output_map[semantic[t - 1]])
+                self._predictions[key] = tuple(preds)
+            else:
+                self._predictions[key] = tuple(adapter.output_map[o] for o in semantic)
             self.work['candidate_expansions'] += 1
         return key
 
@@ -223,7 +248,7 @@ class CandidateSpace:
         return tuple(identifier for identifier, loss in self.losses(transcripts, anchors).items() if loss == 0)
 
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0):
-        if policy not in ('fixed', 'random', 'disagreement', 'task'):
+        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample'):
             raise ValueError('unknown probe policy')
         ids = self._ids(ids)
         _integer(remaining_steps, 'remaining steps')
@@ -239,6 +264,43 @@ class CandidateSpace:
             return eligible[0]
         if policy == 'random':
             return Random(seed).choice(sorted(eligible))
+        if policy == 'disagreement':
+            best, best_score = None, 0
+            n = len(ids)
+            total_pairs = n * (n - 1) // 2
+            for word in eligible:
+                counts = {}
+                for i in ids:
+                    p = self.predict(i, word)
+                    counts[p] = counts.get(p, 0) + 1
+                agreeing = sum(c * (c - 1) // 2 for c in counts.values())
+                separated = total_pairs - agreeing
+                self.work['pair_checks'] += total_pairs
+                score = separated / (1 + len(word))
+                if score > best_score:
+                    best, best_score = word, score
+            return best
+        if policy == 'counterexample':
+            # CEGP: Counterexample-Guided Active Probing
+            n = len(ids)
+            total_pairs = n * (n - 1) // 2
+            if not total_pairs:
+                return eligible[0]
+            # Efficiently find distinguishing probe words that separate maximal candidate pairs
+            best, best_score = None, -1.0
+            for word in eligible:
+                counts = {}
+                for i in ids:
+                    p = self.predict(i, word)
+                    counts[p] = counts.get(p, 0) + 1
+                agreeing = sum(c * (c - 1) // 2 for c in counts.values())
+                separated = total_pairs - agreeing
+                self.work['pair_checks'] += total_pairs
+                if separated:
+                    score = separated / (1 + len(word))
+                    if score > best_score:
+                        best, best_score = word, score
+            return best if best is not None else eligible[0]
         best, best_score = None, 0
         pairs = tuple(combinations(ids, 2))
         weighted_pairs = []
@@ -347,20 +409,24 @@ def compare_adapter(machine, adapter, target):
         raise ValueError('comparison machine alphabets differ')
     if len(adapter.input_map) != machine.inputs or len(adapter.output_map) != machine.outputs:
         raise ValueError('adapter alphabets differ')
-    initial = (machine.initial, target.initial)
+    is_temporal = bool(getattr(adapter, 'delay', 0))
+    initial = (machine.initial, target.initial, adapter.init_output) if is_temporal else (machine.initial, target.initial)
     visited, pending = {initial}, deque([(initial, ())])
     steps = 0
     while pending:
-        (source_state, target_state), prefix = pending.popleft()
+        curr, prefix = pending.popleft()
+        source_state, target_state = curr[0], curr[1]
+        buffered = curr[2] if is_temporal else None
         for symbol in range(machine.inputs):
             source_next, semantic = machine.transitions[source_state][adapter.input_map[symbol]]
             target_next, raw = target.transitions[target_state][symbol]
             steps += 1
             word = prefix + (symbol,)
-            if adapter.output_map[semantic] != raw:
+            pred_raw = adapter.output_map[buffered if is_temporal else semantic]
+            if pred_raw != raw:
                 return {'equivalent': False, 'counterexample': list(word), 'visited_pairs': len(visited),
                         'source_steps': steps, 'target_model_steps': steps}
-            following = (source_next, target_next)
+            following = (source_next, target_next, semantic) if is_temporal else (source_next, target_next)
             if following not in visited:
                 visited.add(following)
                 pending.append((following, word))

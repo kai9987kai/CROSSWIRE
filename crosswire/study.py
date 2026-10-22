@@ -16,8 +16,9 @@ from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample")
 ADMISSIONS = ("robust", "one_best", "unique", "fit", "identity", "abstain", "oracle")
+EXECUTION_MODES = ("open_loop", "shielded")
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
 
@@ -37,6 +38,8 @@ class RunConfig:
     horizon: int = 4
     policy: str = "task"
     admission: str = "robust"
+    execution_mode: str = "open_loop"
+    temporal: bool = False
 
     @classmethod
     def from_dict(cls, values: dict) -> "RunConfig":
@@ -53,6 +56,10 @@ class RunConfig:
                 raise ValueError(f"{key} must be an integer in [{low}, {high}]")
         if type(self.anchors) is not bool:
             raise ValueError("anchors must be a boolean")
+        if type(self.temporal) is not bool:
+            raise ValueError("temporal must be a boolean")
+        if self.execution_mode not in EXECUTION_MODES:
+            raise ValueError("Unknown execution mode")
         if self.family not in {f["id"] for f in catalog()}:
             raise ValueError("Unknown fixture family")
         if self.implementation not in ("table", "procedural") or self.split not in ("development", "evaluation"):
@@ -96,9 +103,9 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 
 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
-             cancel: Callable[[], bool] | None, progress: Callable | None):
+             cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False):
     """This function receives no Case, private map, target states or family label."""
-    space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]))
+    space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
     probes: list[dict] = []
     survivors = space.survivors(probes, anchors)
@@ -162,6 +169,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         tracemalloc.start()
     tracemalloc.reset_peak()
     try:
+        temporal = config.temporal
         if config.policy == "aalpy" and config.admission != "oracle":
             from .baselines import acquire_aalpy
             target = resources.enter_context(TargetProcess(case.private))
@@ -170,10 +178,10 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             baseline.update(detail)
         elif config.budget and config.admission != "oracle":
             target = resources.enter_context(TargetProcess(case.private))
-            space, survivors, probes, error = _acquire(public, config.policy, config.budget, target.query, target.counts, cancel, progress)
+            space, survivors, probes, error = _acquire(public, config.policy, config.budget, target.query, target.counts, cancel, progress, temporal=temporal)
             counts = dict(target.counts)
         else:
-            space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]))
+            space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
             survivors = space.survivors([], {int(k): int(v) for k, v in public.get("anchors", {}).items()})
             probes, error = [], None
         _check_cancel(cancel)
@@ -204,16 +212,9 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             _check_cancel(cancel)
             if target is None:
                 target = resources.enter_context(TargetProcess(case.private))
-            previous = dict(target.counts)
-            try:
-                deployment['outputs'] = target.query(decision['word'])
-                deployment['complete'] = True
-            except InterfaceError as exc:
-                deployment['outputs'] = getattr(exc, 'trace', {}).get('outputs', [])
-                deployment['error'] = {'code': exc.code, 'message': str(exc)}
-            deployment.update(target_steps=target.counts['step_attempts'] - previous['step_attempts'],
-                              resets=target.counts['reset_attempts'] - previous['reset_attempts'],
-                              target_calls=target.counts['target_calls'] - previous['target_calls'])
+            from .shield import execute_deployment
+            deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,
+                                            mode=config.execution_mode, cancel=cancel)
         from .audit import evaluate
         audit = evaluate(case, space, survivors, decision, probes, deployment)
         peak = tracemalloc.get_traced_memory()[1]
@@ -262,6 +263,8 @@ def summarize(rows: list[dict]) -> list[dict]:
             "method": method, "family": family, "scope": scopes[family], "budget": budget, "requests": n,
             "admitted": admitted, "successful": success, "harmful": harm,
             "hazardous": sum(r["audit"]["hazard"] is True for r in members),
+            "hazards_averted": sum(r["audit"].get("hazard_averted") is True for r in members),
+            "shield_interventions": sum(r["audit"].get("shield_intervened") is True for r in members),
             "interface_errors": sum(r["decision"]["status"] == "INTERFACE_ERROR"
                                     or bool((r.get("deployment") or {}).get("error")) for r in members),
             "acquisition_interface_errors": sum(r["decision"]["status"] == "INTERFACE_ERROR" for r in members),
@@ -332,7 +335,8 @@ STUDY_DEFAULTS = {"families": ["latch", "symmetric", "neutral"], "seeds": [17], 
 def study_configs(spec: dict) -> list[RunConfig]:
     if not isinstance(spec, dict):
         raise ValueError("Study must be an object")
-    allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations", "anchors", "split", "horizon"}
+    allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
+               "anchors", "split", "horizon", "execution_mode", "temporal"}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -350,7 +354,9 @@ def study_configs(spec: dict) -> list[RunConfig]:
         raise ValueError("Study exceeds 512 runs; split the protocol explicitly")
     return [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation"), values),
                                          anchors=spec.get("anchors", False), split=spec.get("split", "development"),
-                                         horizon=spec.get("horizon", 4))) for values in product(*dimensions)]
+                                         horizon=spec.get("horizon", 4),
+                                         execution_mode=spec.get("execution_mode", "open_loop"),
+                                         temporal=spec.get("temporal", False))) for values in product(*dimensions)]
 
 
 def run_study(spec: dict, cancel: Callable[[], bool] | None = None, progress: Callable | None = None) -> dict:

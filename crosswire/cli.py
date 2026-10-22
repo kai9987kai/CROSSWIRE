@@ -26,13 +26,15 @@ def main(argv=None):
     commands = parser.add_subparsers(dest='command', required=True)
     one = commands.add_parser('run')
     defaults = asdict(RunConfig())
-    for name in ('family', 'implementation', 'split', 'policy', 'admission'):
+    for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode'):
         choices = {'family': [f['id'] for f in catalog()], 'implementation': ['table', 'procedural'],
-                   'split': ['development', 'evaluation'], 'policy': POLICIES, 'admission': ADMISSIONS}[name]
+                   'split': ['development', 'evaluation'], 'policy': POLICIES, 'admission': ADMISSIONS,
+                   'execution_mode': ('open_loop', 'shielded')}[name]
         one.add_argument('--' + name, default=defaults[name], choices=choices)
     for name in ('seed', 'budget', 'horizon'):
         one.add_argument('--' + name, default=defaults[name], type=int)
     one.add_argument('--anchors', action='store_true')
+    one.add_argument('--temporal', action='store_true')
     one.add_argument('--out', type=Path)
     study = commands.add_parser('study')
     study.add_argument('--config', type=Path, required=True)

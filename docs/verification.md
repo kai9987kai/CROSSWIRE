@@ -3,7 +3,7 @@
 **Date:** 22 October 2026  
 **Commit:** `083f847`  
 **Platform:** Windows (Python 3.12.9 64-bit, Node.js v20+, Chromium 1243)  
-**Overall Status:** PASS (80/80 tests passing, clean wheel install verified, browser e2e verified, 593 total empirical runs verified)
+**Overall Status:** PASS (88/88 tests passing, clean wheel install verified, browser e2e verified, 669 total empirical runs verified)
 
 ---
 
@@ -12,7 +12,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================== 80 passed in 31.84s ==============================
+============================== 88 passed in 44.55s ==============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -27,7 +27,10 @@ The automated test suite runs via `pytest` without external dependencies (except
 | `tests/test_study.py` | 10 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; stratified paired comparisons within budget strata. |
 | `tests/test_server.py` | 5 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection. |
 | `tests/test_cli.py` | 4 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`. |
-| **Total** | **80** | **Complete local coverage of contract specifications.** |
+| `tests/test_shield.py` | 3 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-emptive hazard aversion via suffix candidate simulation; open-loop vs. shielded deployment branching. |
+| `tests/test_temporal.py` | 3 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); 3-tuple product Mealy state comparison; empirical resolution of pipeline delay. |
+| `tests/test_cegp.py` | 2 | Counterexample-guided active probing (CEGP) policy; $O(W \cdot N)$ marginal frequency pair disagreement counting; survivor set differentiation. |
+| **Total** | **88** | **Complete local coverage of contract specifications and runtime dynamics.** |
 
 ---
 
@@ -105,12 +108,16 @@ Browser automation was conducted using Playwright on headless Chromium against a
 
 ## 5. Scientific Receipt Provenance & Reproducibility
 
-Three systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
+Six systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
 
 | Benchmark | Output Receipt | Protocol Hash | Scientific Hash | Total Runs |
 |---|---|---|---|---:|
 | **Development Smoke** | `reports/smoke-receipt.json` | `18f9b1ef3bce37f8…` | `f08e0e7316980cb7…` | 27 |
 | **In-Family Benchmark** | `reports/pilot-in-family-receipt.json` | `9977cf45469275ff…` | `64c084a09fa36956…` | 350 |
 | **Out-of-Family Stress** | `reports/pilot-stress-receipt.json` | `1dc8cc430b960163…` | `ad1c49f782e756cb…` | 216 |
+| **Open-Loop Stress Baseline** | `reports/pilot-shield-openloop-receipt.json` | `a4fcb06f0e492da4…` | `5bdf9766d4ab4946…` | 36 |
+| **Shielded Closed-Loop Benchmark** | `reports/pilot-shield-shielded-receipt.json` | `a88c531ea7fad346…` | `924a7b12de35f87c…` | 36 |
+| **Temporal Adapter Synthesis** | `reports/pilot-temporal-receipt.json` | `674907c7f02dcdb7…` | `f0eee9109c032893…` | 4 |
+| **Total Empirical Runs** | | | | **669** |
 
-All receipts are cryptographically bound to source revision hash `12ccc80deeacb472…`. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.
+All receipts are cryptographically bound to explicit source and protocol hashes. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.
