@@ -1,0 +1,11 @@
+{
+  "frozen_at": "2026-10-22T19:01+01:00",
+  "git_commit": "083f847",
+  "source_hash": "12ccc80deeacb47206ffc1d1ddaa9c6c5eafffe2bd368cc0d4f9cfd90830082b",
+  "config_hashes": {
+    "pilot-in-family.json": "e19966c8ee0f2749f6923612f4d6bc18587096d4acc67b43d8e58fcebbe9d5ef",
+    "pilot-stress.json": "3f559b2ee3aebfb8ab96e3129fd76c44c8c5af8b6fdc05f0f40572ae4e04e926",
+    "smoke.json": "bce11107778adda56134245952f409dc9a795ae5661312e5a99540590659e5c6"
+  },
+  "status": "exploratory pilot; configs frozen before execution"
+}

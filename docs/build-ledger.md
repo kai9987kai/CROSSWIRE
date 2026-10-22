@@ -23,7 +23,26 @@ Ruling: parallelize disjoint core, target-protocol and browser files — active 
 | 4 | UI versus core | visualizes Python output, no duplicated scientific learner |
 | 5 | Research conclusion versus software status | negative pilot permitted; no breakthrough/publication claim |
 
-## Progress
+## Integration Review Rulings & Resolutions
 
-- Planning and shared API: prepared.
-- Implementation, task reviews, pilot, package and browser checks: pending.
+1. **Deployment Prefix Auditing:** Fixed in `audit.py`. Only executed prefixes are audited; aborted suffixes are never simulated as if executed.
+2. **Unified System-Call Cap:** Fixed in `study.py` and `baselines.py`. Resets and steps share a common call budget $B$.
+3. **Deployment Failure Accounting:** Fixed in `study.py`. Deployment interface crashes are counted in summary metrics without mutating frozen decisions.
+4. **Forced-Fit Residual Diagnostics:** Fixed in `study.py`. Preserved chosen adapter and residual mismatch breakdown in baseline diagnostics.
+5. **AALpy Transition Work:** Fixed in `baselines.py`. Model comparison steps are counted explicitly.
+6. **Stratified Paired Contrasts:** Fixed in `study.py`. Matched cell-by-cell comparisons remain within identical call-cap levels.
+7. **Asynchronous Import/Replay:** Fixed in `server.py` and `app.js`. Receipt import and verification run as cancellable jobs on the scientific worker.
+
+## Milestone Status
+
+- [x] **Task 1 (Core Algebra & Mappings):** Completed and verified with 17 tests.
+- [x] **Task 2 (Targets & Subprocess Protocol):** Completed and verified with 34 tests.
+- [x] **Task 3 (Study Orchestration, AALpy, Audit, Receipts):** Completed and verified with 20 tests.
+- [x] **Task 4 (CLI, Async Job Server, Browser Workbench):** Completed and verified with 9 tests, Playwright e2e automation, and mobile responsive check.
+- [x] **Task 5 (Reproducible Pilot Benchmarks, Verification, Documentation):** 
+  - Smoke benchmark (27 runs): verified.
+  - In-family benchmark (350 runs): verified.
+  - Stress benchmark (216 runs): verified.
+  - Wheel build & clean environment parity: verified.
+  - `docs/paper.md` and `docs/verification.md`: authored.
+  - `README.md` and `Run-CROSSWIRE.ps1`: operational.

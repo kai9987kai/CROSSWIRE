@@ -37,52 +37,52 @@ The exact shared API and HTTP payload decisions are in `docs/implementation-cont
 
 Files: `crosswire/core.py`, `tests/test_core.py`.
 
-- [ ] Write failing tests for 144 maps, prefix hazard, true-map retention, unique versus task-equivalent ambiguity, non-vacuous empty family and exact product counterexamples.
-- [ ] Observe failure with `python -m pytest tests/test_core.py -q`.
-- [ ] Implement the core contract with validated finite immutable tuples, memoized predictions, work counters, task-agnostic and contract-relevant probe scores, robust/one-best/unique/fit/identity/abstain admission.
-- [ ] Verify targeted tests, then run the available full suite. Report deterministic behavior and cost-accounting checks.
-- [ ] Independent review of core semantics and tests before final integration.
+- [x] Write failing tests for 144 maps, prefix hazard, true-map retention, unique versus task-equivalent ambiguity, non-vacuous empty family and exact product counterexamples.
+- [x] Observe failure with `python -m pytest tests/test_core.py -q`.
+- [x] Implement the core contract with validated finite immutable tuples, memoized predictions, work counters, task-agnostic and contract-relevant probe scores, robust/one-best/unique/fit/identity/abstain admission.
+- [x] Verify targeted tests, then run the available full suite. Report deterministic behavior and cost-accounting checks.
+- [x] Independent review of core semantics and tests before final integration.
 
 ### Task 2: target fixtures and bounded subprocess protocol
 
 Files: `crosswire/fixtures.py`, `crosswire/target_worker.py`, `crosswire/interfaces.py`, `tests/test_fixtures.py`, `tests/test_interfaces.py`.
 
-- [ ] Write failing tests for separately implemented table/procedural traces, hidden action/output maps, symmetric semantic ambiguity, neutral-map ambiguity, semantic corruption, aliasing, long separating traces, malformed protocol and timeout cleanup.
-- [ ] Observe failures before implementation.
-- [ ] Implement `Case`, public/private separation, case catalog, target engines, private evaluation and finite audit-model exports. Procedural engines must not interpret a shared transition table at runtime.
-- [ ] Implement exact-PID subprocess lifecycle with line-delimited JSON, init/reset/step, response validation, bounded timeout, counted failures and context-manager cleanup.
-- [ ] Verify targeted and available full tests, including child exit. Source snapshot and private target identity cannot affect learner-facing observations except through the documented interface.
-- [ ] Independent review of privacy data flow, boundary handling and semantic ground truth.
+- [x] Write failing tests for separately implemented table/procedural traces, hidden action/output maps, symmetric semantic ambiguity, neutral-map ambiguity, semantic corruption, aliasing, long separating traces, malformed protocol and timeout cleanup.
+- [x] Observe failures before implementation.
+- [x] Implement `Case`, public/private separation, case catalog, target engines, private evaluation and finite audit-model exports. Procedural engines must not interpret a shared transition table at runtime.
+- [x] Implement exact-PID subprocess lifecycle with line-delimited JSON, init/reset/step, response validation, bounded timeout, counted failures and context-manager cleanup.
+- [x] Verify targeted and available full tests, including child exit. Source snapshot and private target identity cannot affect learner-facing observations except through the documented interface.
+- [x] Independent review of privacy data flow, boundary handling and semantic ground truth.
 
 ### Task 3: study orchestration, AALpy baseline, audit and receipts
 
 Files: `crosswire/study.py`, `crosswire/baselines.py`, `crosswire/audit.py`, `crosswire/receipts.py`, `tests/test_study.py`, `tests/test_receipts.py`, `tests/test_baselines.py`.
 
-- [ ] Write failing tests for zero-budget admission, common transcript comparisons, deterministic replay, true-map containment, actual semantic harm, exact no-map-in-class, empty-result risk, tampering and parent-cluster summaries.
-- [ ] Observe failures; implement acquisition with exclusive call accounting and freeze scientific decision before private audit.
-- [ ] Implement AALpy 1.6.2 raw Mealy learning using budget-limited SUL/oracle access, with no uncharged model finish. Complete models undergo adapter equivalence search and the same task admission; incomplete learning abstains.
-- [ ] Implement receipt canonical hashes, deterministic scientific projection, import validation and exact scientific replay. Runtime measurements remain outside deterministic identity.
-- [ ] Implement method-by-family summaries, parent-cluster paired bootstrap, utility at recorded abstention costs and exploratory pilot runner; incomplete/cancelled runs cannot be passed as complete.
-- [ ] Verify targeted/full tests and compare core private auditor with direct enumerated tiny fixtures. Record any scope rulings.
+- [x] Write failing tests for zero-budget admission, common transcript comparisons, deterministic replay, true-map containment, actual semantic harm, exact no-map-in-class, empty-result risk, tampering and parent-cluster summaries.
+- [x] Observe failures; implement acquisition with exclusive call accounting and freeze scientific decision before private audit.
+- [x] Implement AALpy 1.6.2 raw Mealy learning using budget-limited SUL/oracle access, with no uncharged model finish. Complete models undergo adapter equivalence search and the same task admission; incomplete learning abstains.
+- [x] Implement receipt canonical hashes, deterministic scientific projection, import validation and exact scientific replay. Runtime measurements remain outside deterministic identity.
+- [x] Implement method-by-family summaries, parent-cluster paired bootstrap, utility at recorded abstention costs and exploratory pilot runner; incomplete/cancelled runs cannot be passed as complete.
+- [x] Verify targeted/full tests and compare core private auditor with direct enumerated tiny fixtures. Record any scope rulings.
 
 ### Task 4: CLI, async job server and browser inspector
 
 Files: root owns `crosswire/__main__.py`, `crosswire/cli.py`, `crosswire/server.py`, `tests/test_cli.py`, `tests/test_server.py`; web worker owns `crosswire/web/index.html`, `crosswire/web/styles.css`, `crosswire/web/app.js`.
 
-- [ ] Write failing API/CLI tests for run/export/import/replay, bounded input, async status, cancel, loopback static serving and errors.
-- [ ] Implement shared CLI commands `run`, `study`, `verify`, `replay`, `serve`; one queued worker in server and stable HTTP contract.
-- [ ] Implement responsive browser workbench from the shared contract: task settings, module diagrams, candidate maps, probe/counterexample timeline, decision/outcome separation, study plots, cancel/import/export/replay.
-- [ ] Verify CLI/API tests; browser automation must exercise real run, cancel, export/import and replay. Inspect actual screenshots and repair errors/overflow/empty states.
+- [x] Write failing API/CLI tests for run/export/import/replay, bounded input, async status, cancel, loopback static serving and errors.
+- [x] Implement shared CLI commands `run`, `study`, `verify`, `replay`, `serve`; one queued worker in server and stable HTTP contract.
+- [x] Implement responsive browser workbench from the shared contract: task settings, module diagrams, candidate maps, probe/counterexample timeline, decision/outcome separation, study plots, cancel/import/export/replay.
+- [x] Verify CLI/API tests; browser automation must exercise real run, cancel, export/import and replay. Inspect actual screenshots and repair errors/overflow/empty states.
 
 ### Task 5: reproducible pilot, documentation and package parity
 
-Files: `configs/pilot.json`, `configs/smoke.json`, `README.md`, `docs/paper.md`, `docs/verification.md`, `Run-CROSSWIRE.ps1`, `pyproject.toml`, `LICENSE`, `reports/`.
+Files: `configs/pilot-in-family.json`, `configs/pilot-stress.json`, `configs/smoke.json`, `README.md`, `docs/paper.md`, `docs/verification.md`, `Run-CROSSWIRE.ps1`, `pyproject.toml`, `LICENSE`, `reports/`.
 
-- [ ] Run development smoke to establish run cost and sample variability. Freeze an explicit exploratory pilot config/source hash before executing the pilot.
-- [ ] Run paired methods on the same semantic parent instances; preserve raw rows and receipts, source/config hashes, actual baselines, failure counts, conditional and total coverage/harm, and cluster intervals.
-- [ ] Write operational docs and standalone paper reporting measured results honestly, including negative outcomes and supported versus out-of-family assumptions.
-- [ ] Build wheel, install in a clean temporary environment, execute the same CLI fixture/receipt replay and confirm web assets are included.
-- [ ] Run full tests, artifact/link checks and fresh whole-project review; fix actionable findings, rerun checks justified by fixes, commit the completed local build, launch and verify responsive browser workbench.
+- [x] Run development smoke to establish run cost and sample variability. Freeze an explicit exploratory pilot config/source hash before executing the pilot.
+- [x] Run paired methods on the same semantic parent instances; preserve raw rows and receipts, source/config hashes, actual baselines, failure counts, conditional and total coverage/harm, and cluster intervals.
+- [x] Write operational docs and standalone paper reporting measured results honestly, including negative outcomes and supported versus out-of-family assumptions.
+- [x] Build wheel, install in a clean temporary environment, execute the same CLI fixture/receipt replay and confirm web assets are included.
+- [x] Run full tests, artifact/link checks and fresh whole-project review; fix actionable findings, rerun checks justified by fixes, commit the completed local build, launch and verify responsive browser workbench.
 
 ## Execution decisions
 
