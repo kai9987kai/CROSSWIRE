@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crosswire-lab"
+version = "0.1.0"
+description = "A finite behavioral interoperability research laboratory"
+requires-python = ">=3.12"
+readme = "README.md"
+license = "MIT"
+authors = [{name = "Kai Piper"}]
+dependencies = []
+
+[project.optional-dependencies]
+baselines = ["aalpy==1.6.2"]
+dev = ["pytest>=8,<10", "build>=1,<2"]
+
+[project.scripts]
+crosswire = "crosswire.cli:main"
+
+[tool.setuptools]
+packages = ["crosswire"]
+
+[tool.setuptools.package-data]
+crosswire = ["web/*.html", "web/*.css", "web/*.js"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

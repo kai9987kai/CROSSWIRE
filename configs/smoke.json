@@ -1,0 +1,8 @@
+{
+  "families": ["latch", "symmetric", "neutral"],
+  "seeds": [17],
+  "budgets": [0, 8, 16],
+  "policies": ["fixed", "random", "task"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"]
+}

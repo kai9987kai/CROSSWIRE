@@ -1,0 +1,53 @@
+# Shared implementation contract, v0.1
+
+This is an internal build contract. It does not replace the approved research spec. Python modules live directly in `crosswire/` and all scientific values use JSON-safe finite numbers. Public symbols are integer opaque IDs, not semantic names.
+
+## Core worker ownership: core.py and test_core.py
+
+`Machine(name: str, transitions: tuple[tuple[tuple[int,int],...],...], inputs: int=3, outputs: int=4, initial: int=0)`: immutable dataclass. Each cell is `(next_state, output_id)`. Validate complete rectangular dimensions, bounds and nonempty states. Methods `trace(word)->tuple[int,...]`, `to_dict()->dict`, `from_dict(dict)->Machine`.
+
+`Contract(goal: int=1, hazard: int=2, horizon: int=4)`: validate distinct bounded goal/hazard in study; methods `accepts(outputs)->bool` (nonempty, last goal, no hazard anywhere), `to_dict()`, `from_dict()`.
+
+`Adapter(id: int, input_map: tuple[int,...], output_map: tuple[int,...])`: target input to reference input; reference output to target output. `to_dict()`.
+
+`words(inputs: int, max_length: int)->tuple[tuple[int,...],...]`: shortest then lexicographic, no empty word.
+
+`CandidateSpace(machine: Machine, contract: Contract)` owns `.adapters` (tuple of Adapter), `.work` dict counters `source_steps`, `candidate_expansions`, `pair_checks`. `.predict(id,word)->tuple` returns raw target outputs and memoizes; `.semantic(id,word)->tuple` reference semantic outputs; `.safe_words(id)->frozenset[tuple]`; all actual source steps/cache misses counted.
+
+`.survivors(transcripts: list[dict], anchors: dict[int,int]|None=None)->tuple[int,...]`: transcript entry has `word`, `outputs`, `complete` bool; ignore incomplete entries for fitting unless their complete observed prefix is supplied as word/output (study does that). Anchor maps raw target output to reference semantic output. `.losses(transcripts,anchors)->dict[int,int]` counts per-symbol mismatch plus anchor mismatch.
+
+`.choose_probe(ids, policy: str, remaining_steps: int, seen: set[tuple], seed: int=0)->tuple|None`: policies fixed/random/disagreement/task; fixed probe pool lengths 1-3. Never choose too long or repeat. random deterministically samples sorted eligible pool using local RNG. Disagreement pair score is divided by 1+length; task weights symmetric difference/union of safe-word sets. Stop if max score zero for disagreement/task. Other policies can continue while probes remain.
+
+`.plan(ids, mode='robust', transcripts=None, anchors=None)->dict`: keys `status`, `admitted`, `word` (list or null), `candidate_count`. Modes robust, one_best, unique, fit, identity, abstain. robust intersects safe words, one_best chooses smallest survivor, unique requires one, fit minimizes losses across all adapters, identity uses identity pair, abstain always declines. Empty survivor family never robust-admits; fit/identity are explicitly forced baselines. IDENTIFIED/TASK_ADMISSIBLE only with an admitted word; otherwise UNRESOLVED/FAMILY_CONTRADICTED. Study may turn unresolved into NEEDS_EVIDENCE when a remaining valid probe exists.
+
+`.ambiguity(ids)->dict`: `map_count`, `observational_classes` (count), `contract_classes` (count). Exact canonical reachable raw transducer signatures, not just the 39-probe bank, determine observational equivalence; safe-word sets determine contract equivalence.
+
+`compare_adapter(machine:Machine, adapter:Adapter, target:Machine)->dict`: exact product BFS, keys `equivalent`, `counterexample` (list or null), `visited_pairs`. Count actual source/audit work separately where possible.
+
+## Fixture/protocol worker ownership
+
+`fixtures.py` defines immutable `Case(public: dict, private: dict)` and `catalog()->list[dict]` of `{id,label,scope,description}`. `make_case(family: str, seed: int=17, implementation: str='procedural', split: str='development', anchors: bool=False, horizon: int=4)->Case`.
+
+`Case.public` keys: `reference` (Machine dict), `contract` (Contract dict), `target_id` opaque stable hash, `anchors` (raw-output to semantic-output dict; JSON string keys converted at boundary), `parent_instance_id` (shared across related permutations/contracts/implementations; no family label given to learner). `Case.private` is a JSON configuration for target construction/audit, hidden maps and semantic ground truth; root passes only public data and narrow query callable into acquisition.
+
+Required families: `latch`, `handshake`, `symmetric`, `neutral`, `long_trace`, `incompatible`, `alias`, `semantic_corruption`, `bypass`, `malformed`. Secondary stress families may include `delay`, `repeat`, `drift`. Catalog scopes `in_family`, `out_of_family`, `interface_error`. All supported stationary families have table and separately authored procedural execution paths. Source reference can use explicit tuples; procedural target runtime must use logic/arithmetic, not the source table behind a wrapper. Seed chooses hidden permutations with local RNG; no global RNG mutation.
+
+`make_engine(private:dict)` returns private engine with `.reset()` (returns protocol ack or None), `.step(input:int)->int`, `.semantic_events` private list and `.close()` optional. Semantics are emitted directly by the engine before observation aliasing/corruption. `.reset()` clears semantic events and transient state (drift may be experiment-level if documented).
+
+`evaluate_word(private:dict, word: list|tuple)->dict`: direct fresh engine; keys `outputs`, `semantic_events`, `goal_success`, `hazard`, `contract_satisfied`. Contract semantic goal/hazard is stored in private config. No early stop. `target_machine(private:dict)->Machine|None` returns actual finite raw transition model for exhaustive private audit, including alias/semantic corruption; None only for unsupported nonstationary/interface errors. `oracle_plan(private:dict,horizon:int=4)->list|None` enumerates actual semantic successful words, shortest lexicographic.
+
+`interfaces.py`: `InterfaceError(RuntimeError)` with `.code` string. `TargetProcess(private:dict,timeout:float=2.0)` context manager, `.query(word)->list[int]`, `.counts` dict with `reset_attempts`, `step_attempts`, `reset_successes`, `step_successes`, `target_calls`. Failed calls count before attempt; timeout/read failures close only owned process. `.last_trace` has word/outputs/complete for partial failure. `.close()` idempotent and `.pid` available for cleanup tests. `.reset()` and `.step(input)` public methods are also needed by AALpy wrapper; they use the same counted protocol. Reset returns no permuted observation. `target_worker.py` uses line-delimited JSON init/reset/step/close; stdout is JSON only and timeout cannot block the caller indefinitely.
+
+## Root study, audit, receipts, CLI and server ownership
+
+`RunConfig` accepts family, seed, implementation, split, anchors, budget (shared target system-call cap: resets + action attempts; revised after integration review to match the spec's same-system-call-cap comparison), horizon, policy (fixed/random/disagreement/task/aalpy), admission (robust/one_best/unique/fit/identity/abstain/oracle). Defaults latch/17/procedural/development/false/16/4/task/robust. Bounded values: budget 0-512, horizon 1-6, seed unsigned 32-bit. API rejects unknown fields and bool-as-int. Acquisition stops when robust can admit (same stopping rule across admission comparisons), no informative affordable probes remain, budget exhausts, cancel or interface error. Oracle bypass is privileged and marked, no ordinary method gets hidden truth.
+
+Run result keys: `schema`=`crosswire-result-v1`, `configuration`, `reference`, `contract`, `target_id`, `parent_instance_id`, `decision`, `ambiguity`, `candidates` list, `probes` list, `audit`, `metrics`, `baseline`, `scientific_hash`. Probe entries word/outputs/complete/survivors_before/survivors_after. Metrics include target_steps/resets/target_calls/source_steps/candidate_expansions/pair_checks/parent_cpu_seconds/wall_seconds/parent_peak_traced_bytes. Private evaluation work/calls are separately named. Before target execution or audit, freeze decision scientific bytes/hash. Audit includes goal_success/hazard/contract_satisfied/oracle_feasible/oracle_word/true_map_retained/raw_equivalent_maps_count/no_map_in_class/counterexample and assumption limits. No-admission audit success values are null (not success).
+
+Receipt `{schema:'crosswire-receipt-v1', source_hash:str, payload:result, payload_hash:str}`. Canonical JSON SHA256, reject NaN, missing/inconsistent/tampered data. Scientific equality excludes timing/memory/created IDs; replay regenerates fixture/config and full scientific result with same source. Import recomputes decisions/audit/arithmetic, not digest alone. Cancelled/incomplete runs cannot become complete receipts.
+
+HTTP uses one background job worker. `GET /api/catalog` returns version/families/policies/admissions/defaults. `POST /api/runs` takes RunConfig dict and returns `{id,status:'RUNNING'}`. `GET /api/runs/{id}` returns `{id,status,progress:{current,total,message},result? ,error?}`; status RUNNING/QUEUED/COMPLETE/FAILED/CANCELLED. `POST /api/runs/{id}/cancel` cancels owned job. `GET /api/runs/{id}/export` returns receipt. `POST /api/import` body `{receipt}` validates and registers COMPLETE job, returns id/status. `POST /api/runs/{id}/replay` returns `{valid,message,scientific_hash}` (may take a few seconds). `POST /api/studies` takes families/seeds/budgets/policies/admissions/implementations lists and anchors bool; returns async id/status. Study result `schema:'crosswire-study-v1',rows:[run results],summary:[method/family metrics],paired:[cluster comparisons],protocol,source_hash`. UI handles study export/import as documented by server after integration.
+
+## Web worker ownership
+
+Only `crosswire/web/index.html`, `styles.css`, `app.js`; no Python/server changes. Use the HTTP contract above. Browser is inspector/controller, not second learner. Expose run settings, named family scope, policy/admission, seed/budget/horizon/anchor, module SVG diagrams from model transitions, mapping table, probe timeline, decision and private outcome separately, costs, finite assumption text. Support run/cancel/export/import/replay and small study preset with plots drawn in SVG, responsive layout, accessible labels/keyboard/focus, local fonts, no external assets. Use safe DOM rendering for imported values. Preserve current completed result when a new job fails/cancels. Show active job progress and robust empty/error states. Include a static HTTP-unavailable error for direct-file opening. Scope/style: polished dark instrument interface with cyan/amber signals, clear visual hierarchy, no decorative biological or generic chatbot UI.

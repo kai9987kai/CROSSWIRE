@@ -1,0 +1,9 @@
+{
+  "families": ["latch", "handshake", "symmetric", "neutral", "long_trace", "rotary", "interlock"],
+  "seeds": [17, 23],
+  "budgets": [0, 4, 8, 16, 32],
+  "policies": ["fixed", "random", "disagreement", "task", "aalpy"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"],
+  "split": "evaluation"
+}
