@@ -35,6 +35,8 @@ Date: 22 October 2026. All 26 links resolved through the connected GitHub tools.
 
 Full immutable commit IDs, version observations, selected source paths, source links and limitations appear in the detailed reviews. A README's version or licensing prose can lag the actual tree; the reviewers called out such discrepancies rather than silently reconciling them.
 
+[repository-snapshot.json](repository-snapshot.json) provides the 26 full commit IDs and review scope in a machine-readable file. These identify the inspected sources; they are not experiment replay receipts.
+
 ## Synthesis
 
 The portfolio is strong in local execution, modular experimental architectures, controlled interventions, checkpoints and explicit result records. It already spans biological inspiration, memory carriers, synthetic evolution, program libraries, neural composition, exact verification, agent tools and source-to-experiment workbenches. Combining all of those as subsystems would make causal attribution harder and duplicate existing projects.

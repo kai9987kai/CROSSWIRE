@@ -12,6 +12,7 @@ The research review and first-build design are prepared for review. No applicati
 
 - [First-build design](docs/superpowers/specs/2026-10-22-crosswire-design.md): mechanism, exact assumptions, baselines, interface, evaluation and falsification.
 - [All 26 repositories](research/portfolio-index.md): complete coverage and pointers to detailed source reviews.
+- [Machine-readable review snapshot](research/repository-snapshot.json): all 26 full commit IDs and evidence scope.
 - [Recent research and foundational prior art](research/recent-research.md): primary sources, publication dates and what they change in the design.
 - [Model/search portfolio review](research/portfolio-models.md).
 - [Synthetic-laboratory portfolio review](research/portfolio-labs.md).

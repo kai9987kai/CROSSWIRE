@@ -1,0 +1,191 @@
+{
+  "schema": "crosswire-repository-review-v1",
+  "review_date": "2026-10-22",
+  "review_method": "live GitHub connector source inspection",
+  "repository_count": 26,
+  "upstream_experiments_reproduced": false,
+  "records": [
+    {
+      "repository": "7coil/quibble-builds",
+      "url": "https://github.com/7coil/quibble-builds",
+      "reviewed_commit": "f89481a1a3b81abfcbc1d43a2d539204101201aa",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "7coil/svideo",
+      "url": "https://github.com/7coil/svideo",
+      "reviewed_commit": "d4b34633e92be30fd6395da1ffde21d6cac96917",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "djpiper28/Flipper-Zero-Periodic-NTAG-Emulator",
+      "url": "https://github.com/djpiper28/Flipper-Zero-Periodic-NTAG-Emulator",
+      "reviewed_commit": "98fd7478253f9041195adc8eedfa95eabe084aff",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/3d-animal-simulator-Hybrid-Agent",
+      "url": "https://github.com/kai9987kai/3d-animal-simulator-Hybrid-Agent",
+      "reviewed_commit": "b7dd934770380a28717ddc82e3dfa7f127732a75",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Causeway",
+      "url": "https://github.com/kai9987kai/Causeway",
+      "reviewed_commit": "e25ea9e6a5a70f60f5a6ee36756aceb3c6c9baac",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/FLY-DIAMOND-NEXUS",
+      "url": "https://github.com/kai9987kai/FLY-DIAMOND-NEXUS",
+      "reviewed_commit": "0c8d4100b21d8889bacdef1a9c6dfc20b3424242",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/GenesisEngine",
+      "url": "https://github.com/kai9987kai/GenesisEngine",
+      "reviewed_commit": "a43099ef21e91b75b812e3eb883cb4f3813ab7c7",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/GhostInTheMachine",
+      "url": "https://github.com/kai9987kai/GhostInTheMachine",
+      "reviewed_commit": "239f5de6452f78f3960de07c393268eeac142d03",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/MEMORY-CARRIER-OBSERVATORY",
+      "url": "https://github.com/kai9987kai/MEMORY-CARRIER-OBSERVATORY",
+      "reviewed_commit": "523c10b46fa26acd53cd8468f95d3cbf55011437",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Mnemorph",
+      "url": "https://github.com/kai9987kai/Mnemorph",
+      "reviewed_commit": "4fc3353b4aa4ea3e2c7b24798121ee65deda6939",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/MOLT",
+      "url": "https://github.com/kai9987kai/MOLT",
+      "reviewed_commit": "8ac04b1839b82d4e4d83166f1938bc6e1150197a",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/morpheus",
+      "url": "https://github.com/kai9987kai/morpheus",
+      "reviewed_commit": "5db6f98d605b80245ed9ff5e2cc9d42151830a14",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/NEUROGRAFT",
+      "url": "https://github.com/kai9987kai/NEUROGRAFT",
+      "reviewed_commit": "2301f0af16a92a9722608c868e4719f1898ca0fe",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/nexusflow",
+      "url": "https://github.com/kai9987kai/nexusflow",
+      "reviewed_commit": "3fb4be7e7f9a523bcd817bd2bd94a2d7855229ec",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/NexusSearch",
+      "url": "https://github.com/kai9987kai/NexusSearch",
+      "reviewed_commit": "538edcba595889090946a51ce03f72ac9fb72202",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/prometheus-alpha",
+      "url": "https://github.com/kai9987kai/prometheus-alpha",
+      "reviewed_commit": "417009e5548453338761732152b7b8ec30ffa79a",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/QuantumBot",
+      "url": "https://github.com/kai9987kai/QuantumBot",
+      "reviewed_commit": "42e4fd637da2df1da5241da484ebc2c625050e72",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Supermix",
+      "url": "https://github.com/kai9987kai/Supermix",
+      "reviewed_commit": "6ea1c2cc41e3705b4b899b764a001cec180d155d",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/supermix-archimedes",
+      "url": "https://github.com/kai9987kai/supermix-archimedes",
+      "reviewed_commit": "1952cf1c92cb506fff60f9ee0c055c2365988e5e",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Supermix-expanse",
+      "url": "https://github.com/kai9987kai/Supermix-expanse",
+      "reviewed_commit": "3fd091e9cc3387b2c17da5ce7514831d77e2af44",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Supermix-Expanse-v2",
+      "url": "https://github.com/kai9987kai/Supermix-Expanse-v2",
+      "reviewed_commit": "33e38a279c86bccdb1e5680f15f193d61a3f71cb",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/Supermix-Poseidon",
+      "url": "https://github.com/kai9987kai/Supermix-Poseidon",
+      "reviewed_commit": "72d42218ae92cee5c9668a090f9d31d8d9961681",
+      "review_report": "research/portfolio-models.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "kai9987kai/TESSERA",
+      "url": "https://github.com/kai9987kai/TESSERA",
+      "reviewed_commit": "85e740452824a0ae089332e47d3473db879ba70c",
+      "review_report": "research/portfolio-labs.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "morluto/rea",
+      "url": "https://github.com/morluto/rea",
+      "reviewed_commit": "66aacc6fba7fb498302ca58894f179d77a847444",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "odysseus-dev/odysseus",
+      "url": "https://github.com/odysseus-dev/odysseus",
+      "reviewed_commit": "8877273e195a90d51bc6a37f3a1b60dc3414c431",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    },
+    {
+      "repository": "rehan-remade/universal-modder",
+      "url": "https://github.com/rehan-remade/universal-modder",
+      "reviewed_commit": "c1dff21663665dd17af289744a301b66e369605e",
+      "review_report": "research/portfolio-systems.md",
+      "evidence": "README where present and selected source/configuration/results inspected; not executed"
+    }
+  ]
+}
