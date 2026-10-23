@@ -135,12 +135,27 @@ def verify_policy(space: CandidateSpace, ids, policy) -> dict:
                      'stationarity, deterministic reset and truthful anchors. Not semantic grounding.'}
 
 
-def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None) -> dict:
+def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, fault_schedule=None) -> dict:
     """Verify before reset, then execute only certified observation branches."""
+    if hasattr(target, 'set_phase'):
+        target.set_phase('deployment')
     ids = space._ids(ids)
     certificate = verify_policy(space, ids, policy)
     if not certificate['valid']:
         raise ValueError('Refusing uncertified policy: ' + certificate['reason'])
+    cp_step = fault_schedule.get('step') if fault_schedule else None
+    cp_type = fault_schedule.get('type') if fault_schedule else None
+    cp_detected = False
+    cp_det_step = None
+    cp_det_latency = None
+
+    def _check_cp(step_idx):
+        nonlocal cp_detected, cp_det_step, cp_det_latency
+        if fault_schedule and cp_step is not None and step_idx >= cp_step and not cp_detected:
+            cp_detected = True
+            cp_det_step = step_idx
+            cp_det_latency = step_idx - cp_step
+
     deployment = {'word': None, 'executed_word': [], 'outputs': [], 'complete': False,
                   'mode': 'adaptive', 'shield_status': 'ACTIVE', 'intervened': False,
                   'hazard_averted': False, 'reasons': [], 'survivor_history': [len(ids)],
@@ -156,6 +171,7 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None) -> d
             action = node['action']
             word = tuple(deployment['executed_word']) + (action,)
             if not active or any(space.contract.hazard in space.semantic(i, word) for i in active):
+                _check_cp(len(deployment['executed_word']))
                 deployment.update(intervened=True, shield_status='INTERVENED_MODEL_RISK')
                 deployment['reasons'].append('No unanimously safe continuation')
                 break
@@ -165,6 +181,7 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None) -> d
             active = tuple(i for i in active if space.predict(i, word) == tuple(deployment['outputs']))
             deployment['survivor_history'].append(len(active))
             if not active or str(raw) not in node['branches']:
+                _check_cp(len(deployment['executed_word']) - 1)
                 deployment.update(intervened=True, shield_status='INTERVENED_ANOMALY')
                 deployment['reasons'].append('Observed response has no certified continuation')
                 break
@@ -177,5 +194,8 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None) -> d
     finally:
         deployment.update(target_steps=target.counts['step_attempts'] - before['step_attempts'],
                           resets=target.counts['reset_attempts'] - before['reset_attempts'],
-                          target_calls=target.counts['target_calls'] - before['target_calls'])
+                          target_calls=target.counts['target_calls'] - before['target_calls'],
+                          change_point={'scheduled': fault_schedule is not None, 'step': cp_step,
+                                        'type': cp_type, 'detected': cp_detected,
+                                        'detection_step': cp_det_step, 'detection_latency': cp_det_latency})
     return deployment

@@ -46,6 +46,7 @@ class RunConfig:
     probe_safety: str = 'unrestricted'
     risk_tolerance: float = 0.0
     instance_seed: int | None = None
+    fault_schedule: dict | None = None
 
     def __post_init__(self):
         if self.family == 'generated_protocol' and self.instance_seed is None:
@@ -102,6 +103,16 @@ class RunConfig:
             raise ValueError('The AALpy baseline does not support adaptive admission')
         if self.policy == 'aalpy' and self.escalate:
             raise ValueError('The AALpy baseline does not support model escalation')
+        if self.fault_schedule is not None:
+            if not isinstance(self.fault_schedule, dict):
+                raise ValueError('fault_schedule must be a dict or None')
+            if 'step' not in self.fault_schedule or 'type' not in self.fault_schedule:
+                raise ValueError("fault_schedule must specify 'step' and 'type'")
+            if type(self.fault_schedule['step']) is not int or self.fault_schedule['step'] < 0:
+                raise ValueError("fault_schedule 'step' must be a non-negative integer")
+            valid_faults = ('sensor_drift', 'actuator_swap', 'delay_spike', 'stuck_output', 'semantic_swap')
+            if self.fault_schedule['type'] not in valid_faults:
+                raise ValueError(f"fault_schedule 'type' must be one of {valid_faults}")
 
 
 def _check_cancel(cancel: Callable[[], bool] | None) -> None:
@@ -329,7 +340,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         raise RuntimeError('Source changed since runtime import; restart CROSSWIRE before creating evidence')
     _check_cancel(cancel)
     case = make_case(config.family, config.seed, config.implementation, config.split, config.anchors, config.horizon,
-                     instance_seed=config.instance_seed)
+                     instance_seed=config.instance_seed, fault_schedule=config.fault_schedule)
     public = case.public
     counts = dict(reset_attempts=0, step_attempts=0, reset_successes=0, step_successes=0, target_calls=0)
     baseline = {"name": config.policy, "privileged": config.admission == "oracle"}
@@ -427,11 +438,13 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                 target = resources.enter_context(TargetProcess(case.private))
             if config.admission == 'adaptive':
                 from .adaptive import execute_policy
-                deployment = execute_policy(target, decision['policy'], space, survivors, cancel)
+                deployment = execute_policy(target, decision['policy'], space, survivors, cancel,
+                                            fault_schedule=config.fault_schedule)
             else:
                 from .shield import execute_deployment
                 deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,
-                                                mode=config.execution_mode, cancel=cancel)
+                                                mode=config.execution_mode, cancel=cancel,
+                                                fault_schedule=config.fault_schedule)
         from .audit import evaluate
         audit = evaluate(case, space, survivors, decision, probes, deployment)
         peak = tracemalloc.get_traced_memory()[1]

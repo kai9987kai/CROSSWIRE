@@ -43,6 +43,8 @@ def main(argv=None):
     one.add_argument('--escalate', action='store_true')
     one.add_argument('--risk-tolerance', '--risk_tolerance', type=float, default=defaults['risk_tolerance'],
                      help='Allowed fraction of uniformly weighted surviving models (not calibrated target risk)')
+    one.add_argument('--fault-schedule', '--fault_schedule', type=json.loads, default=defaults['fault_schedule'],
+                     help='Fault schedule JSON dict (e.g. {"step": 2, "type": "sensor_drift"})')
     one.add_argument('--out', type=Path)
     study = commands.add_parser('study')
     study.add_argument('--config', type=Path, required=True)
@@ -63,7 +65,7 @@ def main(argv=None):
             print(json.dumps(catalog(), indent=2))
             return 0
         if args.command == 'run':
-            cfg = {name: getattr(args, name) for name in defaults}
+            cfg = {name: getattr(args, name, defaults[name]) for name in defaults}
             result = run(RunConfig.from_dict(cfg))
             receipt = pack(result)
             if args.out:

@@ -151,7 +151,7 @@ def _grounded_anchors(family, output_map):
 
 
 def make_case(family, seed=17, implementation='procedural', split='development', anchors=False, horizon=4,
-              *, instance_seed=None):
+              *, instance_seed=None, fault_schedule=None):
     if family not in _DESCRIPTIONS:
         raise ValueError('unknown family')
     if implementation not in ('table', 'procedural'):
@@ -180,6 +180,8 @@ def make_case(family, seed=17, implementation='procedural', split='development',
                'input_map': input_map, 'output_map': output_map, 'contract': contract}
     if family == 'malformed':
         private.update(fault_mode='malformed', fault_after=0)
+    if fault_schedule is not None:
+        private['fault_schedule'] = dict(fault_schedule)
     parent = _digest({'source_family':source_family, 'semantic_version':1})
     design = None
     if family == 'generated_protocol':
@@ -208,13 +210,19 @@ class _Engine:
         self.config = config
         self.work = work
         self.total_steps = 0
+        self.steps_since_reset = 0
+        self.phase = 'calibration'
         self.reset()
+
+    def set_phase(self, phase):
+        self.phase = phase
 
     def reset(self):
         if self.work is not None:
             self.work['resets'] = self.work.get('resets',0) + 1
         self.state, self.previous, self.parity = 0, 0, 0
         self.semantic_events = []
+        self.steps_since_reset = 0
 
     def _transition(self, action):
         raise NotImplementedError
@@ -224,15 +232,33 @@ class _Engine:
             self.work['steps'] = self.work.get('steps',0) + 1
         if type(input) is not int or not 0 <= input < 3:
             raise ValueError('input outside alphabet')
+
+        fault = self.config.get('fault_schedule')
+        phase_applies = True
+        if fault is not None:
+            req_phase = fault.get('phase', 'deployment')
+            if req_phase != 'always' and self.phase != req_phase:
+                phase_applies = False
+        fault_active = (fault is not None and phase_applies and self.steps_since_reset >= fault.get('step', 0))
+        fault_type = fault.get('type') if fault_active else None
+
         action = self.config['input_map'][input]
+        if fault_type == 'actuator_swap':
+            action = (action + 1) % 3
+
         self.state, event = self._transition(action)
         self.total_steps += 1
+        self.steps_since_reset += 1
+
         family = self.config['family']
         # Ground truth is produced from the actual mechanism before its sensor.
         actual = event
         if family in ('semantic_corruption','bypass') or (family == 'drift' and self.total_steps > 8):
             actual = {1:2,2:1}.get(event,event)
+        elif fault_type == 'semantic_swap':
+            actual = {1:2,2:1}.get(event,event)
         self.semantic_events.append(actual)
+
         observed = event
         if family == 'alias' and event == 2:
             observed = 1
@@ -243,6 +269,13 @@ class _Engine:
                 observed = self.previous
             self.previous = observed
             self.parity ^= 1
+        elif fault_type == 'sensor_drift':
+            observed = (observed + 1) % 4
+        elif fault_type == 'delay_spike':
+            observed, self.previous = self.previous, event
+        elif fault_type == 'stuck_output':
+            observed = fault.get('value', 0)
+
         return self.config['output_map'][observed]
 
     def close(self):
@@ -372,6 +405,8 @@ def evaluate_deployment(private, probes, word, work=None):
     engine = make_engine(private, work)
     try:
         _replay_calibration(engine, probes)
+        if hasattr(engine, 'set_phase'):
+            engine.set_phase('deployment')
         outputs = []
         if isinstance(word, dict):
             node = word

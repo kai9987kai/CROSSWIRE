@@ -3,8 +3,8 @@
 **Date:** 23 October 2026  
 **Commit:** `codex/crosswire-design`  
 **Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
-**Record type:** Full verification report. Current upgrade evidence includes safe calibration, model-mismatch diagnostics, and independent protocol reliability (321 passed tests).
-**Overall Status:** PASS (321/321 tests passing, clean wheel install verified, browser e2e verified, 997 total empirical runs across 13 benchmarks)
+**Record type:** Full verification report. Current upgrade evidence includes safe calibration, model-mismatch diagnostics, independent protocol reliability, adaptive branching calibration, online change-point recovery with detection latency, and factored candidate spaces (344 passed tests).  
+**Overall Status:** PASS (344/344 tests passing, clean wheel install verified, browser e2e verified, 997 total empirical runs across 13 benchmarks)
 
 ---
 
@@ -13,7 +13,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================= 321 passed in 93.24s =============================
+============================= 344 passed in 172.10s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -23,22 +23,32 @@ The automated test suite runs via `pytest` without external dependencies (except
 | `tests/test_adaptive.py` | 5 | Observation-dependent contingent policy synthesis (AND/OR tree search); independent policy certificate verification (branch completeness, horizon bounds, zero hazard); certificate tampering rejection; search cap handling; full execution trace replay and audit. |
 | `tests/test_audit.py` | 6 | Executed prefix reconstruction; counterfactual trajectory analysis without side-effects; unexecuted suffixes withheld from hazard attribution; causal hazard averted classification. |
 | `tests/test_baselines.py` | 3 | Pinned AALpy 1.6.2 $L^*$ integration; budget-limited SUL and equivalence oracle; comparison transition step counting; global RNG isolation. |
+| `tests/test_branching_calibration.py` | 10 | Interactive within-query action selection (`policy="branching"`); evaluates conditional predictive entropy and model safety under surviving belief at every action dispatch; halts early upon contract readiness; tie-breaking in zero-entropy and delayed settings. |
+| `tests/test_calibration_safety.py` | 8 | Pre-probe safety checks preventing hazardous queries during calibration under finite model assumptions. |
 | `tests/test_cegp.py` | 3 | Decision-focused counterexample-guided active probing (CEGP); $O(W \cdot N)$ marginal frequency pair disagreement counting; dynamic synthesis of distinguishing witnesses beyond fixed probe pool. |
 | `tests/test_certificates.py` | 11 | Independent finite public-evidence certificate generation and validation; clean re-enumeration of static/latency-1 adapter spaces; verification of surviving belief sets from public transcripts; deletion-minimal contradiction core extraction; verification of admitted plans and policy trees; unmodeled target scope boundaries. |
+| `tests/test_change_points.py` | 7 | Explicit change-point fault schedules in `_Engine` and `RunConfig` (5 fault transformations: `sensor_drift`, `actuator_swap`, `delay_spike`, `stuck_output`, `semantic_swap`); detection latency measurement ($\Delta t = t_{\text{detect}} - t_{\text{fault}}$); causal hazard aversion under shielded abort and online replanned safe detours; negative control verification (`semantic_swap`). |
 | `tests/test_cli.py` | 3 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`, and `check` with JSON evidence envelope verification. |
 | `tests/test_core.py` | 14 | 144 bijective adapter permutations; prefix hazard safety; true-map retention; equivalence classes; empty-family non-vacuous handling; shortest lexicographic product counterexample BFS. |
 | `tests/test_ec2.py` | 6 | Equivalence Class Edge Cutting (EC2) active probing; contract equivalence class partitioning; cross-class Jaccard distance weighting; zero intra-class score filtering; query cost normalization; temporal model compatibility. |
 | `tests/test_escalation.py` | 7 | Information-theoretic Shannon entropy probe selection; deterministic tie-breaking and empty belief handling; autonomous model-class escalation ($\mathcal{H}_0 \to \mathcal{H}_1$) on delayed interfaces; structural contradiction certificate emission when nested classes are refuted; in-family non-spurious escalation; Simplex safe fallback recovery execution; configuration validation guards. |
+| `tests/test_factored_space.py` | 6 | Factored permutation space decomposing candidate adapters into orthogonal factor spaces $\mathcal{P}_I \times \mathcal{P}_O$; lazy adapter proxy indexing; independent anchor pruning on $\mathcal{P}_O$; exact mathematical equivalence on 144 and 720 models; sub-second scaling to 17,280 candidate models with complete-survivor semantics. |
 | `tests/test_fixtures.py` | 37 | Procedural vs. table target implementations; 17 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation; routing control. |
+| `tests/test_independent_instances.py` | 8 | Independent structural instance generation, protocol hashing, and instance seeds. |
 | `tests/test_interfaces.py` | 7 | Subprocess lifecycle; exact-PID cleanup; line-delimited JSON protocol; malformed message recovery; timeout enforcement; attempted vs. successful call accounting. |
+| `tests/test_model_diagnostics.py` | 8 | Sequential forecasts, first refutation witnesses, deterministic reset consistency checking, enabled-class diagnostics. |
 | `tests/test_receipts.py` | 3 | Canonical JSON serialization; SHA-256 payload and scientific hashing; envelope validation; tampering rejection; exact scientific replay. |
+| `tests/test_reliability.py` | 8 | Statistical reliability metrics across independent protocol instances. |
 | `tests/test_replan.py` | 5 | Receding-horizon dynamic replanning shield (`replan` mode); pre-step and post-step suffix risk detection; online synthesis of certified safe alternative detours (`REPLANNED_ONLINE_SAFE`); fallback to recovery/abort when no detour exists. |
+| `tests/test_report.py` | 14 | Study reporting, stratified comparisons, SVG plot generation, and individual-run inspection. |
 | `tests/test_risk_controlled.py` | 4 | Risk-controlled version-space admission (`risk_controlled` mode); empirical version-space hazard and goal calculation; zero-tolerance consensus equivalence; positive-tolerance majority admission; certificate verification and tampering rejection. |
+| `tests/test_roadmap_integration.py` | 4 | End-to-end roadmap integration workflows. |
+| `tests/test_safe_probes.py` | 6 | Pre-query safety guards across multiple probe policies. |
 | `tests/test_server.py` | 6 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection; raw text receipt payload import. |
 | `tests/test_shield.py` | 20 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch (any surviving interpretation); conservative Simplex safe fallback recovery requirements (consistent non-empty belief, remaining horizon, zero modeled hazards across all survivors); immediate abstention on contradiction. |
 | `tests/test_study.py` | 23 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; exact-cell condition-stratified paired comparisons (matching execution mode, escalation, split, anchors, and horizon); paired admission contrasts; AALpy configuration guards. |
 | `tests/test_temporal.py` | 10 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
-| **Total** | **173** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, evidence integrity, Simplex recovery, EC2 active probing, replanning shielding, and risk-controlled admission.** |
+| **Total** | **344** | **Complete local coverage across 28 test modules verifying safe calibration, change-point fault recovery, factored candidate space scaling, adaptive policies, model escalation, evidence integrity, Simplex recovery, EC2 active probing, and risk-controlled admission.** |
 
 ---
 

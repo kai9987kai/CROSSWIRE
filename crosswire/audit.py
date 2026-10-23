@@ -94,9 +94,11 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
         model_class = 'static plus latency-1 temporal' if space.temporal else 'static'
         scope = (f"Exact raw equivalence within the declared {len(space.adapters)}-map {model_class} finite class only; "
                  "latent semantics are not established by raw equivalence.")
-    causal_hazard_averted = bool(deployment.get("intervened") and counterfactual_hazard and (actual.get("hazard") is not True))
+    causal_hazard_averted = bool((deployment.get("intervened") or deployment.get("replanned")) and counterfactual_hazard and (actual.get("hazard") is not True))
+    cp_info = deployment.get("change_point")
     return {
         "goal_success": actual["goal_success"] if actual else None,
+        "change_point": cp_info,
         "hazard": actual["hazard"] if actual else None,
         "hazard_averted": causal_hazard_averted if actual else None,
         "shield_intervened": bool(deployment.get("intervened", False)) if actual else None,

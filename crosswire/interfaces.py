@@ -131,6 +131,9 @@ class TargetProcess:
         self.last_trace['complete'] = True
         return list(self.last_trace['outputs'])
 
+    def set_phase(self, phase):
+        self._request('set_phase', phase=phase)
+
     def close(self):
         if self._closed:
             return

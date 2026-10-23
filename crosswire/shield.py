@@ -25,13 +25,20 @@ class RuntimeShield:
     """Monitors step-by-step target execution and intervenes when safety is violated."""
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
-                 contract: Contract, mode: str = "shielded", cancel: Callable[[], bool] | None = None):
+                 contract: Contract, mode: str = "shielded", cancel: Callable[[], bool] | None = None,
+                 fault_schedule: dict | None = None):
         if mode not in ('open_loop', 'shielded', 'recovery', 'replan'):
             raise ValueError('Unknown execution mode')
         self.space = space
         self.contract = contract
         self.mode = mode
         self.cancel = cancel
+        self.fault_schedule = fault_schedule
+        self.change_point_step = fault_schedule.get('step') if fault_schedule else None
+        self.fault_type = fault_schedule.get('type') if fault_schedule else None
+        self.change_point_detected = False
+        self.detection_step = None
+        self.detection_latency = None
         self.active_survivors = space._ids(initial_survivors)
         self.history_words: list[int] = []
         self.history_outputs: list[int] = []
@@ -51,6 +58,23 @@ class RuntimeShield:
         self.replanned = False
         self.replan_events: list[dict] = []
         self.replanned_suffix: tuple[int, ...] | None = None
+
+    def _check_change_point_detection(self, current_step_index: int):
+        if self.fault_schedule and self.change_point_step is not None:
+            if current_step_index >= self.change_point_step and not self.change_point_detected:
+                self.change_point_detected = True
+                self.detection_step = current_step_index
+                self.detection_latency = current_step_index - self.change_point_step
+
+    def change_point_record(self) -> dict:
+        return {
+            'scheduled': self.fault_schedule is not None,
+            'step': self.change_point_step,
+            'type': self.fault_type,
+            'detected': self.change_point_detected,
+            'detection_step': self.detection_step,
+            'detection_latency': self.detection_latency,
+        }
 
     def _find_safe_suffix(self, prefix: tuple[int, ...], remaining_horizon: int) -> tuple[int, ...] | None:
         """Find shortest lexicographic action suffix satisfying the contract under all active survivors."""
@@ -147,6 +171,7 @@ class RuntimeShield:
 
         # Pre-condition check: if survivors are already empty
         if not self.active_survivors:
+            self._check_change_point_detection(len(self.history_words))
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
@@ -164,6 +189,7 @@ class RuntimeShield:
                 rem_h = max(0, self.contract.horizon - len(self.history_words))
                 safe_suffix = self._find_safe_suffix(tuple(self.history_words), rem_h)
                 if safe_suffix is not None:
+                    self._check_change_point_detection(len(self.history_words))
                     self.replanned = True
                     self.replan_events.append({
                         'step': len(self.history_words), 'trigger': 'pre_step_hazard',
@@ -175,6 +201,7 @@ class RuntimeShield:
                     planned_action = safe_suffix[0]
                     self.replanned_suffix = safe_suffix[1:]
                 else:
+                    self._check_change_point_detection(len(self.history_words))
                     self.status = "INTERVENED_HAZARD_AVERTED"
                     self.intervened = True
                     self.hazard_averted = True
@@ -182,6 +209,7 @@ class RuntimeShield:
                     rec_out = self.recover(target)
                     return rec_out, False
             else:
+                self._check_change_point_detection(len(self.history_words))
                 self.status = "INTERVENED_HAZARD_AVERTED"
                 self.intervened = True
                 self.hazard_averted = True
@@ -198,6 +226,7 @@ class RuntimeShield:
 
         if not self.active_survivors:
             # Anomaly / distribution drift detected: target output contradicted all surviving models
+            self._check_change_point_detection(len(self.history_words) - 1)
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append(f"Post-step abort at step {len(self.history_words)}: output {out} refuted all surviving adapters")
@@ -224,6 +253,7 @@ class RuntimeShield:
                     rem_h = max(0, self.contract.horizon - len(self.history_words))
                     safe_suffix = self._find_safe_suffix(current_word, rem_h)
                     if safe_suffix is not None:
+                        self._check_change_point_detection(len(self.history_words) - 1)
                         self.replanned = True
                         self.replan_events.append({
                             'step': len(self.history_words), 'trigger': 'post_step_suffix_risk',
@@ -235,6 +265,7 @@ class RuntimeShield:
                         self.replanned_suffix = safe_suffix
                         return out, True
                     else:
+                        self._check_change_point_detection(len(self.history_words) - 1)
                         self.status = "INTERVENED_HAZARD_AVERTED"
                         self.intervened = True
                         self.hazard_averted = True
@@ -242,6 +273,7 @@ class RuntimeShield:
                         self.recover(target)
                         return out, False
                 else:
+                    self._check_change_point_detection(len(self.history_words) - 1)
                     self.status = "INTERVENED_HAZARD_AVERTED"
                     self.intervened = True
                     self.hazard_averted = True
@@ -256,9 +288,12 @@ class RuntimeShield:
 
 def execute_deployment(target: TargetProcess, planned_word: list[int], space: CandidateSpace,
                        survivors: tuple[int, ...], contract: Contract,
-                       mode: str = "open_loop", cancel: Callable[[], bool] | None = None) -> dict:
+                       mode: str = "open_loop", cancel: Callable[[], bool] | None = None,
+                       fault_schedule: dict | None = None) -> dict:
     """Execute deployment through the target process with optional closed-loop shielding."""
-    shield = RuntimeShield(space, survivors, contract, mode=mode, cancel=cancel)
+    if hasattr(target, 'set_phase'):
+        target.set_phase('deployment')
+    shield = RuntimeShield(space, survivors, contract, mode=mode, cancel=cancel, fault_schedule=fault_schedule)
     deployment = {
         "word": list(planned_word),
         "executed_word": [],
@@ -311,6 +346,7 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
         deployment["reasons"] = list(shield.reasons)
         deployment["survivor_history"] = list(shield.survivor_counts)
         deployment["recovery"] = shield.recovery_record()
+        deployment["change_point"] = shield.change_point_record()
         deployment["target_steps"] = target.counts["step_attempts"] - previous_counts["step_attempts"]
         deployment["resets"] = target.counts["reset_attempts"] - previous_counts["reset_attempts"]
         deployment["target_calls"] = target.counts["target_calls"] - previous_counts["target_calls"]

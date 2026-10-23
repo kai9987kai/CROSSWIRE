@@ -27,6 +27,12 @@ def main():
                 if operation == 'init' and engine is None and set(request)=={'id','op','config'}:
                     config = request['config']
                     engine = make_engine(config)
+                elif operation == 'set_phase' and engine is not None:
+                    phase = request.get('phase', 'calibration')
+                    if hasattr(engine, 'set_phase'):
+                        engine.set_phase(phase)
+                    _send({'id':request_id,'ok':True})
+                    continue
                 elif operation == 'reset' and engine is not None and set(request)=={'id','op'}:
                     if config['family']=='malformed' and config.get('fault_operation')=='reset':
                         sys.stdout.write('{malformed\n')

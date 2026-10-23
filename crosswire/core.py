@@ -654,3 +654,279 @@ def compare_adapter(machine, adapter, target):
                 pending.append((following, word))
     return {'equivalent': True, 'counterexample': None, 'visited_pairs': len(visited),
             'source_steps': steps, 'target_model_steps': steps}
+
+
+
+class _LazyAdapters:
+    def __init__(self, space):
+        self._space = space
+
+    def __len__(self):
+        return self._space.total_adapters
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return [self[i] for i in range(*idx.indices(len(self)))]
+        return self._space.adapter(idx)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield self._space.adapter(i)
+
+
+class FactoredCandidateSpace:
+    """Factored permutation space decomposing candidate adapters into orthogonal input/output factors.
+
+    Instead of enumerating N_I * N_O * (1 + N_O) adapters in flat memory, decomposes
+    the hypothesis space into P_I x P_O (and temporal initial delay buffers).
+    Semantic evaluation depends strictly on P_I; anchors prune P_O independently;
+    and combined survivor filtering scales beyond 17,280+ models with complete survivor semantics.
+    """
+
+    def __init__(self, machine: Machine, contract: Contract, temporal: bool = False):
+        if not isinstance(machine, Machine) or not isinstance(contract, Contract):
+            raise TypeError('FactoredCandidateSpace requires a Machine and Contract')
+        if max(contract.goal, contract.hazard) >= machine.outputs:
+            raise ValueError('contract symbols exceed source alphabet')
+        self.machine, self.contract = machine, contract
+        self.temporal = bool(temporal)
+
+        self.input_perms = tuple(permutations(range(machine.inputs)))
+        self.output_perms = tuple(permutations(range(machine.outputs)))
+        self.num_input_perms = len(self.input_perms)
+        self.num_output_perms = len(self.output_perms)
+        self.static_count = self.num_input_perms * self.num_output_perms
+
+        if self.temporal:
+            self.temporal_count = self.static_count * machine.outputs
+            self.total_adapters = self.static_count + self.temporal_count
+        else:
+            self.temporal_count = 0
+            self.total_adapters = self.static_count
+
+        self.work = {'source_steps': 0, 'candidate_expansions': 0, 'pair_checks': 0}
+        self._source = {(): (machine.initial, ())}
+        self._input_traces = {}
+        self._safe_input_factors = {}
+        self._adapter_cache = {}
+        self._deployment = words(machine.inputs, contract.horizon)
+        self._probes = words(machine.inputs, 3)
+        self._adapters_proxy = _LazyAdapters(self)
+
+    @property
+    def adapters(self):
+        return self._adapters_proxy
+
+    def decompose_id(self, identifier: int) -> tuple[int, int, int, int]:
+        """Convert linear adapter id into (input_perm_idx, output_perm_idx, delay, init_output)."""
+        _integer(identifier, 'adapter id', maximum=self.total_adapters - 1)
+        if identifier < self.static_count:
+            i_idx = identifier // self.num_output_perms
+            o_idx = identifier % self.num_output_perms
+            return i_idx, o_idx, 0, 0
+        else:
+            rem = identifier - self.static_count
+            init_output = rem % self.machine.outputs
+            pair_idx = rem // self.machine.outputs
+            i_idx = pair_idx // self.num_output_perms
+            o_idx = pair_idx % self.num_output_perms
+            return i_idx, o_idx, 1, init_output
+
+    def compose_id(self, i_idx: int, o_idx: int, delay: int = 0, init_output: int = 0) -> int:
+        """Compose (input_perm_idx, output_perm_idx, delay, init_output) into canonical linear id."""
+        if delay == 0:
+            return i_idx * self.num_output_perms + o_idx
+        pair_idx = i_idx * self.num_output_perms + o_idx
+        return self.static_count + pair_idx * self.machine.outputs + init_output
+
+    def adapter(self, identifier: int) -> Adapter:
+        if identifier not in self._adapter_cache:
+            i_idx, o_idx, delay, init_output = self.decompose_id(identifier)
+            self._adapter_cache[identifier] = Adapter(
+                id=identifier,
+                input_map=self.input_perms[i_idx],
+                output_map=self.output_perms[o_idx],
+                delay=delay,
+                init_output=init_output
+            )
+        return self._adapter_cache[identifier]
+
+    def _ids(self, ids):
+        ids = tuple(ids)
+        for identifier in ids:
+            _integer(identifier, 'adapter id', maximum=self.total_adapters - 1)
+        return tuple(sorted(set(ids)))
+
+    def _source_trace(self, mapped):
+        prefix = ()
+        for symbol in mapped:
+            next_prefix = prefix + (symbol,)
+            if next_prefix not in self._source:
+                state, outputs = self._source[prefix]
+                state, output = self.machine.transitions[state][symbol]
+                self.work['source_steps'] += 1
+                self._source[next_prefix] = (state, outputs + (output,))
+            prefix = next_prefix
+        return self._source[prefix][1]
+
+    def _input_trace(self, i_idx: int, word: tuple[int, ...]) -> tuple[int, ...]:
+        key = (i_idx, word)
+        if key not in self._input_traces:
+            input_map = self.input_perms[i_idx]
+            mapped = tuple(input_map[x] for x in word)
+            self._input_traces[key] = self._source_trace(mapped)
+        return self._input_traces[key]
+
+    def semantic(self, identifier: int, word: tuple[int, ...]) -> tuple[int, ...]:
+        i_idx, _, _, _ = self.decompose_id(identifier)
+        word = _word(word, self.machine.inputs)
+        return self._input_trace(i_idx, word)
+
+    def predict(self, identifier: int, word: tuple[int, ...]) -> tuple[int, ...]:
+        i_idx, o_idx, delay, init_o = self.decompose_id(identifier)
+        word = _word(word, self.machine.inputs)
+        semantic = self._input_trace(i_idx, word)
+        out_map = self.output_perms[o_idx]
+        self.work['candidate_expansions'] += 1
+        if delay == 0:
+            return tuple(out_map[s] for s in semantic)
+        preds = []
+        for t in range(len(semantic)):
+            if t == 0:
+                preds.append(out_map[init_o])
+            else:
+                preds.append(out_map[semantic[t - 1]])
+        return tuple(preds)
+
+    def safe_words(self, identifier: int) -> frozenset:
+        i_idx, _, _, _ = self.decompose_id(identifier)
+        if i_idx not in self._safe_input_factors:
+            self._safe_input_factors[i_idx] = frozenset(
+                w for w in self._deployment if self.contract.accepts(self._input_trace(i_idx, w))
+            )
+        return self._safe_input_factors[i_idx]
+
+    def _evidence(self, transcripts, anchors):
+        evidence = []
+        for transcript in transcripts:
+            if type(transcript.get('complete')) is not bool:
+                raise ValueError('transcript needs a boolean complete field')
+            if not transcript['complete']:
+                continue
+            word = _word(transcript['word'], self.machine.inputs)
+            outputs = tuple(transcript['outputs'])
+            if len(outputs) != len(word):
+                raise ValueError('complete transcript word/output lengths differ')
+            for symbol in outputs:
+                _integer(symbol, 'raw output', maximum=self.machine.outputs - 1)
+            evidence.append((word, outputs))
+        validated = dict(anchors or {})
+        for raw, semantic in validated.items():
+            _integer(raw, 'anchor raw output', maximum=self.machine.outputs - 1)
+            _integer(semantic, 'anchor semantic output', maximum=self.machine.outputs - 1)
+        return evidence, validated
+
+    def survivors(self, transcripts, anchors=None) -> tuple[int, ...]:
+        evidence, anchors = self._evidence(transcripts, anchors)
+
+        valid_o_indices = []
+        for o_idx, o_perm in enumerate(self.output_perms):
+            if all(o_perm[sem] == raw for raw, sem in anchors.items()):
+                valid_o_indices.append(o_idx)
+
+        if not valid_o_indices:
+            return ()
+
+        surviving_ids = []
+
+        # Check static adapters
+        for i_idx in range(self.num_input_perms):
+            sem_traces = [self._input_trace(i_idx, word) for word, _ in evidence]
+            for o_idx in valid_o_indices:
+                o_perm = self.output_perms[o_idx]
+                match = True
+                for sem, (_, outputs) in zip(sem_traces, evidence):
+                    if any(o_perm[s] != out for s, out in zip(sem, outputs)):
+                        match = False
+                        break
+                if match:
+                    surviving_ids.append(self.compose_id(i_idx, o_idx, delay=0))
+
+        # Check temporal adapters if enabled
+        if self.temporal:
+            for i_idx in range(self.num_input_perms):
+                sem_traces = [self._input_trace(i_idx, word) for word, _ in evidence]
+                for o_idx in valid_o_indices:
+                    o_perm = self.output_perms[o_idx]
+                    for init_o in range(self.machine.outputs):
+                        match = True
+                        for sem, (_, outputs) in zip(sem_traces, evidence):
+                            for t, out in enumerate(outputs):
+                                pred_s = init_o if t == 0 else sem[t - 1]
+                                if o_perm[pred_s] != out:
+                                    match = False
+                                    break
+                            if not match:
+                                break
+                        if match:
+                            surviving_ids.append(self.compose_id(i_idx, o_idx, delay=1, init_output=init_o))
+
+        return tuple(sorted(surviving_ids))
+
+    def ambiguity(self, survivors):
+        survivors = self._ids(survivors)
+        if not survivors:
+            return {'candidate_count': 0, 'entropy': 0.0, 'complete': False}
+        entropy = math.log2(len(survivors)) if survivors else 0.0
+        return {'candidate_count': len(survivors), 'entropy': entropy, 'complete': len(survivors) == 1}
+
+    def plan(self, survivors, admission='robust', transcripts=None, anchors=None, risk_tolerance=0.0):
+        survivors = self._ids(survivors)
+        if not survivors:
+            return {'status': 'FAMILY_CONTRADICTED', 'admitted': False, 'word': None, 'candidate_count': 0}
+        if admission == 'robust':
+            common = None
+            for s in survivors:
+                sw = self.safe_words(s)
+                if common is None:
+                    common = set(sw)
+                else:
+                    common &= sw
+                if not common:
+                    break
+            chosen = min(common, key=lambda w: (len(w), w)) if common else None
+            status = ('IDENTIFIED' if len(survivors) == 1 else 'TASK_ADMISSIBLE') if chosen is not None else (
+                'FAMILY_CONTRADICTED' if not survivors else 'UNRESOLVED'
+            )
+            return {'status': status, 'admitted': chosen is not None, 'word': list(chosen) if chosen is not None else None,
+                    'candidate_count': len(survivors)}
+        raise ValueError(f'Unsupported admission {admission}')
+
+    def factor_summary(self, survivors=None) -> dict:
+        """Report factored structure, memory footprint, and active factor counts."""
+        if survivors is None:
+            survivors = tuple(range(self.total_adapters))
+        else:
+            survivors = self._ids(survivors)
+        active_i = set()
+        active_o = set()
+        active_delay = set()
+        for sid in survivors:
+            i_idx, o_idx, delay, _ = self.decompose_id(sid)
+            active_i.add(i_idx)
+            active_o.add(o_idx)
+            active_delay.add(delay)
+        return {
+            'total_models': self.total_adapters,
+            'static_models': self.static_count,
+            'temporal_models': self.temporal_count,
+            'input_alphabet': self.machine.inputs,
+            'output_alphabet': self.machine.outputs,
+            'input_permutations': self.num_input_perms,
+            'output_permutations': self.num_output_perms,
+            'survivors_count': len(survivors),
+            'active_input_factors': len(active_i),
+            'active_output_factors': len(active_o),
+            'active_delay_modes': sorted(active_delay),
+            'compression_ratio': round(self.total_adapters / max(1, (self.num_input_perms + self.num_output_perms)), 2),
+        }
