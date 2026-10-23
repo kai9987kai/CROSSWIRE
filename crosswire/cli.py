@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import sys
 
-from .study import ADMISSIONS, POLICIES, RunConfig, run, run_study
+from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, RunConfig, run, run_study
 from .fixtures import catalog
 from .receipts import pack, replay, validate
 
@@ -29,12 +29,13 @@ def main(argv=None):
     for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode'):
         choices = {'family': [f['id'] for f in catalog()], 'implementation': ['table', 'procedural'],
                    'split': ['development', 'evaluation'], 'policy': POLICIES, 'admission': ADMISSIONS,
-                   'execution_mode': ('open_loop', 'shielded')}[name]
+                   'execution_mode': EXECUTION_MODES}[name]
         one.add_argument('--' + name, default=defaults[name], choices=choices)
     for name in ('seed', 'budget', 'horizon'):
         one.add_argument('--' + name, default=defaults[name], type=int)
     one.add_argument('--anchors', action='store_true')
     one.add_argument('--temporal', action='store_true')
+    one.add_argument('--escalate', action='store_true')
     one.add_argument('--out', type=Path)
     study = commands.add_parser('study')
     study.add_argument('--config', type=Path, required=True)

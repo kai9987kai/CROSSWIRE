@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const state = {catalog:null, active:null, completed:null, busy:false};
-const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield'};
+const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield'};
 function element(tag, text, cls){const node=document.createElement(tag);if(text!==undefined&&text!==null)node.textContent=String(text);if(cls)node.className=cls;return node;}
 function svgElement(tag, attrs={}, text){const node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));if(text!==undefined)node.textContent=String(text);return node;}
 function readable(value){if(value===null||value===undefined)return 'Not available';if(typeof value==='boolean')return value?'Yes':'No';if(typeof value==='object')return JSON.stringify(value);return String(value);}
@@ -13,18 +13,20 @@ async function request(path,options={}){let response;try{response=await fetch(pa
 function lock(){const busy=state.busy||!!state.active;$('run-button').disabled=busy||!state.catalog;$('study-button').disabled=busy||!state.catalog;$('import-button').disabled=busy;$('replay-button').disabled=busy||!state.completed;$('export-button').disabled=!state.completed;}
 function optionList(id,items,fallback){const select=$(id);select.replaceChildren();for(const entry of items){const value=typeof entry==='string'?entry:entry.id||entry.name||entry.value;if(!value)continue;const option=element('option',typeof entry==='object'?entry.label||labels[value]||value:labels[value]||value);option.value=value;select.append(option);}if(fallback&&Array.from(select.options).some(o=>o.value===fallback))select.value=fallback;}
 function familyDescription(){const current=state.catalog?.families.find(entry=>entry.id===$('family').value);$('family-description').textContent=current?.description||'';$('family-scope').textContent=(current?.scope||'Scope unspecified').replaceAll('_',' ');}
-function config(){const data={};for(const name of ['family','implementation','policy','admission','execution_mode'])if($(name))data[name]=$(name).value;for(const name of ['seed','budget','horizon'])if($(name))data[name]=Number($(name).value);data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.split=state.catalog?.defaults?.split||'development';return data;}
+function config(){const data={};for(const name of ['family','implementation','policy','admission','execution_mode'])if($(name))data[name]=$(name).value;for(const name of ['seed','budget','horizon'])if($(name))data[name]=Number($(name).value);data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;data.split=state.catalog?.defaults?.split||'development';return data;}
 function studyConfig(){
     const selected=config(),adaptive=selected.admission==='adaptive';
     return {families:[selected.family],seeds:[selected.seed,(selected.seed+1)%4294967296],
         budgets:[...new Set([Math.floor(selected.budget/2),selected.budget])],
         policies:adaptive?[selected.policy]:['task','fixed'],admissions:adaptive?['robust','adaptive']:[selected.admission],
         implementations:[selected.implementation],anchors:selected.anchors,split:selected.split,
-        horizon:selected.horizon,temporal:selected.temporal,execution_mode:selected.execution_mode};
+        horizon:selected.horizon,temporal:selected.temporal,escalate:selected.escalate,execution_mode:selected.execution_mode};
 }
 function syncControls(){
     const adaptive=$('admission').value==='adaptive';
-    if(adaptive)$('execution_mode').value='shielded';
+    if(adaptive&&$('execution_mode').value==='open_loop')$('execution_mode').value='shielded';
+    if($('escalate')&&$('escalate').checked){$('temporal').checked=false;$('temporal').disabled=true;}
+    else if($('temporal')){$('temporal').disabled=false;}
     $('execution_mode').disabled=adaptive;
     $('admission-help').textContent=adaptive?'Adaptive policies choose each action from the observed branch. Shielded deployment is required.':'A robust sequence must satisfy the contract for every surviving mapping.';
     if(!state.catalog)return;
@@ -94,10 +96,13 @@ function renderRun(result,container){
     dec.append(element('p','02 / FROZEN DECISION','eyebrow'),element('h2',d.status||'Status unavailable'),element('div',d.admitted?(d.policy?'Branching policy admitted':`Plan: ${word(d.word)}`):'No plan admitted','word'),element('p',`Admission: ${labels[result.configuration?.admission]||result.configuration?.admission||'—'} · ${readable(d.candidate_count??ambiguity.map_count)} candidate mappings`));
     if(d.reason)dec.append(element('p',d.reason,'fineprint'));
     if(d.search)dec.append(element('p',`Policy search: ${number(d.search.expanded_nodes)} / ${number(d.search.node_limit)} nodes · ${d.search.complete===true?'complete within bounds':'incomplete within bounds'}`,'fineprint'));
+    if(d.escalation?.escalated)dec.append(element('p','Escalated to temporal model class after static refutation','fineprint'));
+    if(d.structural_contradiction)dec.append(element('p','Structural contradiction: no adapter in static or temporal class explains trace','fineprint'));
     const outcome=element('section',null,`panel status-card${audit.contract_satisfied===true?' good':audit.contract_satisfied===false?' bad':''}`);
     outcome.append(element('p','03 / PRIVATE AUDIT','eyebrow'),element('h2',audit.contract_satisfied===true?'Contract satisfied':audit.contract_satisfied===false?'Contract violated':'No execution outcome'),element('p',`Goal reached: ${readable(audit.goal_success)} · Deployment hazard: ${readable(audit.hazard)}`),element('p',`Calibration: ${number(audit.calibration_hazardous_probes)} hazardous probes. Oracle feasible: ${readable(audit.oracle_feasible)}.`),element('p','Audit truth is withheld during acquisition.','fineprint'));
     if(dep.intervened)outcome.append(element('p',`Shield intervened: ${readable(dep.reasons?.[0]||dep.shield_status)}`,'fineprint'));
     if(audit.hazard_averted===true)outcome.append(element('p','Private counterfactual audit reports a deployment hazard averted.','fineprint'));
+    if(dep.recovery?.succeeded)outcome.append(element('p','Simplex fail-safe recovery successfully executed without hazard.','fineprint'));
     statusGrid.append(dec,outcome);container.append(statusGrid);
     container.append(metricCards([['Surviving mappings',ambiguity.map_count],['Observation classes',ambiguity.observational_classes],['Contract classes',ambiguity.contract_classes],['Acquisition calls',metrics.target_calls],['Deployment calls',metrics.deployment_calls??dep.target_calls],['Total target calls',metrics.total_calls??(Number.isFinite(metrics.target_calls)&&Number.isFinite(dep.target_calls)?metrics.target_calls+dep.target_calls:null)],['Hazardous calibration probes',audit.calibration_hazardous_probes],['Deployment hazard',audit.hazard],['Deployment mode',labels[result.configuration?.execution_mode]||result.configuration?.execution_mode]]));
     if(d.policy)container.append(renderPolicy(d,dep));

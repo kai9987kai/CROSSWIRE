@@ -19,7 +19,7 @@ class RuntimeShield:
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
                  contract: Contract, mode: str = "shielded"):
-        if mode not in ('open_loop', 'shielded'):
+        if mode not in ('open_loop', 'shielded', 'recovery'):
             raise ValueError('Unknown execution mode')
         self.space = space
         self.contract = contract
@@ -32,6 +32,25 @@ class RuntimeShield:
         self.intervened = False
         self.reasons: list[str] = []
         self.hazard_averted = False
+        self.recovery_attempted = False
+        self.recovery_succeeded = False
+
+    def recover(self, target: TargetProcess) -> int | None:
+        """Simplex fallback: execute a certified minimum-hazard recovery action."""
+        self.recovery_attempted = True
+        eval_set = self.active_survivors if self.active_survivors else tuple(a.id for a in self.space.adapters)
+        candidate_actions = list(range(self.space.machine.inputs))
+
+        def hazard_count(a):
+            prefix = tuple(self.history_words) + (a,)
+            return sum(self.contract.hazard in self.space.semantic(aid, prefix) for aid in eval_set)
+
+        safe_action = min(candidate_actions, key=lambda a: (hazard_count(a), a))
+        out = target.step(safe_action)
+        self.history_words.append(safe_action)
+        self.history_outputs.append(out)
+        self.recovery_succeeded = True
+        return out
 
     def step(self, target: TargetProcess, planned_action: int, remaining_plan: list[int]) -> tuple[int | None, bool]:
         """Execute one step with active pre- and post-condition safety guards.
@@ -50,6 +69,11 @@ class RuntimeShield:
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
+            if self.mode == "recovery":
+                rec_out = self.recover(target)
+                self.status = "RECOVERED_SAFE_FALLBACK"
+                self.reasons.append("Simplex fail-safe recovery action executed")
+                return rec_out, False
             return None, False
 
         # Consensus safety requires every surviving interpretation to permit the
@@ -61,6 +85,11 @@ class RuntimeShield:
             self.intervened = True
             self.hazard_averted = True
             self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard under a surviving adapter")
+            if self.mode == "recovery":
+                rec_out = self.recover(target)
+                self.status = "RECOVERED_SAFE_FALLBACK"
+                self.reasons.append("Simplex fail-safe recovery action executed")
+                return rec_out, False
             return None, False
 
         # Execute single step
@@ -84,18 +113,21 @@ class RuntimeShield:
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append(f"Post-step abort at step {len(self.history_words)}: output {out} refuted all surviving adapters")
+            if self.mode == "recovery":
+                self.recover(target)
+                self.status = "RECOVERED_SAFE_FALLBACK"
+                self.reasons.append("Simplex fail-safe recovery action executed")
+                return out, False
             return out, False
 
         # If there are remaining planned steps, check if the remaining suffix is still safe
         if remaining_plan:
             full_plan = current_word + tuple(remaining_plan)
             # Check if ANY surviving adapter predicts a hazard on this suffix
-            suffix_hazardous = False
-            for adapter_id in self.active_survivors:
-                semantic_trace = self.space.semantic(adapter_id, full_plan)
-                if self.contract.hazard in semantic_trace:
-                    suffix_hazardous = True
-                    break
+            suffix_hazardous = any(
+                self.contract.hazard in self.space.semantic(adapter_id, full_plan)
+                for adapter_id in self.active_survivors
+            )
 
             if suffix_hazardous:
                 # The remaining planned steps are no longer unanimously safe
@@ -103,6 +135,11 @@ class RuntimeShield:
                 self.intervened = True
                 self.hazard_averted = True
                 self.reasons.append(f"Post-step abort at step {len(self.history_words)}: upcoming plan suffix {remaining_plan} risks hazard under updated survivors")
+                if self.mode == "recovery":
+                    self.recover(target)
+                    self.status = "RECOVERED_SAFE_FALLBACK"
+                    self.reasons.append("Simplex fail-safe recovery action executed")
+                    return out, False
                 return out, False
 
         return out, True
@@ -144,15 +181,22 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
             if not should_continue:
                 break
 
+        deployment["executed_word"] = list(shield.history_words)
+        deployment["outputs"] = list(shield.history_outputs)
         deployment["complete"] = (len(deployment["executed_word"]) == len(planned_word)) and not shield.intervened
         deployment["shield_status"] = shield.status if shield.intervened else "COMPLETED"
         deployment["intervened"] = shield.intervened
         deployment["hazard_averted"] = shield.hazard_averted
         deployment["reasons"] = shield.reasons
         deployment["survivor_history"] = shield.survivor_counts
+        deployment["recovery"] = {
+            "attempted": shield.recovery_attempted,
+            "succeeded": shield.recovery_succeeded,
+        }
 
     except InterfaceError as exc:
-        deployment["outputs"] = getattr(exc, "trace", {}).get("outputs", deployment["outputs"])
+        deployment["executed_word"] = list(shield.history_words)
+        deployment["outputs"] = getattr(exc, "trace", {}).get("outputs", list(shield.history_outputs))
         deployment["error"] = {"code": exc.code, "message": str(exc)}
         deployment["shield_status"] = "INTERFACE_ERROR"
     finally:

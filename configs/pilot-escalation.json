@@ -1,0 +1,12 @@
+{
+  "families": ["latch", "delay", "incompatible"],
+  "seeds": [17, 23],
+  "budgets": [0, 16],
+  "policies": ["fixed", "task", "entropy"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"],
+  "execution_mode": "recovery",
+  "escalate": true,
+  "horizon": 4,
+  "split": "evaluation"
+}

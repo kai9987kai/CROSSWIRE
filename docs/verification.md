@@ -3,7 +3,7 @@
 **Date:** 23 October 2026  
 **Commit:** `codex/crosswire-design`  
 **Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
-**Overall Status:** PASS (109/109 tests passing, clean wheel install verified, browser e2e verified, 721 total empirical runs verified)
+**Overall Status:** PASS (116/116 tests passing, clean wheel install verified, browser e2e verified, 757 total empirical runs verified)
 
 ---
 
@@ -12,7 +12,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================= 109 passed in 80.24s =============================
+============================= 116 passed in 117.88s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -31,8 +31,9 @@ The automated test suite runs via `pytest` without external dependencies (except
 | `tests/test_temporal.py` | 7 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
 | `tests/test_cegp.py` | 3 | Decision-focused counterexample-guided active probing (CEGP); $O(W \cdot N)$ marginal frequency pair disagreement counting; dynamic synthesis of distinguishing witnesses beyond fixed probe pool. |
 | `tests/test_adaptive.py` | 5 | Observation-dependent contingent policy synthesis (AND/OR tree search); independent policy certificate verification (branch completeness, horizon bounds, zero hazard); certificate tampering rejection; search cap handling; full execution trace replay and audit. |
+| `tests/test_escalation.py` | 7 | Information-theoretic Shannon entropy probe selection; deterministic tie-breaking and empty belief handling; autonomous model-class escalation ($\mathcal{H}_0 \to \mathcal{H}_1$) on delayed interfaces; structural contradiction certificate emission when nested classes are refuted; in-family non-spurious escalation; Simplex safe fallback recovery execution; configuration validation guards. |
 | `tests/test_web.py` | 4 | Local workbench server endpoints, static file serving, and receipt export. |
-| **Total** | **109** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, and adaptive contingent policies.** |
+| **Total** | **116** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, and Simplex recovery.** |
 
 ---
 
@@ -110,7 +111,7 @@ Browser automation was conducted using Playwright on headless Chromium against a
 
 ## 5. Scientific Receipt Provenance & Reproducibility
 
-Six systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
+Nine systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
 
 | Benchmark | Output Receipt | Protocol Hash | Scientific Hash | Total Runs |
 |---|---|---|---|---:|
@@ -122,6 +123,7 @@ Six systematic empirical benchmarks were executed and preserved as self-containe
 | **Temporal Adapter Synthesis** | `reports/pilot-temporal-receipt.json` | `674907c7f02dcdb7…` | `f0eee9109c032893…` | 4 |
 | **CEGP Distinguishing Witness Benchmark** | `reports/pilot-cegp-longtrace-receipt.json` | `968ed5dfe5874e08…` | `e931c96b3d027d34…` | 4 |
 | **Adaptive Contingent Policy Benchmark** | `reports/pilot-adaptive-receipt.json` | `6e07673c27941fc7…` | `cbc85a6cbc260e98…` | 48 |
-| **Total Empirical Runs** | | | | **721** |
+| **Pilot Escalation, Entropy & Recovery** | `reports/pilot-escalation-receipt.json` | `74257f9947c445e3…` | `741aac4f5f86eb51…` | 36 |
+| **Total Empirical Runs** | | | | **757** |
 
 All receipts are cryptographically bound to explicit source and protocol hashes. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.

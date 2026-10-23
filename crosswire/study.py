@@ -16,9 +16,9 @@ from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle")
-EXECUTION_MODES = ("open_loop", "shielded")
+EXECUTION_MODES = ("open_loop", "shielded", "recovery")
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
 
@@ -40,6 +40,7 @@ class RunConfig:
     admission: str = "robust"
     execution_mode: str = "open_loop"
     temporal: bool = False
+    escalate: bool = False
 
     @classmethod
     def from_dict(cls, values: dict) -> "RunConfig":
@@ -58,6 +59,10 @@ class RunConfig:
             raise ValueError("anchors must be a boolean")
         if type(self.temporal) is not bool:
             raise ValueError("temporal must be a boolean")
+        if type(self.escalate) is not bool:
+            raise ValueError("escalate must be a boolean")
+        if self.escalate and self.temporal:
+            raise ValueError("escalate cannot be combined with temporal=True (starts at static and escalates)")
         if self.execution_mode not in EXECUTION_MODES:
             raise ValueError("Unknown execution mode")
         if self.family not in {f["id"] for f in catalog()}:
@@ -66,12 +71,14 @@ class RunConfig:
             raise ValueError("Unknown implementation or split")
         if self.policy not in POLICIES or self.admission not in ADMISSIONS:
             raise ValueError("Unknown probe/admission policy")
-        if self.admission == 'adaptive' and self.execution_mode != 'shielded':
-            raise ValueError('Adaptive admission requires shielded execution')
+        if self.admission == 'adaptive' and self.execution_mode not in ('shielded', 'recovery'):
+            raise ValueError('Adaptive admission requires shielded or recovery execution')
         if self.policy == 'aalpy' and self.temporal:
             raise ValueError('The AALpy baseline does not support temporal adapters')
         if self.policy == 'aalpy' and self.admission == 'adaptive':
             raise ValueError('The AALpy baseline does not support adaptive admission')
+        if self.policy == 'aalpy' and self.escalate:
+            raise ValueError('The AALpy baseline does not support model escalation')
 
 
 def _check_cancel(cancel: Callable[[], bool] | None) -> None:
@@ -110,7 +117,7 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
              cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False,
-             admission: str = 'robust'):
+             admission: str = 'robust', escalate: bool = False):
     """This function receives no Case, private map, target states or family label."""
     space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
@@ -118,6 +125,8 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
     survivors = space.survivors(probes, anchors)
     seen: set[tuple] = set()
     error = None
+    escalated = False
+    escalation_history = []
     # `budget` is the shared system-call cap: every reset and every action
     # attempt counts, so all methods compare at the same total target access.
     while counts["target_calls"] < budget:
@@ -153,9 +162,32 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
         entry["survivors_after"] = len(survivors)
         if progress:
             progress(counts["target_calls"], budget, f"{len(survivors)} mappings remain")
-        if error or not survivors:
+        if error:
             break
-    return space, survivors, probes, error
+        if not survivors:
+            if escalate and not space.temporal:
+                # Autonomous Model-Class Escalation: static refuted -> escalate to temporal
+                space = CandidateSpace(space.machine, space.contract, temporal=True)
+                survivors = space.survivors(fit_evidence(probes), anchors)
+                entry["survivors_after"] = len(survivors)
+                escalated = True
+                escalation_history.append({"step": len(probes), "from": "static", "to": "temporal",
+                                           "survivors_after_escalation": len(survivors)})
+                if progress:
+                    progress(counts["target_calls"], budget, f"Escalated to temporal model class: {len(survivors)} mappings")
+                if not survivors:
+                    break
+            else:
+                break
+    escalation_info = {
+        "enabled": escalate,
+        "escalated": escalated,
+        "escalations": len(escalation_history),
+        "history": escalation_history,
+        "model_class": "temporal" if space.temporal else "static",
+        "structural_complexity": 1 if space.temporal else 0,
+    }
+    return space, survivors, probes, error, escalation_info
 
 
 def run(config: RunConfig, cancel: Callable[[], bool] | None = None, progress: Callable | None = None) -> dict:
@@ -188,14 +220,26 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             space, survivors, probes, error, detail = acquire_aalpy(public, config.budget, target, cancel)
             counts = dict(target.counts)
             baseline.update(detail)
+            escalation_info = {
+                "enabled": False, "escalated": False, "escalations": 0, "history": [],
+                "model_class": "static", "structural_complexity": 0,
+            }
         elif config.budget and config.admission != "oracle":
             target = resources.enter_context(TargetProcess(case.private))
-            space, survivors, probes, error = _acquire(public, config.policy, config.budget, target.query, target.counts, cancel, progress, temporal=temporal, admission=config.admission)
+            space, survivors, probes, error, escalation_info = _acquire(
+                public, config.policy, config.budget, target.query, target.counts, cancel, progress,
+                temporal=temporal, admission=config.admission, escalate=config.escalate
+            )
             counts = dict(target.counts)
         else:
             space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
             survivors = space.survivors([], {int(k): int(v) for k, v in public.get("anchors", {}).items()})
             probes, error = [], None
+            escalation_info = {
+                "enabled": config.escalate, "escalated": False, "escalations": 0, "history": [],
+                "model_class": "temporal" if space.temporal else "static",
+                "structural_complexity": 1 if space.temporal else 0,
+            }
         _check_cancel(cancel)
         if config.admission == "oracle":
             word = oracle_plan(case.private, config.horizon)
@@ -216,6 +260,13 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         elif config.policy == 'aalpy' and not baseline.get('model_complete') and config.admission != 'oracle':
             decision = {'status': 'UNRESOLVED', 'admitted': False, 'word': None,
                         'candidate_count': 0, 'reason': 'Budget exhausted before a complete classical model'}
+        decision["escalation"] = escalation_info
+        if decision["status"] == "FAMILY_CONTRADICTED" and config.escalate:
+            decision["structural_contradiction"] = {
+                "classes_refuted": ["static (144 maps)", "temporal (720 latency maps)"],
+                "evidence_length": len(probes),
+                "scope": "No adapter in static or latency-1 temporal hypothesis class can explain the observed trace."
+            }
         ambiguity = space.ambiguity(survivors)
         # The digest is constructed before importing/calling the private auditor.
         frozen = canonical_hash({"decision": decision, "probes": probes, "reference": public["reference"],
@@ -249,6 +300,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             "metrics": {"target_steps": counts["step_attempts"], "resets": counts["reset_attempts"],
                         "target_calls": counts["target_calls"], **work,
                         'anchor_facts_supplied': len(public.get('anchors', {})),
+                        "escalations": escalation_info["escalations"],
+                        "escalation_level": escalation_info["structural_complexity"],
                         "parent_cpu_seconds": time.process_time() - cpu,
                         "wall_seconds": time.perf_counter() - started, "parent_peak_traced_bytes": peak,
                         "audit_product_pairs": audit["audit_product_pairs"],
@@ -293,6 +346,8 @@ def summarize(rows: list[dict]) -> list[dict]:
                                     or bool((r.get("deployment") or {}).get("error")) for r in members),
             "acquisition_interface_errors": sum(r["decision"]["status"] == "INTERFACE_ERROR" for r in members),
             "deployment_interface_errors": sum(bool((r.get("deployment") or {}).get("error")) for r in members),
+            "escalated_runs": sum(r["metrics"].get("escalations", 0) > 0 for r in members),
+            "recovered_runs": sum((r.get("deployment") or {}).get("recovery", {}).get("succeeded") is True for r in members),
             "abstained": abstained, "oracle_feasible": feasible,
             "admission_coverage": admitted / n, "useful_coverage": success / n,
             "feasible_useful_coverage": success / feasible if feasible else None,
@@ -391,7 +446,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
     if not isinstance(spec, dict):
         raise ValueError("Study must be an object")
     allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
-               "anchors", "split", "horizon", "execution_mode", "temporal"}
+               "anchors", "split", "horizon", "execution_mode", "temporal", "escalate"}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -411,7 +466,8 @@ def study_configs(spec: dict) -> list[RunConfig]:
                                          anchors=spec.get("anchors", False), split=spec.get("split", "development"),
                                          horizon=spec.get("horizon", 4),
                                          execution_mode=spec.get("execution_mode", "open_loop"),
-                                         temporal=spec.get("temporal", False))) for values in product(*dimensions)]
+                                         temporal=spec.get("temporal", False),
+                                         escalate=spec.get("escalate", False))) for values in product(*dimensions)]
 
 
 def run_study(spec: dict, cancel: Callable[[], bool] | None = None, progress: Callable | None = None) -> dict:

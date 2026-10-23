@@ -314,7 +314,7 @@ class CandidateSpace:
         return total
 
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0):
-        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample'):
+        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy'):
             raise ValueError('unknown probe policy')
         ids = self._ids(ids)
         _integer(remaining_steps, 'remaining steps')
@@ -330,6 +330,28 @@ class CandidateSpace:
             return eligible[0]
         if policy == 'random':
             return Random(seed).choice(sorted(eligible))
+        if policy == 'entropy':
+            import math
+            best, best_score = None, -1.0
+            n = len(ids)
+            if not ids:
+                return None
+            if n == 1:
+                return eligible[0] if eligible else None
+            for word in eligible:
+                counts = {}
+                for i in ids:
+                    p = self.predict(i, word)
+                    counts[p] = counts.get(p, 0) + 1
+                h = 0.0
+                for c in counts.values():
+                    prob = c / n
+                    h -= prob * math.log2(prob)
+                self.work['pair_checks'] += n
+                score = h / (1 + len(word))
+                if score > best_score:
+                    best, best_score = word, score
+            return best
         if policy == 'disagreement':
             best, best_score = None, 0
             n = len(ids)
