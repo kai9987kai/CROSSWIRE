@@ -55,17 +55,20 @@ def test_in_family_fixture_does_not_trigger_spurious_escalation():
     assert res['metrics']['escalation_level'] == 0
 
 
-def test_simplex_recovery_shield_dispatches_safe_fallback_on_anomaly():
-    # On alias with recovery mode, anomaly at step 2 triggers safe fallback action
+def test_recovery_halts_after_anomaly_without_inventing_a_backup_model():
+    # Refuted models cannot certify a fallback, even if this fixture has a safe action.
     res_shield = run(RunConfig(family='alias', seed=17, budget=16, execution_mode='shielded'))
     res_recovery = run(RunConfig(family='alias', seed=17, budget=16, execution_mode='recovery'))
 
     assert res_shield['deployment']['shield_status'] == 'INTERVENED_ANOMALY'
-    assert res_recovery['deployment']['shield_status'] == 'RECOVERED_SAFE_FALLBACK'
-    assert res_recovery['deployment']['recovery']['attempted'] is True
-    assert res_recovery['deployment']['recovery']['succeeded'] is True
-    assert len(res_recovery['deployment']['executed_word']) > len(res_shield['deployment']['executed_word'])
-    # Private audit confirms the fallback action did not cause a hazard
+    assert res_recovery['deployment']['shield_status'] == 'INTERVENED_ANOMALY'
+    assert res_recovery['deployment']['recovery']['requested'] is True
+    assert res_recovery['deployment']['recovery']['attempted'] is False
+    assert res_recovery['deployment']['recovery']['certified'] is False
+    assert res_recovery['deployment']['recovery']['succeeded'] is False
+    assert res_recovery['deployment']['recovery']['reason'] == 'model_contradicted'
+    assert res_recovery['deployment']['executed_word'] == res_shield['deployment']['executed_word']
+    # The private audit observes only the prefix that actually happened.
     assert res_recovery['audit']['hazard'] is not True
 
 

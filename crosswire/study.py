@@ -167,11 +167,16 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
         if not survivors:
             if escalate and not space.temporal:
                 # Autonomous Model-Class Escalation: static refuted -> escalate to temporal
+                previous_work = dict(space.work)
                 space = CandidateSpace(space.machine, space.contract, temporal=True)
+                # Rebuilding a larger hypothesis class does not erase the work
+                # already spent refuting the smaller one.
+                space.work.update(previous_work)
                 survivors = space.survivors(fit_evidence(probes), anchors)
                 entry["survivors_after"] = len(survivors)
                 escalated = True
                 escalation_history.append({"step": len(probes), "from": "static", "to": "temporal",
+                                           "work_before_escalation": previous_work,
                                            "survivors_after_escalation": len(survivors)})
                 if progress:
                     progress(counts["target_calls"], budget, f"Escalated to temporal model class: {len(survivors)} mappings")
@@ -262,16 +267,29 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                         'candidate_count': 0, 'reason': 'Budget exhausted before a complete classical model'}
         decision["escalation"] = escalation_info
         if decision["status"] == "FAMILY_CONTRADICTED" and config.escalate:
+            static_count = len(space.adapters) // (1 + space.machine.outputs) if space.temporal else len(space.adapters)
             decision["structural_contradiction"] = {
-                "classes_refuted": ["static (144 maps)", "temporal (720 latency maps)"],
+                "classes_refuted": [f"static ({static_count} maps)"] +
+                                   ([f"temporal ({len(space.adapters)} latency maps)"] if space.temporal else []),
                 "evidence_length": len(probes),
-                "scope": "No adapter in static or latency-1 temporal hypothesis class can explain the observed trace."
+                "scope": "No adapter in the checked finite hypothesis class can explain the public evidence."
             }
+        from .certificates import check_result
+        candidates = [a.to_dict() for a in space.adapters if a.id in survivors]
+        evidence_certificate = check_result({
+            'schema': 'crosswire-result-v1', 'configuration': asdict(config),
+            'reference': public['reference'], 'contract': public['contract'],
+            'anchors': public.get('anchors', {}), 'target_id': public['target_id'],
+            'decision': decision, 'candidates': candidates, 'probes': probes,
+        })
+        if not evidence_certificate['valid']:
+            raise RuntimeError('Independent public-evidence check failed: ' + evidence_certificate['reason'])
         ambiguity = space.ambiguity(survivors)
         # The digest is constructed before importing/calling the private auditor.
         frozen = canonical_hash({"decision": decision, "probes": probes, "reference": public["reference"],
                                  "contract": public["contract"], "target_id": public['target_id'],
-                                 'anchors': public.get('anchors', {}), "survivors": list(survivors)})
+                                 'anchors': public.get('anchors', {}), "survivors": list(survivors),
+                                 'evidence_certificate': evidence_certificate})
         deployment = {'word': decision['word'], 'outputs': [], 'complete': False,
                       'error': None, 'target_steps': 0, 'resets': 0, 'target_calls': 0}
         if decision['admitted']:
@@ -295,7 +313,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             "reference": public["reference"], "contract": public["contract"],
             "target_id": public["target_id"], "parent_instance_id": public["parent_instance_id"],
             "anchors": public.get("anchors", {}), "decision": decision, "ambiguity": ambiguity,
-            "candidates": [a.to_dict() for a in space.adapters if a.id in survivors],
+            "candidates": candidates, "evidence_certificate": evidence_certificate,
             "probes": probes, "decision_frozen_hash": frozen, 'deployment': deployment, "audit": audit,
             "metrics": {"target_steps": counts["step_attempts"], "resets": counts["reset_attempts"],
                         "target_calls": counts["target_calls"], **work,
@@ -317,14 +335,25 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         tracemalloc.stop()
 
 
+_CONDITION_FIELDS = ('anchors', 'split', 'horizon', 'execution_mode', 'temporal', 'escalate')
+_CONDITION_DEFAULTS = (False, 'development', 4, 'open_loop', False, False)
+
+
+def _condition(configuration: dict) -> tuple:
+    """Comparable scientific conditions, with defaults for legacy row inputs."""
+    return tuple(configuration.get(key, default)
+                 for key, default in zip(_CONDITION_FIELDS, _CONDITION_DEFAULTS))
+
+
 def summarize(rows: list[dict]) -> list[dict]:
     groups = defaultdict(list)
     scopes = {f["id"]: f["scope"] for f in catalog()}
     for row in rows:
         cfg = row["configuration"]
-        groups[(cfg["policy"] + "/" + cfg["admission"], cfg["family"], cfg["budget"])].append(row)
+        groups[(cfg["policy"] + "/" + cfg["admission"], cfg["family"], cfg["budget"],
+                _condition(cfg))].append(row)
     result = []
-    for (method, family, budget), members in sorted(groups.items()):
+    for (method, family, budget, conditions), members in sorted(groups.items()):
         n = len(members)
         admitted = sum(r["decision"]["admitted"] for r in members)
         success = sum(r["audit"]["contract_satisfied"] is True for r in members)
@@ -333,6 +362,7 @@ def summarize(rows: list[dict]) -> list[dict]:
         abstained = n - admitted
         result.append({
             "method": method, "family": family, "scope": scopes[family], "budget": budget, "requests": n,
+            **dict(zip(_CONDITION_FIELDS, conditions)),
             "admitted": admitted, "successful": success, "harmful": harm,
             "hazardous": sum(r["audit"]["hazard"] is True for r in members),
             "hazards_averted": sum(r["audit"].get("hazard_averted") is True for r in members),
@@ -363,78 +393,71 @@ def summarize(rows: list[dict]) -> list[dict]:
 def paired_comparisons(rows: list[dict]) -> list[dict]:
     """Exploratory cluster-paired coverage differences, no power claim.
 
-    Contrasts are emitted per call-cap stratum. Within a stratum, task and the
-    comparison method are matched cell by cell (family, seed, implementation,
-    anchors, split, horizon); matched deltas are averaged inside each semantic
-    parent, and whole parents are resampled. Families are pooled only across
-    in-family fixtures and the output labels that pooling explicitly.
+    Every comparison fixes the budget, execution settings, semantic grounding,
+    horizon and split. Label seeds and implementations are matched within each
+    semantic parent before whole-parent resampling. Duplicate cells are refused
+    instead of allowing their last value to silently determine the contrast.
     """
     scopes = {f["id"]: f["scope"] for f in catalog()}
-    cells = defaultdict(dict)  # (budget, parent, cell) -> {policy: outcome}
+    comparisons = {'policy': defaultdict(dict), 'admission': defaultdict(dict)}
+    seen = set()
     for row in rows:
         c = row["configuration"]
         # Out-of-family/control cases are never pooled into primary in-family effect.
-        if scopes.get(c["family"]) != "in_family" or c["admission"] != "robust":
-            continue
-        cell = tuple(c.get(k) for k in ("family", "seed", "implementation", "anchors", "split", "horizon", "execution_mode", "temporal"))
-        cells[(c["budget"], row["parent_instance_id"], cell)][c["policy"]] = \
-            int(row["audit"]["contract_satisfied"] is True)
-    policies = sorted({p for values in cells.values() for p in values} - {"task"})
-    budgets = sorted({key[0] for key in cells})
-    output = []
-    for budget in budgets:
-        for method in policies:
-            per_parent = defaultdict(list)
-            families = set()
-            for (b, parent, cell), values in cells.items():
-                if b == budget and "task" in values and method in values:
-                    per_parent[parent].append(values["task"] - values[method])
-                    families.add(cell[0])
-            if not per_parent:
-                continue
-            delta = [sum(v) / len(v) for _, v in sorted(per_parent.items())]
-            rng = random.Random(68219)
-            draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
-            output.append({"contrast": f"task - {method}", "outcome": "useful_coverage",
-                           "budget": budget, "budget_unit": "target calls (resets + actions)",
-                           "parent_clusters": len(delta),
-                           "matched_cells": sum(len(v) for v in per_parent.values()),
-                           "families_pooled": sorted(families),
-                           "mean_delta": sum(delta) / len(delta),
-                           "descriptive_95_interval": [draws[49], draws[1949]],
-                           "scope": "exploratory parent-cluster paired bootstrap within one call cap; "
-                                    "in-family fixtures pooled; few clusters, no confirmatory claim"})
-    adm_cells = defaultdict(dict)
-    for row in rows:
-        c = row["configuration"]
         if scopes.get(c["family"]) != "in_family":
             continue
-        cell = tuple(c.get(k) for k in ("family", "seed", "implementation", "anchors", "split", "horizon", "execution_mode", "temporal", "policy"))
-        adm_cells[(c["budget"], row["parent_instance_id"], cell)][c["admission"]] = \
-            int(row["audit"]["contract_satisfied"] is True)
-    admissions = sorted({a for values in adm_cells.values() for a in values} - {"robust"})
-    for budget in sorted({key[0] for key in adm_cells}):
-        for adm in admissions:
-            per_parent = defaultdict(list)
-            families = set()
-            for (b, parent, cell), values in adm_cells.items():
-                if b == budget and "robust" in values and adm in values:
-                    per_parent[parent].append(values[adm] - values["robust"])
+        conditions = _condition(c)
+        cell = (c['family'], c['seed'], c['implementation'])
+        parent = row['parent_instance_id']
+        identity = (c['budget'], conditions, parent, cell, c['policy'], c['admission'])
+        if identity in seen:
+            raise ValueError('Duplicate matched analysis cell; each condition/method must occur once')
+        seen.add(identity)
+        outcome = int(row['audit']['contract_satisfied'] is True)
+        if c['admission'] == 'robust':
+            key = (c['budget'], conditions, 'robust', parent, cell)
+            comparisons['policy'][key][c['policy']] = outcome
+        key = (c['budget'], conditions, c['policy'], parent, cell)
+        comparisons['admission'][key][c['admission']] = outcome
+
+    output = []
+    for axis, cells in comparisons.items():
+        reference = 'task' if axis == 'policy' else 'robust'
+        strata = sorted({key[:3] for key in cells})
+        for budget, conditions, fixed in strata:
+            stratum = (budget, conditions, fixed)
+            methods = sorted({method for key, values in cells.items() if key[:3] == stratum
+                              for method in values} - {reference})
+            for method in methods:
+                per_parent = defaultdict(list)
+                families = set()
+                for key, values in cells.items():
+                    if key[:3] != stratum or reference not in values or method not in values:
+                        continue
+                    parent, cell = key[3:]
+                    difference = values[reference] - values[method]
+                    per_parent[parent].append(difference if axis == 'policy' else -difference)
                     families.add(cell[0])
-            if not per_parent:
-                continue
-            delta = [sum(v) / len(v) for _, v in sorted(per_parent.items())]
-            rng = random.Random(68219)
-            draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
-            output.append({"contrast": f"{adm} - robust", "outcome": "useful_coverage",
-                           "budget": budget, "budget_unit": "target calls (resets + actions)",
-                           "parent_clusters": len(delta),
-                           "matched_cells": sum(len(v) for v in per_parent.values()),
-                           "families_pooled": sorted(families),
-                           "mean_delta": sum(delta) / len(delta),
-                           "descriptive_95_interval": [draws[49], draws[1949]],
-                           "scope": "exploratory parent-cluster paired bootstrap within one call cap; "
-                                    "in-family fixtures pooled; few clusters, no confirmatory claim"})
+                if not per_parent:
+                    continue
+                delta = [sum(v) / len(v) for _, v in sorted(per_parent.items())]
+                rng = random.Random(68219)
+                draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
+                output.append({
+                    'contrast': f'task - {method}' if axis == 'policy' else f'{method} - robust',
+                    'comparison_axis': axis,
+                    'fixed_admission' if axis == 'policy' else 'fixed_policy': fixed,
+                    'outcome': 'useful_coverage', 'budget': budget,
+                    **dict(zip(_CONDITION_FIELDS, conditions)),
+                    'budget_unit': 'target calls (resets + actions)',
+                    'parent_clusters': len(delta),
+                    'matched_cells': sum(len(v) for v in per_parent.values()),
+                    'families_pooled': sorted(families),
+                    'mean_delta': sum(delta) / len(delta),
+                    'descriptive_95_interval': [draws[49], draws[1949]],
+                    'scope': 'exploratory parent-cluster paired bootstrap within identical call cap and conditions; '
+                             'in-family fixtures pooled; few clusters, no confirmatory claim',
+                })
     return output
 
 

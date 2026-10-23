@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .core import CandidateSpace, compare_adapter, words
-from .fixtures import Case, evaluate_deployment, target_machine
+from .fixtures import Case, catalog, evaluate_deployment, target_machine
 from .identity import canonical_hash
 
 
@@ -28,13 +28,16 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
     deployment_audit = None
     counterfactual_hazard = False
     if decision["admitted"]:
-        plan = decision["policy"] if decision.get("word") is None else decision["word"]
+        # Execution evidence owns the audited trajectory. A contingent policy
+        # or recovery can dispatch a different word from the initial request.
+        plan = (deployment['executed_word'] if 'executed_word' in deployment else
+                decision['policy'] if decision.get('word') is None else decision['word'])
         if deployment['complete']:
             actual = evaluate_deployment(private, probes, plan, work=work)
             reproduced = actual['outputs'] == deployment['outputs']
             if not reproduced:
                 actual = {**actual, 'goal_success': False, 'contract_satisfied': False}
-            executed_len = len(deployment.get('executed_word') or decision.get('word') or ())
+            executed_len = len(deployment['outputs'])
             deployment_audit = {'completed': True, 'executed_prefix_length': executed_len,
                                 'reconstruction_matches_observed': reproduced, 'prefix_hazard': actual['hazard'],
                                 'counterfactual_hazard': actual['hazard']}
@@ -42,7 +45,7 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
             # Only the successfully executed prefix happened. Fixture faults
             # fail before the engine steps, so the failed call emitted no event.
             # The unexecuted suffix is never simulated as if it occurred.
-            executed = list((deployment.get('executed_word') or decision.get('word') or ())[:len(deployment['outputs'])])
+            executed = list((deployment.get('executed_word', decision.get('word')) or ())[:len(deployment['outputs'])])
             prefix = (evaluate_deployment(private, probes, executed, work=work) if executed
                       else {'outputs': [], 'semantic_events': [], 'hazard': False})
             hazard_key = private['contract']['hazard']
@@ -73,20 +76,24 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
                     if tuple(private.get("input_map", ())) == a.input_map
                     and tuple(private.get("output_map", ())) == a.output_map), None)
     # A raw planted code need not be a true semantic interpretation after corruption.
-    in_family = private.get("family") in {"latch", "handshake", "symmetric", "neutral", "long_trace"}
+    in_family = any(item['id'] == private.get('family') and item['scope'] == 'in_family'
+                    for item in catalog())
     calibration_hazards = 0
     for i, probe in enumerate(probes):
-        if not probe.get("complete"):
+        executed = probe['word'][:len(probe['outputs'])]
+        if not executed:
             continue
         try:
-            item = evaluate_deployment(private, probes[:i], probe["word"], work=work)
+            item = evaluate_deployment(private, probes[:i], executed, work=work)
             calibration_hazards += int(item["hazard"])
         except (ValueError, RuntimeError):
             pass
     if model is None:
         scope = "No finite stationary target model available; equivalence is unresolved."
     else:
-        scope = "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        model_class = 'static plus latency-1 temporal' if space.temporal else 'static'
+        scope = (f"Exact raw equivalence within the declared {len(space.adapters)}-map {model_class} finite class only; "
+                 "latent semantics are not established by raw equivalence.")
     causal_hazard_averted = bool(deployment.get("intervened") and counterfactual_hazard and (actual.get("hazard") is not True))
     return {
         "goal_success": actual["goal_success"] if actual else None,

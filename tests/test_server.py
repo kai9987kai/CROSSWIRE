@@ -79,3 +79,24 @@ def test_static_server_cannot_read_source_or_parent_paths(endpoint):
         with pytest.raises(HTTPError) as exc:
             urlopen(endpoint + path)
         assert exc.value.code == 404
+
+
+def test_replay_status_is_not_exportable_scientific_evidence(endpoint):
+    job = send(endpoint, '/api/runs', {'family': 'symmetric', 'budget': 0})
+    assert completed(endpoint, job)['status'] == 'COMPLETE'
+    replay_job = send(endpoint, f"/api/runs/{job['id']}/replay", {})
+    assert completed(endpoint, replay_job)['result']['valid'] is True
+    with pytest.raises(HTTPError) as exc:
+        send(endpoint, f"/api/runs/{replay_job['id']}/export")
+    assert exc.value.code == 409
+    assert 'evidence' in json.load(exc.value)['error'].lower()
+
+
+def test_export_source_change_returns_json_conflict(endpoint, monkeypatch):
+    job = send(endpoint, '/api/runs', {'family': 'symmetric', 'budget': 0})
+    assert completed(endpoint, job)['status'] == 'COMPLETE'
+    monkeypatch.setattr('crosswire.receipts.source_hash', lambda: 'changed-source')
+    with pytest.raises(HTTPError) as exc:
+        send(endpoint, f"/api/runs/{job['id']}/export")
+    assert exc.value.code == 409
+    assert 'source' in json.load(exc.value)['error'].lower()

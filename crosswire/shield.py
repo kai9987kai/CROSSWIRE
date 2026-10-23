@@ -14,17 +14,24 @@ from .core import CandidateSpace, Contract
 from .interfaces import InterfaceError, TargetProcess
 
 
+def _check_cancel(cancel):
+    if cancel and cancel():
+        from .study import Cancelled
+        raise Cancelled('Deployment cancelled by user')
+
+
 class RuntimeShield:
     """Monitors step-by-step target execution and intervenes when safety is violated."""
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
-                 contract: Contract, mode: str = "shielded"):
+                 contract: Contract, mode: str = "shielded", cancel: Callable[[], bool] | None = None):
         if mode not in ('open_loop', 'shielded', 'recovery'):
             raise ValueError('Unknown execution mode')
         self.space = space
         self.contract = contract
         self.mode = mode
-        self.active_survivors = tuple(initial_survivors)
+        self.cancel = cancel
+        self.active_survivors = space._ids(initial_survivors)
         self.history_words: list[int] = []
         self.history_outputs: list[int] = []
         self.survivor_counts: list[int] = [len(self.active_survivors)]
@@ -32,24 +39,83 @@ class RuntimeShield:
         self.intervened = False
         self.reasons: list[str] = []
         self.hazard_averted = False
+        self.recovery_requested = False
         self.recovery_attempted = False
+        self.recovery_certified = False
         self.recovery_succeeded = False
+        self.recovery_reason = 'not_requested'
+        self.recovery_action = None
+        self.recovery_candidate_count = 0
+        self.recovery_remaining_horizon = contract.horizon
+
+    def _observe(self, action: int, output: int):
+        self.history_words.append(action)
+        self.history_outputs.append(output)
+        word, outputs = tuple(self.history_words), tuple(self.history_outputs)
+        self.active_survivors = tuple(aid for aid in self.active_survivors
+                                      if self.space.predict(aid, word) == outputs)
+        self.survivor_counts.append(len(self.active_survivors))
+
+    def recovery_record(self) -> dict:
+        return {'requested': self.recovery_requested, 'attempted': self.recovery_attempted,
+                'certified': self.recovery_certified, 'succeeded': self.recovery_succeeded,
+                'reason': self.recovery_reason, 'action': self.recovery_action,
+                'candidate_count': self.recovery_candidate_count,
+                'remaining_horizon': self.recovery_remaining_horizon,
+                'scope': 'Conditional on target inclusion in the live finite model family, '
+                         'stationarity, deterministic reset and truthful anchors. A consistent '
+                         'response does not establish real-world safety or task completion.'}
 
     def recover(self, target: TargetProcess) -> int | None:
-        """Simplex fallback: execute a certified minimum-hazard recovery action."""
+        """Execute one model-safe fallback only while the live belief remains valid.
+
+        Refutation supplies no replacement safety model. Without an independently
+        specified backup controller, the only justified response is to halt.
+        """
+        self.recovery_requested = True
+        self.recovery_succeeded = False
+        self.recovery_certified = False
+        self.recovery_action = None
+        prefix, outputs = tuple(self.history_words), tuple(self.history_outputs)
+        self.active_survivors = tuple(aid for aid in self.active_survivors
+                                      if self.space.predict(aid, prefix) == outputs)
+        self.recovery_candidate_count = len(self.active_survivors)
+        self.recovery_remaining_horizon = max(0, self.contract.horizon - len(prefix))
+        if not self.active_survivors:
+            self.recovery_reason = 'model_contradicted'
+            self.reasons.append('Recovery withheld: no model remains consistent with observed history')
+            return None
+        if not self.recovery_remaining_horizon:
+            self.recovery_reason = 'horizon_exhausted'
+            self.reasons.append('Recovery withheld: contract horizon is exhausted')
+            return None
+        safe_action = next((action for action in range(self.space.machine.inputs)
+                            if all(self.contract.hazard not in self.space.semantic(aid, prefix + (action,))
+                                   for aid in self.active_survivors)), None)
+        if safe_action is None:
+            self.recovery_reason = 'no_safe_action'
+            self.reasons.append('Recovery withheld: no action is hazard-free under every live model')
+            return None
+        self.recovery_action = safe_action
+        self.recovery_certified = True
+        _check_cancel(self.cancel)
         self.recovery_attempted = True
-        eval_set = self.active_survivors if self.active_survivors else tuple(a.id for a in self.space.adapters)
-        candidate_actions = list(range(self.space.machine.inputs))
-
-        def hazard_count(a):
-            prefix = tuple(self.history_words) + (a,)
-            return sum(self.contract.hazard in self.space.semantic(aid, prefix) for aid in eval_set)
-
-        safe_action = min(candidate_actions, key=lambda a: (hazard_count(a), a))
-        out = target.step(safe_action)
-        self.history_words.append(safe_action)
-        self.history_outputs.append(out)
+        try:
+            out = target.step(safe_action)
+        except InterfaceError:
+            self.recovery_reason = 'interface_error'
+            raise
+        self._observe(safe_action, out)
+        if not self.active_survivors:
+            self.recovery_reason = 'response_contradiction'
+            self.status = 'INTERVENED_ANOMALY'
+            self.hazard_averted = False
+            self.reasons.append('Recovery response contradicted every certifying model; safety is unresolved')
+            return out
         self.recovery_succeeded = True
+        self.recovery_reason = 'certified_response'
+        self.status = 'RECOVERED_SAFE_FALLBACK'
+        self.reasons.append('Model-certified fallback executed with a response consistent with the live belief')
         return out
 
     def step(self, target: TargetProcess, planned_action: int, remaining_plan: list[int]) -> tuple[int | None, bool]:
@@ -71,8 +137,6 @@ class RuntimeShield:
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
             if self.mode == "recovery":
                 rec_out = self.recover(target)
-                self.status = "RECOVERED_SAFE_FALLBACK"
-                self.reasons.append("Simplex fail-safe recovery action executed")
                 return rec_out, False
             return None, False
 
@@ -87,26 +151,13 @@ class RuntimeShield:
             self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard under a surviving adapter")
             if self.mode == "recovery":
                 rec_out = self.recover(target)
-                self.status = "RECOVERED_SAFE_FALLBACK"
-                self.reasons.append("Simplex fail-safe recovery action executed")
                 return rec_out, False
             return None, False
 
         # Execute single step
         out = target.step(planned_action)
-        self.history_words.append(planned_action)
-        self.history_outputs.append(out)
-
-        # Post-condition check: filter surviving adapters against the observed output
+        self._observe(planned_action, out)
         current_word = tuple(self.history_words)
-        current_outputs = tuple(self.history_outputs)
-        next_survivors = []
-        for adapter_id in self.active_survivors:
-            pred = self.space.predict(adapter_id, current_word)
-            if pred == current_outputs:
-                next_survivors.append(adapter_id)
-        self.active_survivors = tuple(next_survivors)
-        self.survivor_counts.append(len(self.active_survivors))
 
         if not self.active_survivors:
             # Anomaly / distribution drift detected: target output contradicted all surviving models
@@ -115,8 +166,6 @@ class RuntimeShield:
             self.reasons.append(f"Post-step abort at step {len(self.history_words)}: output {out} refuted all surviving adapters")
             if self.mode == "recovery":
                 self.recover(target)
-                self.status = "RECOVERED_SAFE_FALLBACK"
-                self.reasons.append("Simplex fail-safe recovery action executed")
                 return out, False
             return out, False
 
@@ -137,8 +186,6 @@ class RuntimeShield:
                 self.reasons.append(f"Post-step abort at step {len(self.history_words)}: upcoming plan suffix {remaining_plan} risks hazard under updated survivors")
                 if self.mode == "recovery":
                     self.recover(target)
-                    self.status = "RECOVERED_SAFE_FALLBACK"
-                    self.reasons.append("Simplex fail-safe recovery action executed")
                     return out, False
                 return out, False
 
@@ -149,7 +196,7 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
                        survivors: tuple[int, ...], contract: Contract,
                        mode: str = "open_loop", cancel: Callable[[], bool] | None = None) -> dict:
     """Execute deployment through the target process with optional closed-loop shielding."""
-    shield = RuntimeShield(space, survivors, contract, mode=mode)
+    shield = RuntimeShield(space, survivors, contract, mode=mode, cancel=cancel)
     deployment = {
         "word": list(planned_word),
         "executed_word": [],
@@ -169,37 +216,29 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
 
     previous_counts = dict(target.counts)
     try:
+        _check_cancel(cancel)
         target.reset()
         for i, action in enumerate(planned_word):
-            if cancel and cancel():
-                raise InterfaceError("cancelled", "Deployment cancelled by user")
+            _check_cancel(cancel)
             remaining = planned_word[i + 1:]
-            out, should_continue = shield.step(target, action, remaining)
-            if out is not None:
-                deployment["executed_word"].append(action)
-                deployment["outputs"].append(out)
+            _, should_continue = shield.step(target, action, remaining)
             if not should_continue:
                 break
 
-        deployment["executed_word"] = list(shield.history_words)
-        deployment["outputs"] = list(shield.history_outputs)
-        deployment["complete"] = (len(deployment["executed_word"]) == len(planned_word)) and not shield.intervened
+        deployment["complete"] = (len(shield.history_words) == len(planned_word)) and not shield.intervened
         deployment["shield_status"] = shield.status if shield.intervened else "COMPLETED"
-        deployment["intervened"] = shield.intervened
-        deployment["hazard_averted"] = shield.hazard_averted
-        deployment["reasons"] = shield.reasons
-        deployment["survivor_history"] = shield.survivor_counts
-        deployment["recovery"] = {
-            "attempted": shield.recovery_attempted,
-            "succeeded": shield.recovery_succeeded,
-        }
 
     except InterfaceError as exc:
-        deployment["executed_word"] = list(shield.history_words)
-        deployment["outputs"] = getattr(exc, "trace", {}).get("outputs", list(shield.history_outputs))
         deployment["error"] = {"code": exc.code, "message": str(exc)}
         deployment["shield_status"] = "INTERFACE_ERROR"
     finally:
+        deployment["executed_word"] = list(shield.history_words)
+        deployment["outputs"] = list(shield.history_outputs)
+        deployment["intervened"] = shield.intervened
+        deployment["hazard_averted"] = shield.hazard_averted
+        deployment["reasons"] = list(shield.reasons)
+        deployment["survivor_history"] = list(shield.survivor_counts)
+        deployment["recovery"] = shield.recovery_record()
         deployment["target_steps"] = target.counts["step_attempts"] - previous_counts["step_attempts"]
         deployment["resets"] = target.counts["reset_attempts"] - previous_counts["reset_attempts"]
         deployment["target_calls"] = target.counts["target_calls"] - previous_counts["target_calls"]

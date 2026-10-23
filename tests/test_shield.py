@@ -111,3 +111,151 @@ def test_runtime_shield_rejects_unknown_execution_modes(mode):
     with pytest.raises(ValueError, match='mode'):
         RuntimeShield(space, (0,), space.contract, mode=mode)
 
+
+class _ScriptedTarget:
+    """Counted target boundary with deterministic responses or interface faults."""
+
+    def __init__(self, outputs):
+        self.outputs = iter(outputs)
+        self.actions = []
+        self.counts = dict(reset_attempts=0, step_attempts=0, reset_successes=0,
+                           step_successes=0, target_calls=0)
+
+    def reset(self):
+        self.counts['reset_attempts'] += 1
+        self.counts['reset_successes'] += 1
+        self.counts['target_calls'] += 1
+
+    def step(self, action):
+        self.actions.append(action)
+        self.counts['step_attempts'] += 1
+        self.counts['target_calls'] += 1
+        output = next(self.outputs)
+        if isinstance(output, Exception):
+            raise output
+        self.counts['step_successes'] += 1
+        return output
+
+
+def _recovery_space(horizon=2):
+    # Identity: action 0 is hazardous; action 1 reaches the goal; action 2 is neutral.
+    return CandidateSpace(Machine('fallback', (((0, 2), (0, 1), (0, 0)),)),
+                          Contract(horizon=horizon))
+
+
+def test_recovery_refuses_when_every_action_is_hazardous():
+    space = CandidateSpace(Machine('trap', (((0, 2), (0, 2), (0, 2)),)), Contract())
+    target = _ScriptedTarget([2])
+    result = execute_deployment(target, [0], space, (0,), space.contract, mode='recovery')
+    assert result['target_steps'] == 0
+    assert result['executed_word'] == []
+    assert result['shield_status'] == 'INTERVENED_HAZARD_AVERTED'
+    assert result['recovery']['requested'] is True
+    assert result['recovery']['attempted'] is False
+    assert result['recovery']['certified'] is False
+    assert result['recovery']['succeeded'] is False
+    assert result['recovery']['reason'] == 'no_safe_action'
+
+
+def test_recovery_refuses_to_repopulate_a_contradicted_belief():
+    space = _recovery_space()
+    target = _ScriptedTarget([3, 1])
+    result = execute_deployment(target, [1], space, (0,), space.contract, mode='recovery')
+    assert result['target_steps'] == 1
+    assert result['executed_word'] == [1]
+    assert result['survivor_history'] == [1, 0]
+    assert result['shield_status'] == 'INTERVENED_ANOMALY'
+    assert result['recovery']['reason'] == 'model_contradicted'
+    assert result['recovery']['attempted'] is False
+    assert result['recovery']['succeeded'] is False
+
+
+def test_recovery_executes_only_unanimously_safe_action_and_checks_response():
+    space = _recovery_space()
+    target = _ScriptedTarget([1])
+    result = execute_deployment(target, [0], space, (0,), space.contract, mode='recovery')
+    assert result['executed_word'] == [1]
+    assert result['outputs'] == [1]
+    assert result['survivor_history'] == [1, 1]
+    assert result['shield_status'] == 'RECOVERED_SAFE_FALLBACK'
+    assert result['complete'] is False
+    assert result['recovery']['requested'] is True
+    assert result['recovery']['attempted'] is True
+    assert result['recovery']['certified'] is True
+    assert result['recovery']['succeeded'] is True
+    assert result['recovery']['action'] == 1
+    assert result['recovery']['reason'] == 'certified_response'
+    assert 'conditional' in result['recovery']['scope'].lower()
+
+
+def test_recovery_response_contradiction_is_not_reported_as_success():
+    space = _recovery_space()
+    target = _ScriptedTarget([3])
+    result = execute_deployment(target, [0], space, (0,), space.contract, mode='recovery')
+    assert result['executed_word'] == [1]
+    assert result['survivor_history'] == [1, 0]
+    assert result['shield_status'] == 'INTERVENED_ANOMALY'
+    assert result['recovery']['attempted'] is True
+    assert result['recovery']['certified'] is True
+    assert result['recovery']['succeeded'] is False
+    assert result['recovery']['reason'] == 'response_contradiction'
+
+
+def test_recovery_respects_remaining_contract_horizon():
+    space = _recovery_space(horizon=1)
+    target = _ScriptedTarget([1, 1])
+    shield = RuntimeShield(space, (0,), space.contract, mode='recovery')
+    assert shield.step(target, 1, [])[1] is True
+    assert shield.recover(target) is None
+    assert target.counts['step_attempts'] == 1
+    assert shield.recovery_reason == 'horizon_exhausted'
+    assert shield.recovery_succeeded is False
+
+
+def test_recovery_requires_safe_consensus_instead_of_minimum_hazard_count():
+    space = _recovery_space()
+    # Every input is hazardous under one of the possible input permutations.
+    ids = tuple(a.id for a in space.adapters if a.output_map == (0, 1, 2, 3))
+    target = _ScriptedTarget([1])
+    result = execute_deployment(target, [0], space, ids, space.contract, mode='recovery')
+    assert result['target_steps'] == 0
+    assert result['recovery']['reason'] == 'no_safe_action'
+
+
+def test_recovery_interface_error_keeps_intervention_and_attempt_evidence():
+    from crosswire.interfaces import InterfaceError
+    space = _recovery_space()
+    target = _ScriptedTarget([InterfaceError('timeout')])
+    result = execute_deployment(target, [0], space, (0,), space.contract, mode='recovery')
+    assert result['shield_status'] == 'INTERFACE_ERROR'
+    assert result['intervened'] is True
+    assert result['target_steps'] == 1
+    assert result['executed_word'] == []
+    assert result['reasons']
+    assert result['recovery']['attempted'] is True
+    assert result['recovery']['certified'] is True
+    assert result['recovery']['succeeded'] is False
+    assert result['recovery']['reason'] == 'interface_error'
+
+
+@pytest.mark.parametrize('mode', ['open_loop', 'shielded', 'recovery'])
+def test_deployment_cancellation_raises_before_target_reset(mode):
+    from crosswire.study import Cancelled
+    space = _recovery_space()
+    target = _ScriptedTarget([1])
+    with pytest.raises(Cancelled):
+        execute_deployment(target, [1], space, (0,), space.contract, mode=mode,
+                           cancel=lambda: True)
+    assert target.counts['target_calls'] == 0
+
+
+def test_cancellation_after_observation_prevents_fallback_dispatch():
+    from crosswire.study import Cancelled
+    space = _recovery_space()
+    target = _ScriptedTarget([1, 1])
+    # First action is safe; the unsafe suffix would trigger a fallback.
+    with pytest.raises(Cancelled):
+        execute_deployment(target, [1, 0], space, (0,), space.contract, mode='recovery',
+                           cancel=lambda: target.counts['step_successes'] > 0)
+    assert target.actions == [1]
+

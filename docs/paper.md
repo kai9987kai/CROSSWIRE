@@ -93,6 +93,23 @@ where $d \in \{0, 1\}$ is pipeline delay and $y_{\text{init}} \in \Sigma_O^{\tex
 $$\alpha.\text{predict}(w)_1 = y_{\text{init}}, \quad \alpha.\text{predict}(w)_t = \pi_O(\lambda_{\text{ref}}(q_{t-2}, \pi_I(u_{t-1}))) \quad (t \ge 2)$$
 This expands the candidate space from $|\mathcal{A}_{\text{static}}| = 144$ to $|\mathcal{A}_{\text{temporal}}| = 144 + (144 \times 4) = 720$ candidate mappings, allowing CROSSWIRE to verify and synthesize provably correct latency-compensating controllers.
 
+### 2.8 Independent Public-Evidence Certificates & Conservative Fallback
+To eliminate circular reasoning and ensure proof-carrying assurance, CROSSWIRE implements an independent public-evidence verifier (`crosswire.certificates`). This module is architecturally decoupled from the search engine (`CandidateSpace`) and has no access to target processes or private audit ground truth.
+
+Given a public run record $(M_{\text{ref}}, \mathcal{C}, D, A, \text{decision})$, the independent verifier:
+1. Re-enumerates the hypothesis class from first principles ($\mathcal{A}_0$ for static bijections, $\mathcal{A}_1$ for latency-1 temporal adapters).
+2. Re-simulates all calibration traces $D$ and anchor groundings $A$ against every candidate adapter $\alpha$, independently computing the survivor set $\mathcal{V}(D, A)$.
+3. If an admitted plan or contingent policy tree $P$ is declared, verifies that for every candidate $\alpha \in \mathcal{V}(D, A)$, every reachable branch under $\alpha$ satisfies the contract $\mathcal{C}$ within horizon $H$ with zero modeled hazards.
+4. If refutation occurs ($\mathcal{V}(D, A) = \emptyset$), extracts a deletion-minimal contradiction core $D^* \subseteq D$ witnessing that no model in the declared class can explain the observations.
+5. Issues an immutable `evidence_certificate` cryptographically bound to the decision digest before any private auditing occurs.
+
+Furthermore, under Simplex runtime monitoring (`recovery` mode), fallback execution is governed by strict conservative preconditions. A recovery action $u_{\text{rec}}$ is admitted if and only if:
+- The live belief set $\mathcal{V}_t$ is non-empty and consistent with all observations up to step $t$.
+- The remaining horizon $H - t$ is strictly positive.
+- Under *every* surviving interpretation $\alpha \in \mathcal{V}_t$, the immediate semantic outcome of $u_{\text{rec}}$ is non-hazardous ($\forall \alpha \in \mathcal{V}_t, \alpha.\text{semantic}(u_{\text{rec}}) \neq h$).
+
+If the live belief is refuted ($\mathcal{V}_t = \emptyset$, indicating target drift or misspecification outside the hypothesis class), the shield refuses to speculate on uncertified fallback actions and immediately halts deployment (`INTERVENED_ANOMALY`). This prevents ungrounded fallback maneuvers from inadvertently triggering latent hazards.
+
 ---
 
 ## 3. Empirical Methodology & Experimental Protocol
@@ -111,10 +128,15 @@ To prevent data contamination, the learner's decision, candidate count, probe hi
 - `deployment_audit`: Did the executed prefix match the post-calibration state? (Unexecuted suffixes of aborted deployments are never simulated as if they occurred).
 
 ### 3.3 Target Mechanism Catalog
-The test suite consists of 16 families grouped into three scopes:
-- **In-Family (7):** `latch`, `handshake`, `symmetric`, `neutral`, `long_trace`, `rotary`, `interlock`.
+The test suite consists of 17 families grouped into three scopes:
+- **In-Family (8):** `latch`, `handshake`, `symmetric`, `neutral`, `long_trace`, `rotary`, `interlock`, `routing`.
 - **Out-of-Family Stress (8):** `extra_state`, `incompatible`, `alias`, `semantic_corruption`, `bypass`, `delay`, `repeat`, `drift`.
 - **Interface Error (1):** `malformed`.
+
+### 3.4 Condition-Stratified Analysis & Exact-Cell Pairing
+Scientific evaluations across algorithmic policies require strict control of confounding experimental factors. CROSSWIRE implements exact-cell condition stratification across all evaluations:
+1. **Stratification Boundaries:** Paired cluster contrasts strictly condition on execution mode (`open_loop`, `shielded`, `recovery`), hypothesis escalation setting (`--escalate`), evaluation split (`development`, `evaluation`), anchor grounding presence (`--anchors`), and contract horizon $H$. Contrasts never pool runs across differing experimental conditions.
+2. **Prefix-Only Audit Semantics:** If dynamic shielding halts or recovers a deployment, the private semantic auditor inspects exclusively the executed prefix $w_{1 \dots t}$; unexecuted suffix actions are never simulated, preventing phantom hazard attribution.
 
 ---
 

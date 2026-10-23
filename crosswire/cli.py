@@ -10,7 +10,7 @@ import sys
 
 from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, RunConfig, run, run_study
 from .fixtures import catalog
-from .receipts import pack, replay, validate
+from .receipts import check_envelope, pack, replay
 
 
 def _write(path, value):
@@ -40,7 +40,7 @@ def main(argv=None):
     study = commands.add_parser('study')
     study.add_argument('--config', type=Path, required=True)
     study.add_argument('--out', type=Path, required=True)
-    for name in ('verify', 'replay'):
+    for name in ('verify', 'replay', 'check'):
         commands.add_parser(name).add_argument('receipt', type=Path)
     server = commands.add_parser('serve')
     server.add_argument('--port', type=int, default=8781)
@@ -74,9 +74,18 @@ def main(argv=None):
                               'summary': result['summary'], 'paired': result['paired']}))
         else:
             receipt = json.loads(args.receipt.read_text(encoding='utf-8'))
-            checked = replay(receipt)
-            if args.command == 'verify':
-                validate(receipt)
+            if args.command == 'check':
+                from .certificates import check_result
+                payload = check_envelope(receipt)
+                if payload['schema'] == 'crosswire-study-v1':
+                    checks = [check_result(row) for row in payload['rows']]
+                    checked = {'valid': bool(checks) and all(c.get('valid') is True for c in checks),
+                               'checked_runs': len(checks), 'checks': checks,
+                               'scope': 'Public model evidence only; does not authenticate private audits or target execution'}
+                else:
+                    checked = check_result(payload)
+            else:
+                checked = replay(receipt)
             print(json.dumps(checked))
             return 0 if checked['valid'] else 1
         return 0

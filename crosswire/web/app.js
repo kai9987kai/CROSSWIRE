@@ -9,33 +9,80 @@ function readable(value){if(value===null||value===undefined)return 'Not availabl
 function number(value){return typeof value==='number'&&Number.isFinite(value)?Number.isInteger(value)?String(value):value.toLocaleString(undefined,{maximumFractionDigits:4}):'—';}
 function word(value){return Array.isArray(value)?value.length?value.join(' · '):'∅':'—';}
 function notice(message,success=false){$('notice').textContent=message;$('notice').className=`notice${success?' success':''}`;$('notice').hidden=false;}
-async function request(path,options={}){let response;try{response=await fetch(path,{...options,headers:{'Content-Type':'application/json',...options.headers}});}catch{throw new Error('The local HTTP worker is unavailable. Start the CROSSWIRE server and open its HTTP address.');}let data;try{data=await response.json();}catch{throw new Error(`The server returned a non-JSON response (${response.status}). Check that this is the CROSSWIRE HTTP server.`);}if(!response.ok)throw new Error(typeof data.error==='string'?data.error:typeof data.message==='string'?data.message:`Request failed (${response.status}): ${readable(data.error||data)}`);if(!data||typeof data!=='object')throw new Error('The server response is malformed.');return data;}
+async function request(path,options={}){let response;try{response=await fetch(path,{...options,headers:{'Content-Type':'application/json',...options.headers}});}catch{throw new Error('The local HTTP worker is unavailable. Start the CROSSWIRE server and open its HTTP address.');}let data;try{data=await response.json();}catch{throw new Error(`The server returned a non-JSON response (${response.status}). Check that this is the CROSSWIRE HTTP server.`);}if(!response.ok){const error=new Error(typeof data.error==='string'?data.error:typeof data.message==='string'?data.message:`Request failed (${response.status}): ${readable(data.error||data)}`);error.status=response.status;throw error;}if(!data||typeof data!=='object')throw new Error('The server response is malformed.');return data;}
 function lock(){const busy=state.busy||!!state.active;$('run-button').disabled=busy||!state.catalog;$('study-button').disabled=busy||!state.catalog;$('import-button').disabled=busy;$('replay-button').disabled=busy||!state.completed;$('export-button').disabled=!state.completed;}
 function optionList(id,items,fallback){const select=$(id);select.replaceChildren();for(const entry of items){const value=typeof entry==='string'?entry:entry.id||entry.name||entry.value;if(!value)continue;const option=element('option',typeof entry==='object'?entry.label||labels[value]||value:labels[value]||value);option.value=value;select.append(option);}if(fallback&&Array.from(select.options).some(o=>o.value===fallback))select.value=fallback;}
 function familyDescription(){const current=state.catalog?.families.find(entry=>entry.id===$('family').value);$('family-description').textContent=current?.description||'';$('family-scope').textContent=(current?.scope||'Scope unspecified').replaceAll('_',' ');}
-function config(){const data={};for(const name of ['family','implementation','policy','admission','execution_mode'])if($(name))data[name]=$(name).value;for(const name of ['seed','budget','horizon'])if($(name))data[name]=Number($(name).value);data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;data.split=state.catalog?.defaults?.split||'development';return data;}
+function config(){const data={};for(const name of ['family','implementation','policy','admission','execution_mode','split'])if($(name))data[name]=$(name).value;for(const name of ['seed','budget','horizon'])if($(name))data[name]=Number($(name).value);data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;return data;}
 function studyConfig(){
     const selected=config(),adaptive=selected.admission==='adaptive';
     return {families:[selected.family],seeds:[selected.seed,(selected.seed+1)%4294967296],
         budgets:[...new Set([Math.floor(selected.budget/2),selected.budget])],
-        policies:adaptive?[selected.policy]:['task','fixed'],admissions:adaptive?['robust','adaptive']:[selected.admission],
+        policies:adaptive?[selected.policy]:selected.policy==='fixed'?['task','fixed']:[selected.policy,'fixed'],admissions:adaptive?['robust','adaptive']:[selected.admission],
         implementations:[selected.implementation],anchors:selected.anchors,split:selected.split,
         horizon:selected.horizon,temporal:selected.temporal,escalate:selected.escalate,execution_mode:selected.execution_mode};
 }
+function selectedPolicy(){return $('policy').value;}
 function syncControls(){
     const adaptive=$('admission').value==='adaptive';
     if(adaptive&&$('execution_mode').value==='open_loop')$('execution_mode').value='shielded';
     if($('escalate')&&$('escalate').checked){$('temporal').checked=false;$('temporal').disabled=true;}
     else if($('temporal')){$('temporal').disabled=false;}
-    $('execution_mode').disabled=adaptive;
+    for(const option of $('execution_mode').options)option.disabled=adaptive&&option.value==='open_loop';
+    const incompatible=$('policy').value==='aalpy'&&(adaptive||$('temporal').checked||$('escalate').checked);
+    $('policy').setCustomValidity(incompatible?'AALpy requires a static model without automated escalation and a non-adaptive admission rule.':'');
     $('admission-help').textContent=adaptive?'Adaptive policies choose each action from the observed branch. Shielded deployment is required.':'A robust sequence must satisfy the contract for every surviving mapping.';
     if(!state.catalog)return;
     const spec=studyConfig(),runs=spec.seeds.length*spec.budgets.length*spec.policies.length*spec.admissions.length;
-    $('study-description').textContent=`${runs} runs · ${spec.families[0]} · seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':'Task vs fixed probes, using the selected admission rule.'} Horizon, target engine, anchors, temporal adapters and deployment mode follow the controls.`;
+    $('study-description').textContent=`${runs} runs · ${spec.families[0]} · seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':`${labels[selectedPolicy()]||selectedPolicy()} vs ${$('policy').value==='fixed'?'task':'fixed'} probes, using the selected admission rule.`} Horizon ${spec.horizon} · ${spec.split} · ${labels[spec.execution_mode]||spec.execution_mode}. Seeds and target engines are not independent semantic parents.`;
+    if($('study-protocol'))$('study-protocol').textContent=JSON.stringify(spec,null,2);
 }
-async function awaitJob(id,label){const until=Date.now()+15*60*1000;while(Date.now()<until){const job=await request(`/api/runs/${encodeURIComponent(id)}`);if(typeof job.status!=='string')throw new Error('The worker returned a malformed job status.');if(['COMPLETE','FAILED','CANCELLED'].includes(job.status)){if(job.status!=='COMPLETE')throw new Error(`${label} ${job.status.toLowerCase()}${job.error?`: ${readable(job.error)}`:''}.`);return job;}const p=job.progress||{};notice(`${label}: ${readable(p.message||job.status)}${Number.isFinite(p.current)&&Number.isFinite(p.total)&&p.total>1?` (${p.current}/${p.total})`:''}`,true);await new Promise(r=>setTimeout(r,250));}throw new Error(`${label} did not finish in time.`);}
-async function startJob(path,body){if(state.active||state.busy)return;state.busy=true;lock();try{const job=await request(path,{method:'POST',body:JSON.stringify(body)});if(typeof job.id!=='string')throw new Error('The worker did not return a valid job ID.');state.active={id:job.id};$('notice').hidden=true;$('job-panel').hidden=false;$('job-message').textContent='Waiting for worker';$('job-status').textContent=job.status||'QUEUED';$('job-progress').removeAttribute('value');$('cancel-button').disabled=false;poll(job.id);}catch(error){notice(error.message);}finally{state.busy=false;lock();}}
-async function poll(id){if(state.active?.id!==id)return;try{const job=await request(`/api/runs/${encodeURIComponent(id)}`);if(typeof job.status!=='string')throw new Error('The worker returned a malformed job status.');$('job-status').textContent=job.status;const p=job.progress||{};$('job-message').textContent=p.message||'Running experiment';if(Number.isFinite(p.total)&&p.total>0&&Number.isFinite(p.current)){$('job-progress').max=p.total;$('job-progress').value=Math.max(0,Math.min(p.current,p.total));}else $('job-progress').removeAttribute('value');if(job.status==='COMPLETE'){if(!job.result||!['crosswire-result-v1','crosswire-study-v1'].includes(job.result.schema))throw new Error('The completed job has no supported result.');state.completed={id,result:job.result};state.active=null;$('job-panel').hidden=true;render();lock();return;}if(['FAILED','CANCELLED'].includes(job.status)){state.active=null;$('job-panel').hidden=true;notice(job.status==='CANCELLED'?'Job cancelled. The last completed result is preserved.':`Job failed: ${readable(job.error||'No details supplied')}. The last completed result is preserved.`);lock();return;}if(!['RUNNING','QUEUED'].includes(job.status))throw new Error(`Unsupported job status: ${job.status}`);setTimeout(()=>poll(id),450);}catch(error){state.active=null;$('job-panel').hidden=true;notice(error.message+' The last completed result is preserved.');lock();}}
+async function startJob(path,body,kind='run'){
+    if(state.active||state.busy)return;
+    state.busy=true;lock();
+    try{
+        const job=await request(path,{method:'POST',body:JSON.stringify(body)});
+        if(typeof job.id!=='string')throw new Error('The worker did not return a valid job ID.');
+        state.active={id:job.id,kind};$('notice').hidden=true;$('job-panel').hidden=false;
+        $('job-message').textContent=`${kind==='replay'?'Scientific replay':kind==='import'?'Import and scientific replay':'Experiment'} queued`;
+        $('job-status').textContent=job.status||'QUEUED';$('job-progress').removeAttribute('value');$('cancel-button').disabled=false;
+        poll(job.id);
+    }catch(error){notice(error.message);}finally{state.busy=false;lock();}
+}
+async function poll(id){
+    if(state.active?.id!==id)return;
+    try{
+        const job=await request(`/api/runs/${encodeURIComponent(id)}`);
+        if(typeof job.status!=='string')throw new Error('The worker returned a malformed job status.');
+        $('job-status').textContent=job.status;
+        const p=job.progress||{};$('job-message').textContent=p.message||'Running experiment';
+        if(Number.isFinite(p.total)&&p.total>0&&Number.isFinite(p.current)){$('job-progress').max=p.total;$('job-progress').value=Math.max(0,Math.min(p.current,p.total));}
+        else $('job-progress').removeAttribute('value');
+        if(job.status==='COMPLETE'){
+            const kind=state.active.kind;
+            if(kind==='replay'){
+                const replay=job.result||{};
+                notice(`${replay.valid===true?'Replay verified':'Replay verification failed'}: ${readable(replay.message)}${replay.scientific_hash?` · ${replay.scientific_hash}`:''}`,replay.valid===true);
+            }else{
+                if(!job.result||!['crosswire-result-v1','crosswire-study-v1'].includes(job.result.schema))throw new Error('The completed job has no supported result.');
+                state.completed={id,result:job.result};render();
+                if(kind==='import')notice('Receipt loaded after its exact scientific replay matched.',true);
+            }
+            state.active=null;$('job-panel').hidden=true;lock();return;
+        }
+        if(['FAILED','CANCELLED'].includes(job.status)){
+            state.active=null;$('job-panel').hidden=true;
+            notice(job.status==='CANCELLED'?'Job cancelled. The last completed result is preserved.':`Job failed: ${readable(job.error||'No details supplied')}. The last completed result is preserved.`);
+            lock();return;
+        }
+        if(!['RUNNING','QUEUED'].includes(job.status))throw new Error(`Unsupported job status: ${job.status}`);
+        setTimeout(()=>poll(id),450);
+    }catch(error){
+        if(error.status===404){state.active=null;$('job-panel').hidden=true;notice('The worker no longer has this job. The last completed result is preserved.');lock();return;}
+        notice(`${error.message} Tracking job ${id}; retrying. The last completed result is preserved.`);
+        setTimeout(()=>poll(id),2000);
+    }
+}
 function panel(title,subtitle){const section=element('section',null,'panel section-panel');const header=element('div',null,'section-heading');header.append(element('h3',title));if(subtitle)header.append(element('span',subtitle));section.append(header);return section;}
 function keyValues(values){const dl=element('dl',null,'kv');for(const [key,value] of Object.entries(values)){dl.append(element('dt',key.replaceAll('_',' ')),element('dd',readable(value)));}return dl;}
 function rawDetails(title,value){const details=element('details',null,'fineprint');details.append(element('summary',title),element('pre',JSON.stringify(value,null,2),'raw'));return details;}
@@ -72,11 +119,6 @@ function renderPolicy(decision,deployment){
     }
     const tree=element('ul',null,'policy-tree');tree.setAttribute('aria-label','Policy actions and raw observation branches');tree.append(visit(decision.policy,0,true));section.append(tree);
     if(truncated)section.append(element('p','Showing up to 200 policy nodes. Export contains the full tree.','fineprint'));
-    const certificate=decision.certificate||{};
-    section.append(element('h4',certificate.valid===true?'Certificate checked':'Certificate not verified','subheading'));
-    section.append(element('p','The certificate covers the declared survivor set and finite horizon. It does not certify unmodeled target behavior.','fineprint'));
-    section.append(keyValues(Object.fromEntries(Object.entries(certificate).filter(([,value])=>value===null||typeof value!=='object'))));
-    section.append(rawDetails('Full certificate and search bounds',{certificate:decision.certificate,search:decision.search}));
     return section;
 }
 function renderDeployment(deployment){
@@ -88,6 +130,13 @@ function renderDeployment(deployment){
     section.append(keyValues({complete:deployment.complete,mode:labels[deployment.mode]||deployment.mode,shield_status:deployment.shield_status,intervened:deployment.intervened,deployment_calls:deployment.target_calls}));
     for(const reason of deployment.reasons||[])section.append(element('p',reason,'fineprint'));
     if(deployment.error)section.append(rawDetails('Deployment error',deployment.error));
+    return section;
+}
+function renderCertificate(cert,search){
+    const c=cert||{},section=panel('Public model evidence',c.valid===true?'CERTIFICATE CHECKED':'CERTIFICATE UNVERIFIED');
+    section.append(element('p',c.scope||'Public model evidence only; does not authenticate private audits or target execution.','fineprint'));
+    section.append(keyValues(Object.fromEntries(Object.entries(c).filter(([k,v])=>v===null||typeof v!=='object'))));
+    section.append(rawDetails('Full certificate and search bounds',{certificate:c,search}));
     return section;
 }
 function renderRun(result,container){
@@ -107,6 +156,7 @@ function renderRun(result,container){
     container.append(metricCards([['Surviving mappings',ambiguity.map_count],['Observation classes',ambiguity.observational_classes],['Contract classes',ambiguity.contract_classes],['Acquisition calls',metrics.target_calls],['Deployment calls',metrics.deployment_calls??dep.target_calls],['Total target calls',metrics.total_calls??(Number.isFinite(metrics.target_calls)&&Number.isFinite(dep.target_calls)?metrics.target_calls+dep.target_calls:null)],['Hazardous calibration probes',audit.calibration_hazardous_probes],['Deployment hazard',audit.hazard],['Deployment mode',labels[result.configuration?.execution_mode]||result.configuration?.execution_mode]]));
     if(d.policy)container.append(renderPolicy(d,dep));
     if(d.admitted||dep.executed_word?.length)container.append(renderDeployment(dep));
+    container.append(renderCertificate(result.evidence_certificate||d.certificate,d.search));
     const top=element('div',null,'two-panels'),reference=panel('Reference model','INPUT / OUTPUT');
     reference.append(drawGraph(result.reference),element('p',`Goal symbol ${readable(result.contract?.goal)} · Hazard symbol ${readable(result.contract?.hazard)} · Horizon ${readable(result.contract?.horizon)}. Amber ring marks the initial state.`,'fineprint'));
     const candidates=Array.isArray(result.candidates)?result.candidates:[],mapping=panel('Candidate mappings',`${candidates.length} RETAINED`),temporal=result.configuration?.temporal||candidates.some(c=>c.delay);
@@ -144,12 +194,24 @@ function renderStudy(result,container){
 }
 function render(){const result=state.completed.result;$('empty-state').hidden=true;$('result-view').hidden=false;$('result-kind').textContent=result.schema==='crosswire-study-v1'?'PAIRED STUDY RECEIPT':'EXPERIMENT RECEIPT';$('result-meta').textContent=result.schema==='crosswire-study-v1'?`Source ${result.source_hash||'unavailable'}`:`${result.configuration?.family||'Unknown family'} / seed ${result.configuration?.seed??'—'} / ${result.configuration?.implementation||'—'}`;const content=$('result-content');content.replaceChildren();if(result.schema==='crosswire-study-v1')renderStudy(result,content);else renderRun(result,content);}
 $('family').addEventListener('change',familyDescription);
+$('run-form').addEventListener('input',syncControls);
+$('run-form').addEventListener('change',syncControls);
 $('run-form').addEventListener('submit',event=>{event.preventDefault();if($('run-form').reportValidity())startJob('/api/runs',config());});
-$('study-button').addEventListener('click',()=>{const available=new Set(state.catalog.families.map(f=>f.id));startJob('/api/studies',{families:['latch','incompatible'].filter(f=>available.has(f)),seeds:[17,23],budgets:[8,16],policies:['task','fixed'],admissions:['robust'],implementations:[$('implementation').value],anchors:$('anchors').checked});});
+$('study-button').addEventListener('click',()=>{syncControls();if($('run-form').reportValidity())startJob('/api/studies',studyConfig(),'study');});
 $('cancel-button').addEventListener('click',async()=>{if(!state.active)return;const id=state.active.id;$('cancel-button').disabled=true;try{await request(`/api/runs/${encodeURIComponent(id)}/cancel`,{method:'POST',body:'{}'});if(state.active?.id===id)$('job-message').textContent='Cancellation requested';}catch(error){if(state.active?.id===id){notice(error.message);$('cancel-button').disabled=false;}else console.warn(`Cancellation request for previous job ${id} failed: ${error.message}`);}});
-$('export-button').addEventListener('click',async()=>{if(!state.completed)return;try{const receipt=await request(`/api/runs/${encodeURIComponent(state.completed.id)}/export`),blob=new Blob([JSON.stringify(receipt,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=element('a');a.href=url;a.download=`crosswire-${state.completed.id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){notice(error.message);}});
-$('replay-button').addEventListener('click',async()=>{if(!state.completed||state.busy||state.active)return;state.busy=true;lock();notice('Replaying the scientific result with the current source.');try{const queued=await request(`/api/runs/${encodeURIComponent(state.completed.id)}/replay`,{method:'POST',body:'{}'});if(typeof queued.id!=='string')throw new Error('Replay returned no valid job ID.');const replay=(await awaitJob(queued.id,'Replay')).result||{};notice(`${replay.valid===true?'Replay verified':replay.valid===false?'Replay verification failed':'Replay status unavailable'}: ${readable(replay.message)}${replay.scientific_hash?` · ${replay.scientific_hash}`:''}`,replay.valid===true);}catch(error){notice(error.message);}finally{state.busy=false;lock();}});
+$('export-button').addEventListener('click',async()=>{if(!state.completed)return;try{const response=await fetch(`/api/runs/${encodeURIComponent(state.completed.id)}/export`);if(!response.ok)throw new Error(`Export failed (${response.status})`);const text=await response.text(),blob=new Blob([text],{type:'application/json'}),url=URL.createObjectURL(blob),a=element('a');a.href=url;a.download=`crosswire-${state.completed.id}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){notice(error.message);}});
+$('replay-button').addEventListener('click',()=>{if(state.completed)startJob(`/api/runs/${encodeURIComponent(state.completed.id)}/replay`,{},'replay');});
 $('import-button').addEventListener('click',()=>$('receipt-file').click());
-$('receipt-file').addEventListener('change',async event=>{const file=event.target.files[0];event.target.value='';if(!file)return;if(file.size>20*1024*1024){notice('Receipt exceeds the 20 MiB browser import limit.');return;}state.busy=true;lock();try{let receipt;try{receipt=JSON.parse(await file.text());}catch{throw new Error('This file is not valid JSON.');}const imported=await request('/api/import',{method:'POST',body:JSON.stringify({receipt})});if(typeof imported.id!=='string')throw new Error('Import returned no valid job ID.');const job=await awaitJob(imported.id,'Receipt replay');if(job.status!=='COMPLETE'||!['crosswire-result-v1','crosswire-study-v1'].includes(job.result?.schema))throw new Error('Imported receipt did not produce a complete supported result.');state.completed={id:imported.id,result:job.result};render();notice('Receipt validated by the worker and loaded.',true);}catch(error){notice(`Import failed: ${error.message} The last completed result is preserved.`);}finally{state.busy=false;lock();}});
-async function initialize(){if(location.protocol==='file:'){notice('HTTP worker unavailable: this page was opened directly from a file. Start CROSSWIRE and open the local HTTP address.');$('connection').textContent='HTTP server required';return;}try{const catalog=await request('/api/catalog');if(!Array.isArray(catalog.families)||!Array.isArray(catalog.policies)||!Array.isArray(catalog.admissions))throw new Error('The server catalog is malformed or unsupported.');state.catalog=catalog;const defaults=catalog.defaults||{};optionList('family',catalog.families,defaults.family||'latch');optionList('policy',catalog.policies,defaults.policy||'task');optionList('admission',catalog.admissions,defaults.admission||'robust');if(catalog.execution_modes)optionList('execution_mode',catalog.execution_modes,defaults.execution_mode||'open_loop');for(const name of ['seed','budget','horizon','implementation'])if(defaults[name]!==undefined&&$(name))$(name).value=defaults[name];if($('anchors'))$('anchors').checked=defaults.anchors===true;if($('temporal'))$('temporal').checked=defaults.temporal===true;familyDescription();$('connection').textContent=`Local worker · ${catalog.version||'connected'}`;$('connection-dot').classList.add('online');lock();}catch(error){notice(error.message);$('connection').textContent='Worker unavailable';}}
+$('receipt-file').addEventListener('change',async event=>{
+    const file=event.target.files[0];event.target.value='';if(!file||state.active||state.busy)return;
+    if(file.size>20*1024*1024){notice('Receipt exceeds the 20 MiB browser import limit.');return;}
+    state.busy=true;lock();
+    try{
+        const text=await file.text();
+        try{JSON.parse(text);}catch{throw new Error('This file is not valid JSON.');}
+        state.busy=false;await startJob('/api/import',{receipt_text:text},'import');
+    }catch(error){notice(`Import failed: ${error.message} The last completed result is preserved.`);}
+    finally{state.busy=false;lock();}
+});
+async function initialize(){if(location.protocol==='file:'){notice('HTTP worker unavailable: this page was opened directly from a file. Start CROSSWIRE and open the local HTTP address.');$('connection').textContent='HTTP server required';return;}try{const catalog=await request('/api/catalog');if(!Array.isArray(catalog.families)||!Array.isArray(catalog.policies)||!Array.isArray(catalog.admissions))throw new Error('The server catalog is malformed or unsupported.');state.catalog=catalog;const defaults=catalog.defaults||{};optionList('family',catalog.families,defaults.family||'latch');optionList('policy',catalog.policies,defaults.policy||'task');optionList('admission',catalog.admissions,defaults.admission||'robust');if(catalog.execution_modes)optionList('execution_mode',catalog.execution_modes,defaults.execution_mode||'open_loop');for(const name of ['seed','budget','horizon','implementation','split'])if(defaults[name]!==undefined&&$(name))$(name).value=defaults[name];if($('anchors'))$('anchors').checked=defaults.anchors===true;if($('temporal'))$('temporal').checked=defaults.temporal===true;if($('escalate'))$('escalate').checked=defaults.escalate===true;familyDescription();syncControls();$('connection').textContent=`Local worker · ${catalog.version||'connected'}`;$('connection-dot').classList.add('online');lock();}catch(error){notice(error.message);$('connection').textContent='Worker unavailable';}}
 initialize();

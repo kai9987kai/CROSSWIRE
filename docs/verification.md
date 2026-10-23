@@ -3,7 +3,7 @@
 **Date:** 23 October 2026  
 **Commit:** `codex/crosswire-design`  
 **Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
-**Overall Status:** PASS (116/116 tests passing, clean wheel install verified, browser e2e verified, 757 total empirical runs verified)
+**Overall Status:** PASS (158/158 tests passing, clean wheel install verified, browser e2e verified, 757 total empirical runs verified)
 
 ---
 
@@ -12,28 +12,29 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================= 116 passed in 117.88s =============================
+============================= 158 passed in 145.07s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
 
 | Test File | Tests Passed | Subsystem & Invariant Checked |
 |---|---:|---|
-| `tests/test_core.py` | 17 | 144 bijective adapter permutations; prefix hazard safety; true-map retention; equivalence classes; empty-family non-vacuous handling; shortest lexicographic product counterexample BFS. |
-| `tests/test_fixtures.py` | 21 | Procedural vs. table target implementations; 17 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation; routing control. |
-| `tests/test_interfaces.py` | 13 | Subprocess lifecycle; exact-PID cleanup; line-delimited JSON protocol; malformed message recovery; timeout enforcement; attempted vs. successful call accounting. |
-| `tests/test_baselines.py` | 3 | Pinned AALpy 1.6.2 $L^*$ integration; budget-limited SUL and equivalence oracle; comparison transition step counting; global RNG isolation. |
-| `tests/test_receipts.py` | 7 | Canonical JSON serialization; SHA-256 payload and scientific hashing; envelope validation; tampering rejection; exact scientific replay. |
-| `tests/test_study.py` | 13 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; stratified paired comparisons within budget strata; paired admission contrasts; AALpy configuration guards. |
-| `tests/test_server.py` | 5 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection. |
-| `tests/test_cli.py` | 4 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`. |
-| `tests/test_shield.py` | 7 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch (any surviving interpretation); causal counterfactual hazard averted auditing; execution mode validation. |
-| `tests/test_temporal.py` | 7 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
-| `tests/test_cegp.py` | 3 | Decision-focused counterexample-guided active probing (CEGP); $O(W \cdot N)$ marginal frequency pair disagreement counting; dynamic synthesis of distinguishing witnesses beyond fixed probe pool. |
 | `tests/test_adaptive.py` | 5 | Observation-dependent contingent policy synthesis (AND/OR tree search); independent policy certificate verification (branch completeness, horizon bounds, zero hazard); certificate tampering rejection; search cap handling; full execution trace replay and audit. |
+| `tests/test_audit.py` | 6 | Executed prefix reconstruction; counterfactual trajectory analysis without side-effects; unexecuted suffixes withheld from hazard attribution; causal hazard averted classification. |
+| `tests/test_baselines.py` | 3 | Pinned AALpy 1.6.2 $L^*$ integration; budget-limited SUL and equivalence oracle; comparison transition step counting; global RNG isolation. |
+| `tests/test_cegp.py` | 3 | Decision-focused counterexample-guided active probing (CEGP); $O(W \cdot N)$ marginal frequency pair disagreement counting; dynamic synthesis of distinguishing witnesses beyond fixed probe pool. |
+| `tests/test_certificates.py` | 11 | Independent finite public-evidence certificate generation and validation; clean re-enumeration of static/latency-1 adapter spaces; verification of surviving belief sets from public transcripts; deletion-minimal contradiction core extraction; verification of admitted plans and policy trees; unmodeled target scope boundaries. |
+| `tests/test_cli.py` | 3 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`, and `check` with JSON evidence envelope verification. |
+| `tests/test_core.py` | 14 | 144 bijective adapter permutations; prefix hazard safety; true-map retention; equivalence classes; empty-family non-vacuous handling; shortest lexicographic product counterexample BFS. |
 | `tests/test_escalation.py` | 7 | Information-theoretic Shannon entropy probe selection; deterministic tie-breaking and empty belief handling; autonomous model-class escalation ($\mathcal{H}_0 \to \mathcal{H}_1$) on delayed interfaces; structural contradiction certificate emission when nested classes are refuted; in-family non-spurious escalation; Simplex safe fallback recovery execution; configuration validation guards. |
-| `tests/test_web.py` | 4 | Local workbench server endpoints, static file serving, and receipt export. |
-| **Total** | **116** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, and Simplex recovery.** |
+| `tests/test_fixtures.py` | 37 | Procedural vs. table target implementations; 17 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation; routing control. |
+| `tests/test_interfaces.py` | 7 | Subprocess lifecycle; exact-PID cleanup; line-delimited JSON protocol; malformed message recovery; timeout enforcement; attempted vs. successful call accounting. |
+| `tests/test_receipts.py` | 3 | Canonical JSON serialization; SHA-256 payload and scientific hashing; envelope validation; tampering rejection; exact scientific replay. |
+| `tests/test_server.py` | 6 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection; raw text receipt payload import. |
+| `tests/test_shield.py` | 20 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch (any surviving interpretation); conservative Simplex safe fallback recovery requirements (consistent non-empty belief, remaining horizon, zero modeled hazards across all survivors); immediate abstention on contradiction. |
+| `tests/test_study.py` | 23 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; exact-cell condition-stratified paired comparisons (matching execution mode, escalation, split, anchors, and horizon); paired admission contrasts; AALpy configuration guards. |
+| `tests/test_temporal.py` | 10 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
+| **Total** | **158** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, evidence integrity, and Simplex recovery.** |
 
 ---
 

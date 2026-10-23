@@ -52,8 +52,9 @@ class Jobs:
 
     def result(self, identifier):
         value = self.snapshot(identifier)
-        if value['status'] != 'COMPLETE':
-            raise RuntimeError('Only complete jobs have exportable evidence')
+        if (value['status'] != 'COMPLETE'
+                or value.get('result', {}).get('schema') not in ('crosswire-result-v1', 'crosswire-study-v1')):
+            raise RuntimeError('Only completed experiment or study jobs have exportable evidence')
         return value['result']
 
     def cancel(self, identifier):
@@ -199,6 +200,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {'error': str(exc)})
         except RuntimeError as exc:
             self._json(409, {'error': str(exc)})
+        except (ValueError, TypeError) as exc:
+            self._json(409, {'error': str(exc)})
 
     def do_POST(self):
         if not self._same_origin():
@@ -216,9 +219,15 @@ class Handler(BaseHTTPRequestHandler):
                 study_configs(data)
                 self._json(202, self.server.manager.submit('study', data))
             elif path == '/api/import':
-                if not isinstance(data, dict) or set(data) != {'receipt'}:
+                if not isinstance(data, dict):
                     raise ValueError('Expected a receipt envelope')
-                self._json(202, self.server.manager.import_result(data['receipt']))
+                if 'receipt_text' in data:
+                    receipt = json.loads(data['receipt_text'])
+                elif 'receipt' in data:
+                    receipt = data['receipt']
+                else:
+                    raise ValueError('Expected a receipt envelope')
+                self._json(202, self.server.manager.import_result(receipt))
             elif path.startswith('/api/runs/'):
                 parts = path.strip('/').split('/')
                 if len(parts) == 4 and parts[3] == 'cancel':
