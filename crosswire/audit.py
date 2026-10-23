@@ -26,6 +26,7 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
                 counterexamples.append({"adapter_id": adapter.id, "word": check["counterexample"]})
     actual = None
     deployment_audit = None
+    counterfactual_hazard = False
     if decision["admitted"]:
         if deployment['complete']:
             actual = evaluate_deployment(private, probes, decision["word"], work=work)
@@ -33,7 +34,8 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
             if not reproduced:
                 actual = {**actual, 'goal_success': False, 'contract_satisfied': False}
             deployment_audit = {'completed': True, 'executed_prefix_length': len(decision['word']),
-                                'reconstruction_matches_observed': reproduced, 'prefix_hazard': actual['hazard']}
+                                'reconstruction_matches_observed': reproduced, 'prefix_hazard': actual['hazard'],
+                                'counterfactual_hazard': actual['hazard']}
         else:
             # Only the successfully executed prefix happened. Fixture faults
             # fail before the engine steps, so the failed call emitted no event.
@@ -47,9 +49,12 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
                       'goal_success': False, 'contract_satisfied': False,
                       # Observed prefix hazard is evidence; absence is not proof of safety.
                       'hazard': True if prefix_hazard else None}
+            # Counterfactual audit: would the full unshielded plan have triggered a hazard?
+            counterfactual = evaluate_deployment(private, probes, decision["word"], work=work)
+            counterfactual_hazard = bool(counterfactual.get('hazard', False))
             deployment_audit = {'completed': False, 'executed_prefix_length': len(executed),
                                 'reconstruction_matches_observed': prefix['outputs'] == deployment['outputs'],
-                                'prefix_hazard': prefix_hazard,
+                                'prefix_hazard': prefix_hazard, 'counterfactual_hazard': counterfactual_hazard,
                                 'error_code': (deployment.get('error') or {}).get('code')}
     oracle = None
     oracle_candidates = 0
@@ -77,10 +82,11 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
         scope = "No finite stationary target model available; equivalence is unresolved."
     else:
         scope = "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+    causal_hazard_averted = bool(deployment.get("intervened") and counterfactual_hazard and (actual.get("hazard") is not True))
     return {
         "goal_success": actual["goal_success"] if actual else None,
         "hazard": actual["hazard"] if actual else None,
-        "hazard_averted": bool(deployment.get("hazard_averted", False)) if actual else None,
+        "hazard_averted": causal_hazard_averted if actual else None,
         "shield_intervened": bool(deployment.get("intervened", False)) if actual else None,
         "contract_satisfied": actual["contract_satisfied"] if actual else None,
         "outputs": actual["outputs"] if actual else [],

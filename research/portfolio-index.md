@@ -45,6 +45,21 @@ The narrower opportunity is to study **which connections are justified by the av
 
 The reviews deliberately retain negative and incomplete evidence. Examples include Tessera's unsupported ratification benefit, Expanse's unchanged answer score, Ghost's failed proxy replication, Fly's unestablished 22-module advantage and Poseidon's rejected closed-loop adapter. These make meaningful controls and falsification criteria essential from the first build.
 
+## Cross-Portfolio Survey of Additional kai9987kai Repositories
+
+On 23 October 2026, an additional survey of all 100 public repositories under GitHub user `kai9987kai` was conducted via the GitHub API, identifying 95 repositories not covered in the original 26-repository review. The six most relevant to CROSSWIRE's themes of interface interoperability, active verification, and safety enforcement are:
+
+| Repository | Scope & Description | Inspected Mechanism & Architectural Lesson for CROSSWIRE |
+|---|---|---|
+| [Bot-research-lab](https://github.com/kai9987kai/Bot-research-lab) | Browser-based neural bot simulation with neuroevolution, novelty search, and MAP-Elites behavioral diversity. | **Behavioral Diversity in Exploration:** Rather than selecting probes purely by greedy information gain, maintaining diversity over behavioral signatures prevents active learning from getting trapped in redundant local cycles. |
+| [Habitat-Genome-Compiler](https://github.com/kai9987kai/Habitat-Genome-Compiler) | Local-first mission compiler for bio-design programs, converting mission specs into ranked candidate sets and auditable run archives. | **Candidate Ranking & Run Archives:** Structured serialization of candidate spaces and immutable local run dossiers directly mirrors CROSSWIRE's cryptographic receipt and candidate-space architecture. |
+| [BIOLAB](https://github.com/kai9987kai/BIOLAB) | Static, browser-based computational biology sandbox prioritizing transparent methods and explicit limitations. | **Epistemic Modesty & Explicit Scope:** Transparently documenting what local models cannot support directly aligns with CROSSWIRE's refusal to claim semantic correctness without external anchors. |
+| [Hybrid-Intel-Studio](https://github.com/kai9987kai/Hybrid-Intel-Studio) | Multi-substrate simulation blending Quantum Density Evolution, Neuromorphic Active Inference, and Hodgkin-Huxley dynamics. | **Active Inference & Epistemic Uncertainty:** Treating active probing as epistemic foraging (minimizing expected free energy / observation ambiguity) provides a formal foundation for decision-focused query synthesis. |
+| [Italtensor](https://github.com/kai9987kai/Italtensor) | Local desktop workbench for small binary-classification experiments with validation metrics and exportable reports. | **Self-Contained Scientific Workbenches:** Emphasizes zero-cloud local execution, transparent validation metrics, and reproducible reporting. |
+| [1313-Game](https://github.com/kai9987kai/1313-Game) | Pygame action platformer with encounter Director, noise-reactive behavior, and layered health/shield subsystems. | **Layered Pre/Post Shield Thresholds:** Decoupling pre-action safety filtering from post-observation anomaly detection in runtime enforcement. |
+
+---
+
 ## Reuse policy
 
 Implement the new instrument independently and cite ideas and concrete failure cases. Do not copy upstream code, trained weights, game content, biological graphs or generated datasets as an implicit part of this project. If a future stage imports an artifact, inspect that exact artifact's licence and provenance separately. The source review's licence inventory is not a legal determination or blanket permission.

@@ -55,3 +55,9 @@ Ruling: parallelize disjoint core, target-protocol and browser files — active 
   - Temporal Adapter Benchmark (`reports/pilot-temporal-receipt.json`, 4 runs): achieved 100% useful coverage with 0% selective harm on pipeline-delayed interfaces.
   - Total verified empirical evaluations: 669 runs.
   - Research paper and verification report updated with empirical tables and mathematical formulations.
+- [x] **Task 7 (Decision-Focused CEGP Witnesses, Pre-Step Guarding, Causal Auditing, & Portfolio Survey):**
+  - Decision-focused CEGP probe synthesis (`crosswire/core.py`): dynamically synthesizes exact distinguishing counterexample witnesses via product BFS beyond the fixed probe pool. Evaluated on `long_trace`, resolving candidates that stalled standard policies and achieving 100% useful coverage (+1.000 paired difference).
+  - Pre-step preemptive hazard interception (`crosswire/shield.py`): evaluates pending action before dispatch; halts without executing `target.step` if the action is unanimously hazardous under surviving adapters.
+  - Causal counterfactual auditing (`crosswire/audit.py`): simulates unshielded trajectory on private target to verify whether the unshielded run would have encountered a hazard, preventing phantom safety attribution and ensuring scientifically honest reporting.
+  - Cross-portfolio survey of 95 additional `kai9987kai` repositories (`research/portfolio-index.md`): extracted lessons from `Bot-research-lab`, `Habitat-Genome-Compiler`, `BIOLAB`, `Hybrid-Intel-Studio`, `Italtensor`, and `1313-Game`.
+  - Full test suite passing (91/91 passed in 45.08s). Total verified empirical evaluations: 673 runs.

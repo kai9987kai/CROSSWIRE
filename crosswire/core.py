@@ -247,6 +247,72 @@ class CandidateSpace:
     def survivors(self, transcripts, anchors=None):
         return tuple(identifier for identifier, loss in self.losses(transcripts, anchors).items() if loss == 0)
 
+    def level_ids(self, level):
+        """Nested hypothesis classes: 'static' (144 memoryless maps) ⊂ 'temporal' (all)."""
+        if level == 'static':
+            return tuple(a.id for a in self.adapters if a.delay == 0)
+        if level == 'temporal':
+            return tuple(a.id for a in self.adapters)
+        raise ValueError('unknown hypothesis level')
+
+    def _decision_classes(self, ids):
+        """Group survivors by their contract-relevant behaviour (safe deployment set)."""
+        classes = {}
+        for identifier in ids:
+            classes.setdefault(self.safe_words(identifier), []).append(identifier)
+        return list(classes.items())
+
+    def distinguishing_word(self, a, b, max_length):
+        """Shortest lexicographic input word on which adapters a and b predict different raw outputs.
+
+        Exact BFS over the joint state (reference state under a, under b, and each
+        adapter's one-step output buffer). Unlike the fixed probe pool, the witness
+        may be longer than three actions; it is bounded only by ``max_length``.
+        """
+        A, B = self._adapter(a), self._adapter(b)
+        start = (self.machine.initial, self.machine.initial,
+                 A.init_output if A.delay else None, B.init_output if B.delay else None)
+        visited, pending = {start}, deque([(start, ())])
+        while pending:
+            (qa, qb, ba, bb), prefix = pending.popleft()
+            if len(prefix) >= max_length:
+                continue
+            for symbol in range(self.machine.inputs):
+                na, sa = self.machine.transitions[qa][A.input_map[symbol]]
+                nb, sb = self.machine.transitions[qb][B.input_map[symbol]]
+                self.work['source_steps'] += 2
+                oa = A.output_map[ba if A.delay else sa]
+                ob = B.output_map[bb if B.delay else sb]
+                word = prefix + (symbol,)
+                if oa != ob:
+                    return word
+                state = (na, nb, sa if A.delay else None, sb if B.delay else None)
+                if state not in visited:
+                    visited.add(state)
+                    pending.append((state, word))
+        return None
+
+    def _weighted_separation(self, classes, word, weights):
+        """Sum of weights of survivor pairs separated by ``word`` (class-level, O(N + C^2 P))."""
+        counts = []
+        for _, members in classes:
+            tally = {}
+            for identifier in members:
+                p = self.predict(identifier, word)
+                tally[p] = tally.get(p, 0) + 1
+            counts.append((len(members), tally))
+        total = 0.0
+        for i in range(len(counts)):
+            for j in range(i + 1, len(counts)):
+                w = weights[i][j]
+                if not w:
+                    continue
+                (na, ta), (nb, tb) = counts[i], counts[j]
+                agree = sum(c * tb.get(p, 0) for p, c in ta.items())
+                total += w * (na * nb - agree)
+                self.work['pair_checks'] += na * nb
+        return total
+
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0):
         if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample'):
             raise ValueError('unknown probe policy')
@@ -258,7 +324,7 @@ class CandidateSpace:
         # the reset for this query. Scores still charge reset + actions in their
         # information/cost ratio.
         eligible = [w for w in self._probes if w not in seen and len(w) <= remaining_steps]
-        if not eligible:
+        if not eligible and policy != 'counterexample':
             return None
         if policy == 'fixed':
             return eligible[0]
@@ -281,26 +347,38 @@ class CandidateSpace:
                     best, best_score = word, score
             return best
         if policy == 'counterexample':
-            # CEGP: Counterexample-Guided Active Probing
-            n = len(ids)
-            total_pairs = n * (n - 1) // 2
-            if not total_pairs:
-                return eligible[0]
-            # Efficiently find distinguishing probe words that separate maximal candidate pairs
-            best, best_score = None, -1.0
-            for word in eligible:
-                counts = {}
-                for i in ids:
-                    p = self.predict(i, word)
-                    counts[p] = counts.get(p, 0) + 1
-                agreeing = sum(c * (c - 1) // 2 for c in counts.values())
-                separated = total_pairs - agreeing
-                self.work['pair_checks'] += total_pairs
-                if separated:
-                    score = separated / (1 + len(word))
-                    if score > best_score:
-                        best, best_score = word, score
-            return best if best is not None else eligible[0]
+            # Decision-focused counterexample-guided probing. Candidate words are
+            # the fixed pool plus exact shortest witnesses separating one
+            # representative pair for every pair of *decision classes* (survivors
+            # whose admissible deployment sets differ). Witnesses may exceed the
+            # three-action pool. Pairs are weighted as in the task policy
+            # (Jaccard distance of safe sets), computed per class, not per pair.
+            classes = self._decision_classes(ids)
+            if len(classes) > 1:
+                weights = [[len(sa ^ sb) / max(1, len(sa | sb)) for sb, _ in classes] for sa, _ in classes]
+            else:
+                # No decision-relevant disagreement: fall back to plain separation.
+                classes = [(frozenset(), [i]) for i in ids]
+                weights = [[0 if i == j else 1 for j in range(len(classes))] for i in range(len(classes))]
+                if len(classes) > 64:
+                    classes = classes[:64]
+                    weights = [row[:64] for row in weights[:64]]
+            pool = list(eligible)
+            if len(classes) > 1:
+                limit = min(remaining_steps, self.contract.horizon + 4)
+                for i in range(len(classes)):
+                    for j in range(i + 1, len(classes)):
+                        if not weights[i][j]:
+                            continue
+                        witness = self.distinguishing_word(classes[i][1][0], classes[j][1][0], limit)
+                        if witness is not None and witness not in seen and witness not in pool:
+                            pool.append(witness)
+            best, best_score = None, 0.0
+            for word in pool:
+                score = self._weighted_separation(classes, word, weights) / (1 + len(word))
+                if score > best_score:
+                    best, best_score = word, score
+            return best
         best, best_score = None, 0
         pairs = tuple(combinations(ids, 2))
         weighted_pairs = []

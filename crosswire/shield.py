@@ -43,12 +43,21 @@ class RuntimeShield:
             self.history_outputs.append(out)
             return out, True
 
-        # Pre-condition check: if survivors are already empty or if action is universally hazardous
+        # Pre-condition check: if survivors are already empty
         if not self.active_survivors:
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
-            self.hazard_averted = True
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
+            return None, False
+
+        # Pre-step hazard check: if planned_action is guaranteed to cause a hazard under ALL surviving adapters
+        candidate_prefix = tuple(self.history_words) + (planned_action,)
+        if all(self.contract.hazard in self.space.semantic(aid, candidate_prefix)
+               for aid in self.active_survivors):
+            self.status = "INTERVENED_HAZARD_AVERTED"
+            self.intervened = True
+            self.hazard_averted = True
+            self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} is unanimously hazardous under surviving adapters")
             return None, False
 
         # Execute single step
@@ -71,7 +80,6 @@ class RuntimeShield:
             # Anomaly / distribution drift detected: target output contradicted all surviving models
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
-            self.hazard_averted = True
             self.reasons.append(f"Post-step abort at step {len(self.history_words)}: output {out} refuted all surviving adapters")
             return out, False
 

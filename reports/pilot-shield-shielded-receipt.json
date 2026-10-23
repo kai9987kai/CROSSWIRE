@@ -1,6 +1,6 @@
 {
   "schema": "crosswire-receipt-v1",
-  "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+  "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
   "payload": {
     "schema": "crosswire-study-v1",
     "protocol": {
@@ -36,10 +36,10 @@
       "execution_mode": "shielded",
       "exploratory": true,
       "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
-      "pre_execution_source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2"
+      "pre_execution_source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb"
     },
-    "protocol_hash": "a88c531ea7fad346771c971fa098ddd2392dca35b8f68de1a947c38c0646af8b",
-    "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+    "protocol_hash": "f786f6803d92214bd9a81438414c538a000779b7d3f61da6450a3f03f7558e4e",
+    "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
     "rows": [
       {
         "schema": "crosswire-result-v1",
@@ -56,7 +56,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -297,8 +297,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 288227,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 1.8125,
-          "wall_seconds": 2.309813400002895,
+          "parent_cpu_seconds": 2.25,
+          "wall_seconds": 6.485607700000401,
           "parent_peak_traced_bytes": 5895904,
           "audit_product_pairs": 205,
           "audit_execution_steps": 1179
@@ -307,7 +307,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "f6648029bc904c23a0822930daafaefa6ec798f01bb86c578c3df70bcaad5e37"
+        "scientific_hash": "7147b8cf8e03e0161684809097fb919885b541cd2effa0125c4340da5246f4a0"
       },
       {
         "schema": "crosswire-result-v1",
@@ -324,7 +324,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -581,7 +581,8 @@
             "completed": true,
             "executed_prefix_length": 4,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": false,
           "oracle_word": null,
@@ -613,9 +614,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 288227,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 1.859375,
-          "wall_seconds": 2.3599299999987124,
-          "parent_peak_traced_bytes": 5751698,
+          "parent_cpu_seconds": 2.078125,
+          "wall_seconds": 5.4387969999952475,
+          "parent_peak_traced_bytes": 5751384,
           "audit_product_pairs": 205,
           "audit_execution_steps": 1189
         },
@@ -646,7 +647,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "5e36c430a47b102659944ce3d5dfa23a686fd1b9b62c3b236bc7a67480021409"
+        "scientific_hash": "9374b1b8386e79673f86cdaa07cef56981ecf3aa8123cda4aa97ff57c28a8aee"
       },
       {
         "schema": "crosswire-result-v1",
@@ -663,7 +664,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -904,9 +905,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 288227,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 1.921875,
-          "wall_seconds": 2.342841199999384,
-          "parent_peak_traced_bytes": 5507458,
+          "parent_cpu_seconds": 1.984375,
+          "wall_seconds": 3.6985887000046205,
+          "parent_peak_traced_bytes": 5507353,
           "audit_product_pairs": 205,
           "audit_execution_steps": 1179
         },
@@ -914,7 +915,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "e0331cf21e5d150c66d1ce8e3dffbf3cf3b07b8b4928aa0c5a494ddddfcdbc47"
+        "scientific_hash": "be6547330f4a3ff484f15214ac7f6513f98e5162c9ce57f8027befd9f3e4ce23"
       },
       {
         "schema": "crosswire-result-v1",
@@ -931,7 +932,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1188,7 +1189,8 @@
             "completed": true,
             "executed_prefix_length": 4,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": false,
           "oracle_word": null,
@@ -1220,8 +1222,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 288227,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.140625,
-          "wall_seconds": 2.561416000004101,
+          "parent_cpu_seconds": 2.484375,
+          "wall_seconds": 4.434561899994151,
           "parent_peak_traced_bytes": 5506938,
           "audit_product_pairs": 205,
           "audit_execution_steps": 1189
@@ -1253,7 +1255,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "72715bc9221eaacf6e402ce449dc0e09b4d450c04b909ffcf6b1133aef05a977"
+        "scientific_hash": "521a9a61f45d3c863f302c657a0bed86b80eafb2d5105dfbf472e248175201a8"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1270,7 +1272,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1444,8 +1446,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.25,
-          "wall_seconds": 2.7792230999984895,
+          "parent_cpu_seconds": 2.59375,
+          "wall_seconds": 3.446354400002747,
           "parent_peak_traced_bytes": 5686490,
           "audit_product_pairs": 188,
           "audit_execution_steps": 49
@@ -1454,7 +1456,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "f1dd9ea1b96de275c12985c8f751477175d2da97dd63ef153abd6c64e726b415"
+        "scientific_hash": "657def85078d041739021457628f762dc4b0418144460ef5fbd43197fed4201c"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1471,7 +1473,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1608,7 +1610,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Pre-step abort: no surviving models match history (anomaly/drift detected)"
           ],
@@ -1623,7 +1625,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [],
@@ -1633,6 +1635,7 @@
             "executed_prefix_length": 0,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -1652,10 +1655,10 @@
           "counterexamples_hash": "e3d6557bd888b9934bbbe9fc6b079ff0ebdb55451a3afc26aea035b6a3f69f69",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 188,
-          "audit_execution_steps": 49,
+          "audit_execution_steps": 55,
           "audit_reference_steps": 192,
           "audit_target_model_steps": 192,
-          "audit_resets": 27,
+          "audit_resets": 31,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 0,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -1668,11 +1671,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.296875,
-          "wall_seconds": 2.7616726999985985,
+          "parent_cpu_seconds": 2.359375,
+          "wall_seconds": 3.690502600002219,
           "parent_peak_traced_bytes": 5686418,
           "audit_product_pairs": 188,
-          "audit_execution_steps": 49
+          "audit_execution_steps": 55
         },
         "baseline": {
           "name": "task",
@@ -1701,7 +1704,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "a3369a29e2f5fb4ba3797e48b6ede89cb9ce2daebf315e39c568b1f00cb47635"
+        "scientific_hash": "f57e59a103165c1b9d5e48ea14b3f8354096e457d4adc12d25eb916ea1328a76"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1718,7 +1721,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1879,8 +1882,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.046875,
-          "wall_seconds": 2.6204126000011456,
+          "parent_cpu_seconds": 2.1875,
+          "wall_seconds": 3.781265900004655,
           "parent_peak_traced_bytes": 5686642,
           "audit_product_pairs": 180,
           "audit_execution_steps": 51
@@ -1889,7 +1892,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "91ed3f9926db8315394c1460f58fc3e1aeb3be4cd5e7928f0454cac8193d3c8a"
+        "scientific_hash": "5e3fdd7117288eb08e3a25d8511484e2d705e107ae4831e16c5b4d9023528cab"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1906,7 +1909,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2030,7 +2033,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Pre-step abort: no surviving models match history (anomaly/drift detected)"
           ],
@@ -2045,7 +2048,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [],
@@ -2055,6 +2058,7 @@
             "executed_prefix_length": 0,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -2074,10 +2078,10 @@
           "counterexamples_hash": "6b4e3ab52195af4003f02cbac27e11b920eb8ed6e3c4cb20686826637b32ef14",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 180,
-          "audit_execution_steps": 51,
+          "audit_execution_steps": 55,
           "audit_reference_steps": 180,
           "audit_target_model_steps": 180,
-          "audit_resets": 31,
+          "audit_resets": 34,
           "audit_oracle_word_candidates": 9,
           "calibration_hazardous_probes": 0,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -2090,11 +2094,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.109375,
-          "wall_seconds": 2.739295100000163,
-          "parent_peak_traced_bytes": 5686258,
+          "parent_cpu_seconds": 2.3125,
+          "wall_seconds": 3.2144262999936473,
+          "parent_peak_traced_bytes": 5686514,
           "audit_product_pairs": 180,
-          "audit_execution_steps": 51
+          "audit_execution_steps": 55
         },
         "baseline": {
           "name": "task",
@@ -2123,7 +2127,7 @@
             "raw_symbols_compared": 2
           }
         },
-        "scientific_hash": "4fae82d4ce4f0fcc5eea8aa5a2c11414fa645db50261da0adebb8f205b50fffc"
+        "scientific_hash": "d3b679bfd4036692745ed997d7bff342a77848d959f1751e3a5ddb6d496ed7c2"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2140,7 +2144,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2314,7 +2318,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 3 refuted all surviving adapters"
           ],
@@ -2331,7 +2335,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -2347,6 +2351,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -2366,10 +2371,10 @@
           "counterexamples_hash": "18835ae836fbcf314e7698a8abda89dbd7f24f2a49d0d3431685b3bf38b4224d",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 194,
-          "audit_execution_steps": 52,
+          "audit_execution_steps": 59,
           "audit_reference_steps": 199,
           "audit_target_model_steps": 199,
-          "audit_resets": 31,
+          "audit_resets": 35,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 1,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -2382,17 +2387,17 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.203125,
-          "wall_seconds": 2.738569799999823,
+          "parent_cpu_seconds": 2.09375,
+          "wall_seconds": 3.358982699995977,
           "parent_peak_traced_bytes": 5686362,
           "audit_product_pairs": 194,
-          "audit_execution_steps": 52
+          "audit_execution_steps": 59
         },
         "baseline": {
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "02b983f5abcf1ea1a7a287713e28475061591115a213ae5af46931791a11fbf8"
+        "scientific_hash": "17a45d387c0cf2a14c4c90329132bf7d3456ff99a12f2a284c8bdbf0e26c9d7b"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2409,7 +2414,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2581,7 +2586,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 3 refuted all surviving adapters"
           ],
@@ -2598,7 +2603,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -2614,6 +2619,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -2633,10 +2639,10 @@
           "counterexamples_hash": "18835ae836fbcf314e7698a8abda89dbd7f24f2a49d0d3431685b3bf38b4224d",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 194,
-          "audit_execution_steps": 52,
+          "audit_execution_steps": 58,
           "audit_reference_steps": 199,
           "audit_target_model_steps": 199,
-          "audit_resets": 31,
+          "audit_resets": 35,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 1,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -2649,11 +2655,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.21875,
-          "wall_seconds": 2.672383400000399,
-          "parent_peak_traced_bytes": 5957619,
+          "parent_cpu_seconds": 2.234375,
+          "wall_seconds": 3.584275200002594,
+          "parent_peak_traced_bytes": 5957363,
           "audit_product_pairs": 194,
-          "audit_execution_steps": 52
+          "audit_execution_steps": 58
         },
         "baseline": {
           "name": "task",
@@ -2682,7 +2688,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "0a69aaa06bd39b6306094099917ce9f2e1623064d7bb9f6321962b2adba4fd31"
+        "scientific_hash": "5009f2d57f813db84ca86a8a83cc4182be9c315eb1dbe01bc11a968325af0bff"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2699,7 +2705,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2886,8 +2892,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.203125,
-          "wall_seconds": 2.943078600001172,
+          "parent_cpu_seconds": 2.25,
+          "wall_seconds": 3.0877812999970047,
           "parent_peak_traced_bytes": 5706531,
           "audit_product_pairs": 196,
           "audit_execution_steps": 94
@@ -2896,7 +2902,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "11ca84d630dfc5875aaf3a1f738d76857e3532d04f52abd344dfac3b88f718e9"
+        "scientific_hash": "ecb385b14451ab39c40087651154cba6e34e6ecf77e015ca140485d84fa9689b"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2913,7 +2919,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3063,7 +3069,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Pre-step abort: no surviving models match history (anomaly/drift detected)"
           ],
@@ -3088,6 +3094,7 @@
             "executed_prefix_length": 0,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": true,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -3107,10 +3114,10 @@
           "counterexamples_hash": "1253d8d9ed4d3e29989a31c5441c363379794a00ddf8fb7a13e894c55d3e1489",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 196,
-          "audit_execution_steps": 94,
+          "audit_execution_steps": 102,
           "audit_reference_steps": 209,
           "audit_target_model_steps": 209,
-          "audit_resets": 56,
+          "audit_resets": 61,
           "audit_oracle_word_candidates": 9,
           "calibration_hazardous_probes": 2,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -3123,11 +3130,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.203125,
-          "wall_seconds": 2.6841832999998587,
-          "parent_peak_traced_bytes": 5703567,
+          "parent_cpu_seconds": 2.078125,
+          "wall_seconds": 2.977911199996015,
+          "parent_peak_traced_bytes": 5703363,
           "audit_product_pairs": 196,
-          "audit_execution_steps": 94
+          "audit_execution_steps": 102
         },
         "baseline": {
           "name": "task",
@@ -3156,7 +3163,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "07d76f43b171bff02da6d5a3bb15d7d58cfeda9f6fcaebc97100069746a7ec90"
+        "scientific_hash": "695dda4325c912a4f59ca033cda55e8f3d93c405dacb3632ed6ba78feb39132f"
       },
       {
         "schema": "crosswire-result-v1",
@@ -3173,7 +3180,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3382,7 +3389,8 @@
             "completed": true,
             "executed_prefix_length": 3,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -3418,8 +3426,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.125,
-          "wall_seconds": 2.790486800004146,
+          "parent_cpu_seconds": 2.015625,
+          "wall_seconds": 3.0865045999962604,
           "parent_peak_traced_bytes": 5686211,
           "audit_product_pairs": 195,
           "audit_execution_steps": 41
@@ -3428,7 +3436,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "f6a1d924ae2cd90e7ab64f0ab45f02b5015810b288e6fc7be5a14605162b573a"
+        "scientific_hash": "39409d28f726a97070f2a025188117018ea4095819aef4098fa6dd23696fe630"
       },
       {
         "schema": "crosswire-result-v1",
@@ -3445,7 +3453,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3647,7 +3655,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -3683,9 +3692,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.078125,
-          "wall_seconds": 2.727154899999732,
-          "parent_peak_traced_bytes": 5686291,
+          "parent_cpu_seconds": 2.15625,
+          "wall_seconds": 3.236366099998122,
+          "parent_peak_traced_bytes": 5686035,
           "audit_product_pairs": 195,
           "audit_execution_steps": 40
         },
@@ -3716,7 +3725,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "276ca39714b0b92babc30ceb37efc23dd6133b8b087a793f45a4530b0dc3f7b4"
+        "scientific_hash": "10c0136109bfaa8693ff1c5dae5aced71b815a473a26f62d46b44c5ad65f5f86"
       },
       {
         "schema": "crosswire-result-v1",
@@ -3733,7 +3742,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3934,7 +3943,273 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            117
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "25c0615ed912a8711562e1999bc1200b8a4d46237cd12c5e45d6ce360c4a9cc1",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 197,
+          "audit_execution_steps": 40,
+          "audit_reference_steps": 212,
+          "audit_target_model_steps": 212,
+          "audit_resets": 21,
+          "audit_oracle_word_candidates": 1,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 6,
+          "resets": 4,
+          "target_calls": 10,
+          "source_steps": 132,
+          "candidate_expansions": 17280,
+          "pair_checks": 359808,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 2.359375,
+          "wall_seconds": 3.769670900001074,
+          "parent_peak_traced_bytes": 5686179,
+          "audit_product_pairs": 197,
+          "audit_execution_steps": 40
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "be32f946402118ed34081b2613bcd8b3dab9c0fa9c047fb9c3b7d93784240ebb"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "semantic_corruption",
+          "seed": 23,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "fit",
+          "execution_mode": "shielded",
+          "temporal": false
+        },
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "0b4965543fc0e3cad18fe994cc8daf05b81040acc07ebff1e99a9a74d0f6abe6",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "IDENTIFIED",
+          "admitted": true,
+          "word": [
+            1,
+            2
+          ],
+          "candidate_count": 1
+        },
+        "ambiguity": {
+          "map_count": 1,
+          "observational_classes": 1,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 3
+          },
+          {
+            "word": [
+              1,
+              2
+            ],
+            "outputs": [
+              3,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 3,
+            "survivors_after": 1
+          }
+        ],
+        "decision_frozen_hash": "91a21c5a2a57cc89fdab10484f079536565c1be14cb81309967301afc7c5a7c1",
+        "deployment": {
+          "word": [
+            1,
+            2
+          ],
+          "executed_word": [
+            1,
+            2
+          ],
+          "outputs": [
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            1,
+            1,
+            1
+          ],
+          "target_steps": 2,
+          "resets": 1,
+          "target_calls": 3,
+          "error": null
+        },
+        "audit": {
+          "goal_success": false,
+          "hazard": true,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": false,
+          "outputs": [
+            3,
+            1
+          ],
+          "semantic_events": [
+            0,
+            2
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 2,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -3971,271 +4246,7 @@
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
           "parent_cpu_seconds": 2.21875,
-          "wall_seconds": 2.846925400001055,
-          "parent_peak_traced_bytes": 5686435,
-          "audit_product_pairs": 197,
-          "audit_execution_steps": 40
-        },
-        "baseline": {
-          "name": "task",
-          "privileged": false
-        },
-        "scientific_hash": "1ad5b8d3b8132219f0bc13e2e7f8a74c3b6bc2ecc2694248fed05c898a4fa980"
-      },
-      {
-        "schema": "crosswire-result-v1",
-        "configuration": {
-          "family": "semantic_corruption",
-          "seed": 23,
-          "implementation": "procedural",
-          "split": "evaluation",
-          "anchors": false,
-          "budget": 16,
-          "horizon": 4,
-          "policy": "task",
-          "admission": "fit",
-          "execution_mode": "shielded",
-          "temporal": false
-        },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
-        "reference": {
-          "name": "reference",
-          "transitions": [
-            [
-              [
-                1,
-                0
-              ],
-              [
-                0,
-                3
-              ],
-              [
-                3,
-                2
-              ]
-            ],
-            [
-              [
-                1,
-                3
-              ],
-              [
-                2,
-                1
-              ],
-              [
-                3,
-                2
-              ]
-            ],
-            [
-              [
-                2,
-                1
-              ],
-              [
-                2,
-                1
-              ],
-              [
-                3,
-                2
-              ]
-            ],
-            [
-              [
-                3,
-                2
-              ],
-              [
-                3,
-                2
-              ],
-              [
-                3,
-                2
-              ]
-            ]
-          ],
-          "inputs": 3,
-          "outputs": 4,
-          "initial": 0
-        },
-        "contract": {
-          "goal": 1,
-          "hazard": 2,
-          "horizon": 4
-        },
-        "target_id": "0b4965543fc0e3cad18fe994cc8daf05b81040acc07ebff1e99a9a74d0f6abe6",
-        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
-        "anchors": {},
-        "decision": {
-          "status": "IDENTIFIED",
-          "admitted": true,
-          "word": [
-            1,
-            2
-          ],
-          "candidate_count": 1
-        },
-        "ambiguity": {
-          "map_count": 1,
-          "observational_classes": 1,
-          "contract_classes": 1
-        },
-        "candidates": [
-          {
-            "id": 117,
-            "input_map": [
-              2,
-              0,
-              1
-            ],
-            "output_map": [
-              3,
-              1,
-              2,
-              0
-            ]
-          }
-        ],
-        "probes": [
-          {
-            "word": [
-              0
-            ],
-            "outputs": [
-              2
-            ],
-            "complete": true,
-            "survivors_before": 144,
-            "survivors_after": 36
-          },
-          {
-            "word": [
-              1
-            ],
-            "outputs": [
-              3
-            ],
-            "complete": true,
-            "survivors_before": 36,
-            "survivors_after": 12
-          },
-          {
-            "word": [
-              2,
-              0
-            ],
-            "outputs": [
-              0,
-              2
-            ],
-            "complete": true,
-            "survivors_before": 12,
-            "survivors_after": 3
-          },
-          {
-            "word": [
-              1,
-              2
-            ],
-            "outputs": [
-              3,
-              1
-            ],
-            "complete": true,
-            "survivors_before": 3,
-            "survivors_after": 1
-          }
-        ],
-        "decision_frozen_hash": "91a21c5a2a57cc89fdab10484f079536565c1be14cb81309967301afc7c5a7c1",
-        "deployment": {
-          "word": [
-            1,
-            2
-          ],
-          "executed_word": [
-            1,
-            2
-          ],
-          "outputs": [
-            3,
-            1
-          ],
-          "complete": true,
-          "mode": "shielded",
-          "shield_status": "COMPLETED",
-          "intervened": false,
-          "hazard_averted": false,
-          "reasons": [],
-          "survivor_history": [
-            1,
-            1,
-            1
-          ],
-          "target_steps": 2,
-          "resets": 1,
-          "target_calls": 3,
-          "error": null
-        },
-        "audit": {
-          "goal_success": false,
-          "hazard": true,
-          "hazard_averted": false,
-          "shield_intervened": false,
-          "contract_satisfied": false,
-          "outputs": [
-            3,
-            1
-          ],
-          "semantic_events": [
-            0,
-            2
-          ],
-          "deployment_audit": {
-            "completed": true,
-            "executed_prefix_length": 2,
-            "reconstruction_matches_observed": true,
-            "prefix_hazard": true
-          },
-          "oracle_feasible": true,
-          "oracle_word": [
-            0
-          ],
-          "true_map_retained": null,
-          "planted_raw_map_retained": true,
-          "raw_equivalent_maps_count": 1,
-          "raw_equivalent_map_ids": [
-            117
-          ],
-          "no_map_in_class": false,
-          "maps_checked": 144,
-          "counterexample": [
-            0
-          ],
-          "counterexamples_hash": "25c0615ed912a8711562e1999bc1200b8a4d46237cd12c5e45d6ce360c4a9cc1",
-          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
-          "audit_product_pairs": 197,
-          "audit_execution_steps": 40,
-          "audit_reference_steps": 212,
-          "audit_target_model_steps": 212,
-          "audit_resets": 21,
-          "audit_oracle_word_candidates": 1,
-          "calibration_hazardous_probes": 1,
-          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
-        },
-        "metrics": {
-          "target_steps": 6,
-          "resets": 4,
-          "target_calls": 10,
-          "source_steps": 132,
-          "candidate_expansions": 17280,
-          "pair_checks": 359808,
-          "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.203125,
-          "wall_seconds": 2.771184999997786,
+          "wall_seconds": 3.552777499993681,
           "parent_peak_traced_bytes": 5686147,
           "audit_product_pairs": 197,
           "audit_execution_steps": 40
@@ -4267,7 +4278,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "54c796566922022af7a08886333ed3ad6b3194b6a4cbde363d565303a274fa54"
+        "scientific_hash": "d40aae3f3bf3e7e7ab3e67748eb5332793ebc40216bee1571fba19347059856e"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4284,7 +4295,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4493,7 +4504,8 @@
             "completed": true,
             "executed_prefix_length": 3,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -4529,9 +4541,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.28125,
-          "wall_seconds": 2.6442714000004344,
-          "parent_peak_traced_bytes": 5686395,
+          "parent_cpu_seconds": 2.34375,
+          "wall_seconds": 3.322313299999223,
+          "parent_peak_traced_bytes": 5686139,
           "audit_product_pairs": 195,
           "audit_execution_steps": 41
         },
@@ -4539,7 +4551,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "abd658f2a321cfd0b2ae9eccd188d42bf5e0f9793c6b1c7e08397d019fa047e5"
+        "scientific_hash": "dd8a06374ef17130e0716f47a9ae708805d56d81bb1da3c98ef6ac4e0049d4b4"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4556,7 +4568,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4758,7 +4770,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -4795,8 +4808,8 @@
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
           "parent_cpu_seconds": 2.296875,
-          "wall_seconds": 2.9042239999980666,
-          "parent_peak_traced_bytes": 5957859,
+          "wall_seconds": 3.235034400000586,
+          "parent_peak_traced_bytes": 5957603,
           "audit_product_pairs": 195,
           "audit_execution_steps": 40
         },
@@ -4827,7 +4840,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "ed5319ed39772021847a5c6aa6217acc7b09a7f7fc044de9b00b6d44d307ba7d"
+        "scientific_hash": "97613b06cb7024eebff7c014d2a6df34e7f630bbe673da502afeb3f665331440"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4844,7 +4857,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5045,7 +5058,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -5081,8 +5095,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.234375,
-          "wall_seconds": 2.7953273999955854,
+          "parent_cpu_seconds": 2.25,
+          "wall_seconds": 4.208355599999777,
           "parent_peak_traced_bytes": 5706371,
           "audit_product_pairs": 197,
           "audit_execution_steps": 40
@@ -5091,7 +5105,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "aef1644a470f05a0634f47b49876ce92ff2a337d54ca6403d38455981dbc6709"
+        "scientific_hash": "84c22d08b62bfe2056c9d68fadef4051001e8455fcfa9cccb5b506a6b0aa535b"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5108,7 +5122,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5309,7 +5323,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": true
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -5345,8 +5360,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.125,
-          "wall_seconds": 2.80243679999694,
+          "parent_cpu_seconds": 2.3125,
+          "wall_seconds": 3.763055899995379,
           "parent_peak_traced_bytes": 5702883,
           "audit_product_pairs": 197,
           "audit_execution_steps": 40
@@ -5378,7 +5393,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "b6b0ae5e71f38af7c47ef56206207d263b830e61b2575febbd1c56b4fa2231c1"
+        "scientific_hash": "228efacedea490d04cef8adbef86d87b1058e6d017af6f11d8401f75ac4bed51"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5395,7 +5410,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5556,9 +5571,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.171875,
-          "wall_seconds": 2.7544265000033192,
-          "parent_peak_traced_bytes": 5686115,
+          "parent_cpu_seconds": 2.40625,
+          "wall_seconds": 3.479104099998949,
+          "parent_peak_traced_bytes": 5686371,
           "audit_product_pairs": 180,
           "audit_execution_steps": 38
         },
@@ -5566,7 +5581,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "085ce7186e1b3722f176e2fb5a6f7a779030c65496357ed34f1f723dcc35a052"
+        "scientific_hash": "fa71c188f7d46e6d55f1f7ac65c9c433c83092bec296a5e800631a4461f1a609"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5583,7 +5598,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5707,7 +5722,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Pre-step abort: no surviving models match history (anomaly/drift detected)"
           ],
@@ -5722,7 +5737,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [],
@@ -5732,6 +5747,7 @@
             "executed_prefix_length": 0,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -5751,10 +5767,10 @@
           "counterexamples_hash": "5d9fddda77ef23e65cabcb23101cedc2e74b1dd4faf0e11a1b8cc8dd03643b12",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 180,
-          "audit_execution_steps": 38,
+          "audit_execution_steps": 42,
           "audit_reference_steps": 180,
           "audit_target_model_steps": 180,
-          "audit_resets": 19,
+          "audit_resets": 22,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 0,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -5767,11 +5783,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.171875,
-          "wall_seconds": 2.7702551999973366,
-          "parent_peak_traced_bytes": 5686351,
+          "parent_cpu_seconds": 2.34375,
+          "wall_seconds": 3.1960160000016913,
+          "parent_peak_traced_bytes": 5686403,
           "audit_product_pairs": 180,
-          "audit_execution_steps": 38
+          "audit_execution_steps": 42
         },
         "baseline": {
           "name": "task",
@@ -5800,7 +5816,7 @@
             "raw_symbols_compared": 2
           }
         },
-        "scientific_hash": "41a2fb5dfe11d4aac352e5d2b06d48eb3bb55590f15b5d9f7e9af7864b117382"
+        "scientific_hash": "54894759d61f243b2bd65fafd06e2627167fb48acf084d28ae38ea0eb4996152"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5817,7 +5833,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5978,9 +5994,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.09375,
-          "wall_seconds": 2.734451900003478,
-          "parent_peak_traced_bytes": 5686211,
+          "parent_cpu_seconds": 2.125,
+          "wall_seconds": 3.083761800007778,
+          "parent_peak_traced_bytes": 5685908,
           "audit_product_pairs": 180,
           "audit_execution_steps": 54
         },
@@ -5988,7 +6004,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "bd5ea66c53e43944dd989fc79007702d128a00826951a23e572ecfac61fe40a3"
+        "scientific_hash": "da866953bc1cb401ab689d5083d12ff5a4c1eac314e5861f523be9e3ffd0402e"
       },
       {
         "schema": "crosswire-result-v1",
@@ -6005,7 +6021,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6129,7 +6145,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Pre-step abort: no surviving models match history (anomaly/drift detected)"
           ],
@@ -6154,6 +6170,7 @@
             "executed_prefix_length": 0,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": true,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -6173,10 +6190,10 @@
           "counterexamples_hash": "6b4e3ab52195af4003f02cbac27e11b920eb8ed6e3c4cb20686826637b32ef14",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 180,
-          "audit_execution_steps": 54,
+          "audit_execution_steps": 58,
           "audit_reference_steps": 180,
           "audit_target_model_steps": 180,
-          "audit_resets": 31,
+          "audit_resets": 34,
           "audit_oracle_word_candidates": 9,
           "calibration_hazardous_probes": 1,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -6189,11 +6206,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 357480,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.171875,
-          "wall_seconds": 2.689130300001125,
-          "parent_peak_traced_bytes": 5685907,
+          "parent_cpu_seconds": 2.03125,
+          "wall_seconds": 2.964482700001099,
+          "parent_peak_traced_bytes": 5686211,
           "audit_product_pairs": 180,
-          "audit_execution_steps": 54
+          "audit_execution_steps": 58
         },
         "baseline": {
           "name": "task",
@@ -6222,7 +6239,7 @@
             "raw_symbols_compared": 2
           }
         },
-        "scientific_hash": "1fa6bfd9f7fc96ade95dd1658f55a5100270cb55c793ca2a3974b8cdad5de260"
+        "scientific_hash": "fa0bab3b7fef813006ce75b1429b6b369bd51f63ea11098234b36ed66db6f3a1"
       },
       {
         "schema": "crosswire-result-v1",
@@ -6239,7 +6256,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6413,7 +6430,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 0 refuted all surviving adapters"
           ],
@@ -6430,7 +6447,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -6446,6 +6463,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -6465,10 +6483,10 @@
           "counterexamples_hash": "334d401be392cbe0b4ce00d0dfd4b451a5146760b28b75a0b11e079bfccdaf35",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 206,
-          "audit_execution_steps": 88,
+          "audit_execution_steps": 95,
           "audit_reference_steps": 206,
           "audit_target_model_steps": 206,
-          "audit_resets": 31,
+          "audit_resets": 35,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 1,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -6481,17 +6499,17 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.140625,
-          "wall_seconds": 2.67947920000006,
+          "parent_cpu_seconds": 2.625,
+          "wall_seconds": 3.532311100003426,
           "parent_peak_traced_bytes": 5686115,
           "audit_product_pairs": 206,
-          "audit_execution_steps": 88
+          "audit_execution_steps": 95
         },
         "baseline": {
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "082e4c151acf01093de18a71b33d17ff4cfc2c876cae869cd6696dbcbf6d59e2"
+        "scientific_hash": "b522e124608ce3dc7caac3b361b9279f025225c21fefe3e5d391f1681a00c744"
       },
       {
         "schema": "crosswire-result-v1",
@@ -6508,7 +6526,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6680,7 +6698,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 0 refuted all surviving adapters"
           ],
@@ -6697,7 +6715,7 @@
         "audit": {
           "goal_success": false,
           "hazard": null,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -6713,6 +6731,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": false,
+            "counterfactual_hazard": false,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -6732,10 +6751,10 @@
           "counterexamples_hash": "334d401be392cbe0b4ce00d0dfd4b451a5146760b28b75a0b11e079bfccdaf35",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 206,
-          "audit_execution_steps": 88,
+          "audit_execution_steps": 94,
           "audit_reference_steps": 206,
           "audit_target_model_steps": 206,
-          "audit_resets": 31,
+          "audit_resets": 35,
           "audit_oracle_word_candidates": 5,
           "calibration_hazardous_probes": 1,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -6748,11 +6767,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.21875,
-          "wall_seconds": 2.7937620999946375,
-          "parent_peak_traced_bytes": 5958275,
+          "parent_cpu_seconds": 2.171875,
+          "wall_seconds": 3.144822899994324,
+          "parent_peak_traced_bytes": 5958019,
           "audit_product_pairs": 206,
-          "audit_execution_steps": 88
+          "audit_execution_steps": 94
         },
         "baseline": {
           "name": "task",
@@ -6781,7 +6800,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "191f83e4e1f4ad28837760c29323be726a9441bcf16eb1fb1b253adf87d6105f"
+        "scientific_hash": "263f0de7b520da23b9abba710a19120ac8fd8c78019b80aa2cdeed1baa5d1baf"
       },
       {
         "schema": "crosswire-result-v1",
@@ -6798,7 +6817,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6972,7 +6991,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 2 refuted all surviving adapters"
           ],
@@ -6989,7 +7008,7 @@
         "audit": {
           "goal_success": false,
           "hazard": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -7005,6 +7024,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": true,
+            "counterfactual_hazard": true,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -7024,10 +7044,10 @@
           "counterexamples_hash": "2a7b21f05adc32c6aad7ea7828aeb6a45cb72dd7ec23fd78d51d63b938a29e8e",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 202,
-          "audit_execution_steps": 112,
+          "audit_execution_steps": 119,
           "audit_reference_steps": 206,
           "audit_target_model_steps": 206,
-          "audit_resets": 47,
+          "audit_resets": 51,
           "audit_oracle_word_candidates": 9,
           "calibration_hazardous_probes": 2,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -7040,17 +7060,17 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.25,
-          "wall_seconds": 2.8011457000029623,
+          "parent_cpu_seconds": 2.265625,
+          "wall_seconds": 3.1373446000070544,
           "parent_peak_traced_bytes": 5706363,
           "audit_product_pairs": 202,
-          "audit_execution_steps": 112
+          "audit_execution_steps": 119
         },
         "baseline": {
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "d256c032e8c2a894b0cf3ce965f1e708ae740d206eaf56a3a28ea9663276f86d"
+        "scientific_hash": "e196a2f1e80e62a6833469afe00c6e388db94c46ee1cb0cf7fe1a1ff43ee1a9f"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7067,7 +7087,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -7239,7 +7259,7 @@
           "mode": "shielded",
           "shield_status": "INTERVENED_ANOMALY",
           "intervened": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "reasons": [
             "Post-step abort at step 2: output 2 refuted all surviving adapters"
           ],
@@ -7256,7 +7276,7 @@
         "audit": {
           "goal_success": false,
           "hazard": true,
-          "hazard_averted": true,
+          "hazard_averted": false,
           "shield_intervened": true,
           "contract_satisfied": false,
           "outputs": [
@@ -7272,6 +7292,7 @@
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
             "prefix_hazard": true,
+            "counterfactual_hazard": true,
             "error_code": null
           },
           "oracle_feasible": true,
@@ -7291,10 +7312,10 @@
           "counterexamples_hash": "2a7b21f05adc32c6aad7ea7828aeb6a45cb72dd7ec23fd78d51d63b938a29e8e",
           "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
           "audit_product_pairs": 202,
-          "audit_execution_steps": 112,
+          "audit_execution_steps": 118,
           "audit_reference_steps": 206,
           "audit_target_model_steps": 206,
-          "audit_resets": 47,
+          "audit_resets": 51,
           "audit_oracle_word_candidates": 9,
           "calibration_hazardous_probes": 2,
           "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
@@ -7307,11 +7328,11 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.203125,
-          "wall_seconds": 2.6909423999968567,
+          "parent_cpu_seconds": 2.390625,
+          "wall_seconds": 3.4304505000036443,
           "parent_peak_traced_bytes": 5702371,
           "audit_product_pairs": 202,
-          "audit_execution_steps": 112
+          "audit_execution_steps": 118
         },
         "baseline": {
           "name": "task",
@@ -7340,7 +7361,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "6be8423e328baf4bdb47eccc0ec5894a4502cb9c79b02ac625018bf14e7ec014"
+        "scientific_hash": "4a0eb2127b8e87272b3d7c5db52e856da0ced432cf82c3b0b2e888569503ca2b"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7357,7 +7378,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -7566,7 +7587,8 @@
             "completed": true,
             "executed_prefix_length": 3,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -7599,8 +7621,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.1875,
-          "wall_seconds": 2.5743361999993795,
+          "parent_cpu_seconds": 2.390625,
+          "wall_seconds": 3.17778100000578,
           "parent_peak_traced_bytes": 5685955,
           "audit_product_pairs": 0,
           "audit_execution_steps": 41
@@ -7609,7 +7631,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "fb6355a578a4a9555096a96feb2b97a52ba6483ef1384bd9b7838408b1b20d49"
+        "scientific_hash": "fa6fae93bbd7e2c1be8e49a5d6a945d358b76f8dc05d1cb600f4f14df56c8be2"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7626,7 +7648,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -7828,7 +7850,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -7861,8 +7884,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 359700,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.125,
-          "wall_seconds": 2.7263569999995525,
+          "parent_cpu_seconds": 2.75,
+          "wall_seconds": 3.767779999994673,
           "parent_peak_traced_bytes": 5686243,
           "audit_product_pairs": 0,
           "audit_execution_steps": 40
@@ -7894,7 +7917,7 @@
             "raw_symbols_compared": 4
           }
         },
-        "scientific_hash": "09a1de7f597ab550970a332570a85a27f7d938a3de021d68102f4bcc735bc710"
+        "scientific_hash": "2cc154bab74e0f8e82495e36896e36fb02ddfeac5917cbb0af7ace5e45d1c5bd"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7911,7 +7934,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -8112,7 +8135,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -8145,9 +8169,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.296875,
-          "wall_seconds": 2.7387440000020433,
-          "parent_peak_traced_bytes": 5685955,
+          "parent_cpu_seconds": 1.953125,
+          "wall_seconds": 2.695734499997343,
+          "parent_peak_traced_bytes": 5686211,
           "audit_product_pairs": 0,
           "audit_execution_steps": 90
         },
@@ -8155,7 +8179,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "78a5401b9d57e4e1e6e1f8c6363f48292df9d22efa080c66c7fa8a9b70c87607"
+        "scientific_hash": "6d898c30162c1dc5d4135bb8df75a3e45dd8fa29b6530633f5797d5f0bb6634c"
       },
       {
         "schema": "crosswire-result-v1",
@@ -8172,7 +8196,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -8373,7 +8397,8 @@
             "completed": true,
             "executed_prefix_length": 2,
             "reconstruction_matches_observed": true,
-            "prefix_hazard": false
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
           },
           "oracle_feasible": true,
           "oracle_word": [
@@ -8406,9 +8431,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 359808,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.265625,
-          "wall_seconds": 2.639575599998352,
-          "parent_peak_traced_bytes": 5685955,
+          "parent_cpu_seconds": 2.21875,
+          "wall_seconds": 3.2704910000029486,
+          "parent_peak_traced_bytes": 5686060,
           "audit_product_pairs": 0,
           "audit_execution_steps": 90
         },
@@ -8439,7 +8464,7 @@
             "raw_symbols_compared": 6
           }
         },
-        "scientific_hash": "2e69d1d7c01da4d96bfe8786ca9feac057aa82cad147cbcdebfc6efca0051d70"
+        "scientific_hash": "bdaf7fb7aa795214908944edf215345557ca35480e1df3714ba6f663987d7751"
       },
       {
         "schema": "crosswire-result-v1",
@@ -8456,7 +8481,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -10620,9 +10645,9 @@
           "candidate_expansions": 17280,
           "pair_checks": 336960,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.1875,
-          "wall_seconds": 2.6405805999966105,
-          "parent_peak_traced_bytes": 5685905,
+          "parent_cpu_seconds": 2.015625,
+          "wall_seconds": 3.7459153999952832,
+          "parent_peak_traced_bytes": 5685955,
           "audit_product_pairs": 0,
           "audit_execution_steps": 0
         },
@@ -10630,7 +10655,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "646370295343c070fcc9c8f6266b781a2470c3c355b75838976dd1ad3fa6c8f1"
+        "scientific_hash": "f07a60c01515e7dcb5aac9475cd7953bc52ce961b64b7f39ee8dd7371ee4e55e"
       },
       {
         "schema": "crosswire-result-v1",
@@ -10647,7 +10672,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -12811,8 +12836,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 336960,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.265625,
-          "wall_seconds": 2.591403899998113,
+          "parent_cpu_seconds": 2.359375,
+          "wall_seconds": 4.019144799996866,
           "parent_peak_traced_bytes": 5958595,
           "audit_product_pairs": 0,
           "audit_execution_steps": 0
@@ -12844,7 +12869,7 @@
             "raw_symbols_compared": 0
           }
         },
-        "scientific_hash": "ee22c840e2745c5d1d4661e2c0bd0104ce1df4fa697228b56b9be31f4c54738a"
+        "scientific_hash": "92fd479b72fc371cd16a3d04fd993e8eef704d9b022313fb13001525b52547c0"
       },
       {
         "schema": "crosswire-result-v1",
@@ -12861,7 +12886,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -15025,8 +15050,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 336960,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.171875,
-          "wall_seconds": 2.673648099997081,
+          "parent_cpu_seconds": 2.796875,
+          "wall_seconds": 4.544415900003514,
           "parent_peak_traced_bytes": 5706203,
           "audit_product_pairs": 0,
           "audit_execution_steps": 0
@@ -15035,7 +15060,7 @@
           "name": "task",
           "privileged": false
         },
-        "scientific_hash": "2daec9a30dac512b67880a1dd4db466e1fedd8c96bc3ca7b86b306481ae1e36a"
+        "scientific_hash": "4359753cc68252757649d549160c0f6e4d56425fa809d3e679622c3274779e98"
       },
       {
         "schema": "crosswire-result-v1",
@@ -15052,7 +15077,7 @@
           "execution_mode": "shielded",
           "temporal": false
         },
-        "source_hash": "c6f7501cef90c4aa9758dab3ca2423a84dd11552e3af62f148e2063b1c6f3be2",
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -17216,8 +17241,8 @@
           "candidate_expansions": 17280,
           "pair_checks": 336960,
           "anchor_facts_supplied": 0,
-          "parent_cpu_seconds": 2.109375,
-          "wall_seconds": 2.715951499994844,
+          "parent_cpu_seconds": 2.859375,
+          "wall_seconds": 3.757288900000276,
           "parent_peak_traced_bytes": 5701379,
           "audit_product_pairs": 0,
           "audit_execution_steps": 0
@@ -17249,7 +17274,7 @@
             "raw_symbols_compared": 0
           }
         },
-        "scientific_hash": "a9ba238f3c74a23a97c53e2881c71066ecc429998daacb23ec93c82d7fa848b3"
+        "scientific_hash": "8954b112f4b4c26ef7b4a925533738231bf53765dbf73911cf3a6d1eef4e4528"
       }
     ],
     "summary": [
@@ -17263,7 +17288,7 @@
         "successful": 0,
         "harmful": 2,
         "hazardous": 0,
-        "hazards_averted": 2,
+        "hazards_averted": 1,
         "shield_interventions": 2,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17327,7 +17352,7 @@
         "successful": 0,
         "harmful": 2,
         "hazardous": 0,
-        "hazards_averted": 2,
+        "hazards_averted": 1,
         "shield_interventions": 2,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17423,7 +17448,7 @@
         "successful": 0,
         "harmful": 2,
         "hazardous": 0,
-        "hazards_averted": 2,
+        "hazards_averted": 0,
         "shield_interventions": 2,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17487,7 +17512,7 @@
         "successful": 0,
         "harmful": 2,
         "hazardous": 1,
-        "hazards_averted": 2,
+        "hazards_averted": 0,
         "shield_interventions": 2,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17551,7 +17576,7 @@
         "successful": 0,
         "harmful": 1,
         "hazardous": 0,
-        "hazards_averted": 1,
+        "hazards_averted": 0,
         "shield_interventions": 1,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17775,7 +17800,7 @@
         "successful": 0,
         "harmful": 2,
         "hazardous": 1,
-        "hazards_averted": 2,
+        "hazards_averted": 0,
         "shield_interventions": 2,
         "interface_errors": 0,
         "acquisition_interface_errors": 0,
@@ -17831,7 +17856,7 @@
       }
     ],
     "paired": [],
-    "scientific_hash": "924a7b12de35f87c9ef27177534af642cdee28ba1532f7c9cce33209e4bbd6bf"
+    "scientific_hash": "7e4c626579e139d52fddc3a8f80781261dea9aa7cb07ee1c8387a7c27631a973"
   },
-  "payload_hash": "be4b55db608dcf0540a96bd3bd22ba2e3ec7d26901af86e1eb51361ba369777c"
+  "payload_hash": "3fbf51cce2bbfb5375cc04ca2b48aea0c2bb81d6cf34f5b9ee417087e8b8acbf"
 }

@@ -53,3 +53,39 @@ def test_shielded_deployment_halts_on_anomalous_drift_before_suffix():
         # Under incompatible, the shield should detect survivor collapse or complete
         assert "survivor_history" in dep
         assert dep["mode"] == "shielded"
+
+
+def test_pre_step_hazard_interception_prevents_dispatch():
+    # If the upcoming action is universally hazardous under active survivors,
+    # the shield must abort before target.step is executed.
+    case = make_case("latch", seed=17)
+    space = CandidateSpace(Machine.from_dict(case.public["reference"]), Contract.from_dict(case.public["contract"]))
+    survivors = space.survivors([])
+    # Find an action that is universally hazardous under all survivors from initial state (if any)
+    # Or create a 2-adapter subspace where action 0 causes hazard
+    hazard_adapters = [a.id for a in space.adapters if space.contract.hazard in space.semantic(a.id, (2,))]
+    if hazard_adapters:
+        shield = RuntimeShield(space, tuple(hazard_adapters[:5]), space.contract, mode="shielded")
+        with TargetProcess(case.private) as target:
+            out, should_continue = shield.step(target, 2, [])
+            assert should_continue is False
+            assert shield.status == "INTERVENED_HAZARD_AVERTED"
+            assert target.counts["step_attempts"] == 0  # Pre-step: never called target.step!
+
+
+def test_causal_counterfactual_audit_distinguishes_averted_hazards():
+    from crosswire.study import run, RunConfig
+    # On alias seed 23 fit mode: unshielded hits a hazard; shielded halts at step 0
+    res_shielded = run(RunConfig(family="alias", seed=23, budget=16, admission="fit", execution_mode="shielded"))
+    assert res_shielded["deployment"]["intervened"] is True
+    # The auditor detects the counterfactual hazard was causally averted!
+    assert res_shielded["audit"]["hazard_averted"] is True
+    assert res_shielded["audit"]["deployment_audit"]["counterfactual_hazard"] is True
+
+    # On incompatible seed 17 fit mode: unshielded does not hit a hazard; shielded halts at step 0
+    res_incomp = run(RunConfig(family="incompatible", seed=17, budget=16, admission="fit", execution_mode="shielded"))
+    assert res_incomp["deployment"]["intervened"] is True
+    # Anomaly was detected, but because the full plan was not counterfactually hazardous, hazard_averted is False
+    assert res_incomp["audit"]["hazard_averted"] is False
+    assert res_incomp["audit"]["deployment_audit"]["counterfactual_hazard"] is False
+

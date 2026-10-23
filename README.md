@@ -104,15 +104,16 @@ crosswire catalog
 
 ## Empirical Benchmark Findings
 
-In a 669-run systematic evaluation across 16 synthetic fixture environments:
+In a 673-run systematic evaluation across 16 synthetic fixture environments:
 
 1. **Zero Selective Harm (In-Family):** Across 350 runs on in-family mechanisms, robust consensus admission achieved **0% selective harm** and **0 hazards**. Whenever a connection was admitted, it was 100% successful.
 2. **Task-Relevant Probing Efficiency:** Contract-relevant active probing achieved **71.4% useful coverage** in an average of only 7.4 calls (at budget 16), significantly outperforming fixed sequential probing (9.7 calls).
-3. **Dynamic Hazard Deflection:** In stressful out-of-family environments, the **Closed-Loop Dynamic Runtime Shield** intercepted unexpected behavioral divergences mid-execution and safely averted **8 out of 8 reachable hazards** under forced-fit point estimation, converting catastrophic state failures into safe halts.
+3. **Dynamic Anomaly Interception & Causal Hazard Deflection:** In stressful out-of-family environments, the **Closed-Loop Dynamic Runtime Shield** intercepted unexpected behavioral divergences across 8 deployment runs. Causal counterfactual auditing verified that where unshielded plans ran into catastrophic absorbing hazards (`alias` and `delay`), the shield preemptively deflected both hazards with zero harm.
 4. **Temporal Adapter Synthesis:** On asynchronous interfaces with pipeline latency (`delay`), static bijections suffered 0% admission due to transition contradictions. Enabling temporal adapter synthesis expanded the search space to 720 models and achieved **100% useful coverage with 0% selective harm**.
-5. **Classical System Identification Bottleneck:** Under small call caps ($B \le 32$), classical automata learning (AALpy $L^*$) requires 100–250 queries for full state identification and thus abstains entirely (0% coverage). CROSSWIRE's task-directed ambiguity reduction solves the task with an order-of-magnitude fewer interactions.
-6. **Falsification & Honest Negative Controls:** Under semantic corruption (where sensor outputs match raw predictions but underlying physical events are swapped), black-box consensus admitted connections that failed private auditing (100% harm). This rigorously demonstrates that ungrounded behavioral observation cannot substitute for semantic anchors.
-7. **Forced-Fit Catastrophe:** Forced-fit point estimation (`fit`) admitted 33.3% of misspecified stress cases but incurred **62.5% selective harm**, proving the necessity of ambiguity preservation over single-point optimization.
+5. **Decision-Focused CEGP Distinguishing Witnesses:** On deep mechanisms (`long_trace`) where fixed-horizon length-3 probes left candidate adapters indistinguishable (forcing 0% admission), Counterexample-Guided Active Probing (CEGP) dynamically synthesized the 4-step distinguishing witness `[0, 0, 0, 0]`, achieving **100% useful coverage** (+1.000 mean paired difference).
+6. **Classical System Identification Bottleneck:** Under small call caps ($B \le 32$), classical automata learning (AALpy $L^*$) requires 100–250 queries for full state identification and thus abstains entirely (0% coverage). CROSSWIRE's task-directed ambiguity reduction solves the task with an order-of-magnitude fewer interactions.
+7. **Falsification & Honest Negative Controls:** Under semantic corruption (where sensor outputs match raw predictions but underlying physical events are swapped), black-box consensus admitted connections that failed private auditing (100% harm). This rigorously demonstrates that ungrounded behavioral observation cannot substitute for semantic anchors.
+8. **Forced-Fit Catastrophe:** Forced-fit point estimation (`fit`) admitted 33.3% of misspecified stress cases but incurred **62.5% selective harm**, proving the necessity of ambiguity preservation over single-point optimization.
 
 ---
 

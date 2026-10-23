@@ -1,0 +1,1320 @@
+{
+  "schema": "crosswire-receipt-v1",
+  "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+  "payload": {
+    "schema": "crosswire-study-v1",
+    "protocol": {
+      "families": [
+        "long_trace"
+      ],
+      "seeds": [
+        17,
+        23
+      ],
+      "budgets": [
+        16
+      ],
+      "policies": [
+        "task",
+        "counterexample"
+      ],
+      "admissions": [
+        "robust"
+      ],
+      "implementations": [
+        "procedural"
+      ],
+      "split": "evaluation",
+      "exploratory": true,
+      "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
+      "pre_execution_source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb"
+    },
+    "protocol_hash": "968ed5dfe5874e08dd42ae7857ebd326e88a03e616f0073894456730603d80ee",
+    "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+    "rows": [
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "long_trace",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": false
+        },
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "6ca59aa6a25e4438c82c446617150bc4bb5d5e5cab164016816f332c3bc78fc1",
+        "parent_instance_id": "6d26078879baeea739e761ae3a87363378f1e0ce6384af32670bddae79ff97cb",
+        "anchors": {},
+        "decision": {
+          "status": "UNRESOLVED",
+          "admitted": false,
+          "word": null,
+          "candidate_count": 2
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 65,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              1
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 6
+          },
+          {
+            "word": [
+              0,
+              1,
+              0
+            ],
+            "outputs": [
+              0,
+              2,
+              0
+            ],
+            "complete": true,
+            "survivors_before": 6,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "58b3db815a61cb20edb13df64ffc5ca807078695b8f5f71f3f59e8376497ea42",
+        "deployment": {
+          "word": null,
+          "outputs": [],
+          "complete": false,
+          "error": null,
+          "target_steps": 0,
+          "resets": 0,
+          "target_calls": 0
+        },
+        "audit": {
+          "goal_success": null,
+          "hazard": null,
+          "hazard_averted": null,
+          "shield_intervened": null,
+          "contract_satisfied": null,
+          "outputs": [],
+          "semantic_events": [],
+          "deployment_audit": null,
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            4
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "993ff664e72cb3da0e58c790e2d90bd9a9c8a30b5f6395ff891163805d06aafc",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 376,
+          "audit_reference_steps": 235,
+          "audit_target_model_steps": 235,
+          "audit_resets": 211,
+          "audit_oracle_word_candidates": 40,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 6,
+          "resets": 4,
+          "target_calls": 10,
+          "source_steps": 156,
+          "candidate_expansions": 17280,
+          "pair_checks": 288227,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 1.46875,
+          "wall_seconds": 2.2676159999973606,
+          "parent_peak_traced_bytes": 5895968,
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 376
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "5c550f2105c2f14758f17ff0f1b9da2e0ac890e9a2a922026059265fa4e24aeb"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "long_trace",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "counterexample",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": false
+        },
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "6ca59aa6a25e4438c82c446617150bc4bb5d5e5cab164016816f332c3bc78fc1",
+        "parent_instance_id": "6d26078879baeea739e761ae3a87363378f1e0ce6384af32670bddae79ff97cb",
+        "anchors": {},
+        "decision": {
+          "status": "IDENTIFIED",
+          "admitted": true,
+          "word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "candidate_count": 1
+        },
+        "ambiguity": {
+          "map_count": 1,
+          "observational_classes": 1,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              1
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 6
+          },
+          {
+            "word": [
+              0,
+              1,
+              0
+            ],
+            "outputs": [
+              0,
+              2,
+              0
+            ],
+            "complete": true,
+            "survivors_before": 6,
+            "survivors_after": 2
+          },
+          {
+            "word": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "outputs": [
+              0,
+              0,
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 2,
+            "survivors_after": 1
+          }
+        ],
+        "decision_frozen_hash": "0ba544b163391f232eba9677acf71072936b96d164da047fc5645f13ad15331a",
+        "deployment": {
+          "word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "executed_word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "outputs": [
+            0,
+            0,
+            0,
+            3
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            1
+          ],
+          "target_steps": 4,
+          "resets": 1,
+          "target_calls": 5,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            0,
+            0,
+            3
+          ],
+          "semantic_events": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 4,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            4
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "993ff664e72cb3da0e58c790e2d90bd9a9c8a30b5f6395ff891163805d06aafc",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 560,
+          "audit_reference_steps": 235,
+          "audit_target_model_steps": 235,
+          "audit_resets": 262,
+          "audit_oracle_word_candidates": 40,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 10,
+          "resets": 5,
+          "target_calls": 15,
+          "source_steps": 308,
+          "candidate_expansions": 17280,
+          "pair_checks": 288288,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 0.5625,
+          "wall_seconds": 0.9791441999987001,
+          "parent_peak_traced_bytes": 3650899,
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 560
+        },
+        "baseline": {
+          "name": "counterexample",
+          "privileged": false
+        },
+        "scientific_hash": "05c1629b4575101bc21472f6ceefdae3277b25a0d25b3feb5fa4d02420ef20cc"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "long_trace",
+          "seed": 23,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": false
+        },
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "a8d95d11844155b1c87f9b5d7df0957da758c1ef042e4df1017c5ac52e002d36",
+        "parent_instance_id": "6d26078879baeea739e761ae3a87363378f1e0ce6384af32670bddae79ff97cb",
+        "anchors": {},
+        "decision": {
+          "status": "UNRESOLVED",
+          "admitted": false,
+          "word": null,
+          "candidate_count": 2
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 120,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 6
+          },
+          {
+            "word": [
+              0,
+              1,
+              0
+            ],
+            "outputs": [
+              2,
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 6,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "0763690d3765c2c1410c26ad8d433521bc145b30e6a60181b539a02eb014a3eb",
+        "deployment": {
+          "word": null,
+          "outputs": [],
+          "complete": false,
+          "error": null,
+          "target_steps": 0,
+          "resets": 0,
+          "target_calls": 0
+        },
+        "audit": {
+          "goal_success": null,
+          "hazard": null,
+          "hazard_averted": null,
+          "shield_intervened": null,
+          "contract_satisfied": null,
+          "outputs": [],
+          "semantic_events": [],
+          "deployment_audit": null,
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            117
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "6aae66557b1ba79d8851d12e7985739ce4c17ca5a2f687cd6471226460075da7",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 776,
+          "audit_reference_steps": 232,
+          "audit_target_model_steps": 232,
+          "audit_resets": 411,
+          "audit_oracle_word_candidates": 80,
+          "calibration_hazardous_probes": 2,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 6,
+          "resets": 4,
+          "target_calls": 10,
+          "source_steps": 156,
+          "candidate_expansions": 17280,
+          "pair_checks": 288227,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 1.375,
+          "wall_seconds": 2.1706668000115314,
+          "parent_peak_traced_bytes": 5509464,
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 776
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "ea7c38c970832dd8cfcb832a23ac8bffe7e496faf277908c20e0c3128ac71504"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "long_trace",
+          "seed": 23,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "counterexample",
+          "admission": "robust",
+          "execution_mode": "open_loop",
+          "temporal": false
+        },
+        "source_hash": "a7db8dbe369bc8f82052f1d558b6a7802e7324d3f79ea8d24e5234eb823d5dbb",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "a8d95d11844155b1c87f9b5d7df0957da758c1ef042e4df1017c5ac52e002d36",
+        "parent_instance_id": "6d26078879baeea739e761ae3a87363378f1e0ce6384af32670bddae79ff97cb",
+        "anchors": {},
+        "decision": {
+          "status": "IDENTIFIED",
+          "admitted": true,
+          "word": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "candidate_count": 1
+        },
+        "ambiguity": {
+          "map_count": 1,
+          "observational_classes": 1,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 6
+          },
+          {
+            "word": [
+              0,
+              1,
+              0
+            ],
+            "outputs": [
+              2,
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 6,
+            "survivors_after": 2
+          },
+          {
+            "word": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "outputs": [
+              3,
+              3,
+              3,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 2,
+            "survivors_after": 1
+          }
+        ],
+        "decision_frozen_hash": "905bd3d557edaf299b08642db2c199fee81636a7ce818517ba6ebfe4b2bb8bb7",
+        "deployment": {
+          "word": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "executed_word": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "outputs": [
+            3,
+            3,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "open_loop",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            1
+          ],
+          "target_steps": 4,
+          "resets": 1,
+          "target_calls": 5,
+          "error": null
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            3,
+            3,
+            3,
+            1
+          ],
+          "semantic_events": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 4,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            117
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "6aae66557b1ba79d8851d12e7985739ce4c17ca5a2f687cd6471226460075da7",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 1120,
+          "audit_reference_steps": 232,
+          "audit_target_model_steps": 232,
+          "audit_resets": 502,
+          "audit_oracle_word_candidates": 80,
+          "calibration_hazardous_probes": 2,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 10,
+          "resets": 5,
+          "target_calls": 15,
+          "source_steps": 310,
+          "candidate_expansions": 17280,
+          "pair_checks": 288288,
+          "anchor_facts_supplied": 0,
+          "parent_cpu_seconds": 0.546875,
+          "wall_seconds": 1.0014899000088917,
+          "parent_peak_traced_bytes": 3392011,
+          "audit_product_pairs": 205,
+          "audit_execution_steps": 1120
+        },
+        "baseline": {
+          "name": "counterexample",
+          "privileged": false
+        },
+        "scientific_hash": "f4df8ef17d713fa19196846401dc0915226adca1a046edfb6b89c6f99354771c"
+      }
+    ],
+    "summary": [
+      {
+        "method": "counterexample/robust",
+        "family": "long_trace",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 10.0,
+        "mean_resets": 5.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "task/robust",
+        "family": "long_trace",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "admitted": 0,
+        "successful": 0,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "abstained": 2,
+        "oracle_feasible": 2,
+        "admission_coverage": 0.0,
+        "useful_coverage": 0.0,
+        "feasible_useful_coverage": 0.0,
+        "selective_harm": null,
+        "population_harm": 0.0,
+        "mean_target_steps": 6.0,
+        "mean_resets": 4.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 0.0,
+          "0.1": -0.1,
+          "0.5": -0.5,
+          "1": -1.0
+        }
+      }
+    ],
+    "paired": [
+      {
+        "contrast": "task - counterexample",
+        "outcome": "useful_coverage",
+        "budget": 16,
+        "budget_unit": "target calls (resets + actions)",
+        "parent_clusters": 1,
+        "matched_cells": 2,
+        "families_pooled": [
+          "long_trace"
+        ],
+        "mean_delta": -1.0,
+        "descriptive_95_interval": [
+          -1.0,
+          -1.0
+        ],
+        "scope": "exploratory parent-cluster paired bootstrap within one call cap; in-family fixtures pooled; few clusters, no confirmatory claim"
+      }
+    ],
+    "scientific_hash": "e931c96b3d027d34a86e9c056f099428015e72a57de3ddf7e80d15eb5f8ec7f7"
+  },
+  "payload_hash": "fda8f2b5d3979148c50b66e650b482400a27be677f7efe593762b3a72427bbc3"
+}

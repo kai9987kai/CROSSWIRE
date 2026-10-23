@@ -192,16 +192,16 @@ To measure the empirical benefits of runtime shielding and temporal synthesis, w
 #### 4.3.1 Open-Loop Baseline vs. Shielded Closed-Loop Execution
 We evaluated 36 identical stress configurations (`alias`, `bypass`, `delay`, `drift`, `extra_state`, `incompatible`, `malformed`, `repeat`, `semantic_corruption`) under both `open_loop` and `shielded` execution modes at budget $B=16$:
 
-| Deployment Mode | Policy / Admission | Admitted | Useful Coverage | Selective Harm | Hazard Encounters | Hazards Averted | Shield Interventions |
+| Deployment Mode | Policy / Admission | Admitted | Useful Coverage | Selective Harm | Hazard Encounters | Causal Hazards Averted | Shield Interventions |
 |---|---|---:|---:|---:|---:|---:|---:|
 | **Open-Loop Baseline** | `task/fit` | 16 / 18 | 33% | 62% | 7 | 0 | 0 |
 | **Open-Loop Baseline** | `task/robust` | 9 / 18 | 22% | 56% | 5 | 0 | 0 |
-| **Shielded Closed-Loop** | `task/fit` | 16 / 18 | 11% | 88% | 5 | **8** | **8** |
-| **Shielded Closed-Loop** | `task/robust` | 9 / 18 | 11% | 78% | 5 | **3** | **3** |
+| **Shielded Closed-Loop** | `task/fit` | 16 / 18 | 11% | 88% | 5 | **2** | **8** |
+| **Shielded Closed-Loop** | `task/robust` | 9 / 18 | 11% | 78% | 5 | 0 | **3** |
 
-*Key Findings:*
-1. **Dynamic Hazard Deflection:** Under forced-fit point estimation (`task/fit`), the dynamic shield intercepted divergent observations mid-flight across `alias` (2), `delay` (2), `incompatible` (2), and `repeat` (2), preemptively aborting deployment before reaching catastrophic absorbing states. It successfully deflected **8 hazards into safe aborts**.
-2. **Robust Consensus Protection:** Under `task/robust`, the shield intervened 3 times across `alias` and `repeat`, averting all 3 reachable hazards.
+*Key Findings & Causal Attribution:*
+1. **Dynamic Anomaly Halting:** Under forced-fit point estimation (`task/fit`), the dynamic shield intercepted divergent observations across 8 distinct deployment attempts (`alias` (2), `delay` (2), `incompatible` (2), and `repeat` (2)), preemptively halting execution upon detecting that observations contradicted all surviving models.
+2. **Causal Counterfactual Hazard Aversion:** To prevent false safety attribution, CROSSWIRE's private auditor performs counterfactual simulation of the unshielded trajectory. Under `task/fit`, the unshielded plans for `alias` (seed 23) and `delay` (seed 23) counterfactually triggered catastrophic absorbing hazards; by halting before dispatch, the shield **causally averted both hazards**. On the remaining 6 interventions, the unshielded trajectory was non-hazardous, so the auditor truthfully records zero averted hazards.
 3. **Honest Boundary Preservation:** On `semantic_corruption` and `bypass`, the ungrounded target outputs perfectly mirror valid reference paths at step 1 while internally triggering opposite physics. The shield faithfully records that hazard encounters cannot be averted without anchor groundings, upholding CROSSWIRE's core epistemic guarantee.
 
 #### 4.3.2 Temporal Adapter Synthesis on Pipeline-Delayed Interfaces
@@ -216,6 +216,23 @@ By enabling temporal adapter synthesis ($|\mathcal{A}|=720$ with delay $d=1$ and
 | `counterexample/robust` | **Enabled** | **720** | **100.0% (2/2)** | **100.0%** | **0.0%** | **0** |
 
 Both contract-driven (`task`) and active disagreement (`counterexample`) policies synthesized valid delay-1 adapters that satisfied the full private semantic contract with zero hazards, demonstrating the practical power of temporal adapter algebra.
+
+### 4.4 Decision-Focused Counterexample-Guided Active Probing (CEGP)
+
+A central challenge in active interface mapping is query efficiency: standard active probing algorithms explore short fixed-horizon sequences, but deep state machines may require longer distinguishing witnesses that exceed the fixed probe pool.
+
+To address this, CROSSWIRE implements **Decision-Focused Counterexample-Guided Active Probing (CEGP)**, inspired by Equivalence Class Edge Cutting (EC2; Guillory & Bilmes, 2010):
+1. **Decision Partitioning:** Surviving adapters are clustered into equivalence classes based on their admitted safe deployment sets. Distinctions that do not alter the contract satisfaction decision are assigned zero weight.
+2. **Dynamic Distinguishing Witness Synthesis:** When all fixed-horizon probes fail to resolve decision ambiguity, CEGP executes an exact joint BFS over product automata, synthesizing the shortest input sequence that forces disagreeing outputs between surviving decision classes.
+
+We evaluated CEGP against the task-oriented baseline on the `long_trace` mechanism, which requires 4 consecutive advances to reach terminal states and cannot be distinguished by standard length-3 probes:
+
+| Policy | Probe Pool | Budget $B$ | Admitted | Useful Coverage | Selective Harm | Mean Calls | Mean Paired Δ [95% CI] |
+|---|---|---:|---:|---:|---:|---:|---|
+| `task/robust` | Fixed ($\le 3$) | 16 | 0 / 2 | 0.0% | n/a (abstained) | 10.0 | Baseline |
+| `counterexample/robust` | **Dynamic CEGP** | 16 | **2 / 2** | **100.0%** | **0.0%** | 15.0 | **+1.000 [+1.000, +1.000]** |
+
+*Result:* Where the fixed-horizon task policy stalled at 2 ambiguous candidates and abstained entirely, CEGP dynamically synthesized the 4-step distinguishing witness `[0, 0, 0, 0]`, identifying the true adapter and achieving **100% useful coverage with zero harm**.
 
 ---
 
@@ -247,3 +264,6 @@ CROSSWIRE demonstrates that maintaining an explicit space of surviving candidate
 2. Musiol, M., et al. (2021). AALpy: An Active Automata Learning Library in Python. *Innovations in Systems and Software Engineering*.
 3. Smith, E., et al. (2025). Representation stitching and interface alignment under unaligned representations. *Proceedings of the 42nd International Conference on Machine Learning (ICML)*.
 4. De Alfaro, L., & Henzinger, T. A. (2001). Interface automata. *ACM SIGSOFT Software Engineering Notes*, 26(5), 109–120.
+5. Alshiekh, M., Bloem, R., Ehlers, R., Könighofer, B., Niekum, S., & Topcu, U. (2018). Safe reinforcement learning via shielding. *Proceedings of the AAAI Conference on Artificial Intelligence*, 32(1).
+6. Guillory, A., & Bilmes, J. (2010). Interactive submodular set cover. *Proceedings of the 27th International Conference on Machine Learning (ICML)*.
+7. Golovin, D., & Krause, A. (2011). Adaptive submodularity: Theory and applications in active learning and stochastic optimization. *Journal of Artificial Intelligence Research*, 42, 427–486.

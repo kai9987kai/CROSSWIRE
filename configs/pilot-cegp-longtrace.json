@@ -1,0 +1,9 @@
+{
+  "families": ["long_trace"],
+  "seeds": [17, 23],
+  "budgets": [16],
+  "policies": ["task", "counterexample"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"],
+  "split": "evaluation"
+}
