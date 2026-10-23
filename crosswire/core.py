@@ -323,8 +323,50 @@ class CandidateSpace:
         word = _word(word, self.machine.inputs)
         return bool(ids) and all(self.contract.hazard not in self.semantic(i, word) for i in ids)
 
+    def choose_branching_step(self, ids, word_prefix=(), safe_only=False, safe_ids=None, seed=0):
+        """Select the next within-query action conditioned on the live belief and query prefix.
+
+        Chooses an action maximizing predictive output entropy across surviving models.
+        If safe_only=True, only actions where all surviving models in safe_ids predict zero hazard on
+        this step are considered eligible.
+        """
+        import math
+        ids = self._ids(ids)
+        if not ids or len(ids) <= 1:
+            return None
+        if safe_ids is None:
+            safe_ids = ids
+        prefix = _word(word_prefix, self.machine.inputs)
+        best_action, best_score = None, -1.0
+        n = len(ids)
+        order = [(seed + offset) % self.machine.inputs for offset in range(self.machine.inputs)]
+        for a in order:
+            extended = prefix + (a,)
+            if safe_only and not self.probe_is_safe(safe_ids, extended):
+                continue
+            counts = {}
+            for i in ids:
+                p = self.predict(i, extended)[-1]
+                counts[p] = counts.get(p, 0) + 1
+            h = 0.0
+            for c in counts.values():
+                prob = c / n
+                h -= prob * math.log2(prob)
+            self.work['pair_checks'] += n
+            if h > best_score:
+                best_action, best_score = a, h
+        if best_score <= 0.0:
+            # When models agree on predicted outputs, fall back to the rotating
+            # eligible action to test the hypothesis against target observations.
+            for a in order:
+                extended = prefix + (a,)
+                if not safe_only or self.probe_is_safe(safe_ids, extended):
+                    return a
+            return None
+        return best_action
+
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0, safe_only=False):
-        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2'):
+        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2', 'branching'):
             raise ValueError('unknown probe policy')
         if type(safe_only) is not bool:
             raise TypeError('safe_only must be a boolean')
@@ -383,6 +425,11 @@ class CandidateSpace:
             if best_score <= 0.0:
                 return min(eligible, key=lambda w: (len(w), w)) if eligible else None
             return best
+        if policy == 'branching':
+            step_action = self.choose_branching_step(ids, (), safe_only=safe_only)
+            if step_action is not None and (step_action,) in eligible:
+                return (step_action,)
+            return eligible[0] if eligible else None
         if policy == 'disagreement':
             best, best_score = None, 0
             n = len(ids)

@@ -17,7 +17,7 @@ from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
 EXECUTION_MODES = ("open_loop", "shielded", "recovery", "replan")
 PROBE_SAFETY_MODES = ('unrestricted', 'model_safe')
@@ -140,7 +140,8 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
              cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False,
-             admission: str = 'robust', escalate: bool = False, probe_safety: str = 'unrestricted'):
+             admission: str = 'robust', escalate: bool = False, probe_safety: str = 'unrestricted',
+             step: Callable | None = None, reset: Callable | None = None):
     """This function receives no Case, private map, target states or family label."""
     space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
@@ -174,29 +175,99 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
         selection_space = safety_space if safe_mode else space
         selection_ids = (selection_space.survivors(fit_evidence(probes), anchors)
                          if selection_space is not space else survivors)
-        word = selection_space.choose_probe(selection_ids, policy, remaining_actions, seen,
-                                            seed=92821 + len(probes), safe_only=safe_mode)
-        if word is None:
-            stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
-            break
-        seen.add(word)
         before = len(survivors)
-        outputs = []
-        complete = False
-        try:
-            outputs = query(word)
-            complete = True
-        except InterfaceError as exc:
-            error = {"code": exc.code, "message": str(exc)}
-            outputs = getattr(exc, 'trace', {}).get('outputs', [])
-        entry = {"word": list(word), "outputs": list(outputs), "complete": complete,
-                 "survivors_before": before}
-        if safe_mode:
-            entry['safety'] = {'model_class': 'temporal' if selection_space.temporal else 'static',
-                               'candidate_count': len(selection_ids), 'model_safe': True}
-        probes.append(entry)
-        survivors = space.survivors(fit_evidence(probes), anchors)
-        entry["survivors_after"] = len(survivors)
+
+        if policy == 'branching':
+            # Interactive within-query branching calibration:
+            # Observes intermediate outputs and selects each subsequent action conditionally.
+            word = []
+            outputs = []
+            complete = False
+            try:
+                if reset is not None:
+                    reset()
+                elif hasattr(query, '__self__') and hasattr(query.__self__, 'reset'):
+                    query.__self__.reset()
+            except InterfaceError as exc:
+                error = {"code": exc.code, "message": str(exc)}
+                stop_reason = 'INTERFACE_ERROR'
+                break
+
+            current_ids = list(selection_ids)
+            max_query_depth = min(4, remaining_actions)
+
+            while len(word) < max_query_depth and counts["target_calls"] < budget:
+                _check_cancel(cancel)
+                if len(current_ids) <= 1:
+                    break
+
+                if budget - counts["target_calls"] < 1:
+                    break
+
+                next_action = selection_space.choose_branching_step(
+                    current_ids, tuple(word), safe_only=safe_mode, safe_ids=selection_ids,
+                    seed=92821 + len(probes) + len(word)
+                )
+                if next_action is None:
+                    break
+
+                try:
+                    if step is not None:
+                        out = step(next_action)
+                    elif hasattr(query, '__self__') and hasattr(query.__self__, 'step'):
+                        out = query.__self__.step(next_action)
+                    else:
+                        out = query([next_action])[-1]
+                    word.append(next_action)
+                    outputs.append(out)
+                except InterfaceError as exc:
+                    error = {"code": exc.code, "message": str(exc)}
+                    break
+
+                current_ids = [
+                    i for i in current_ids
+                    if selection_space.predict(i, tuple(word)) == tuple(outputs)
+                ]
+                if len(current_ids) <= 1:
+                    break
+
+            complete = error is None
+            if word:
+                seen.add(tuple(word))
+                entry = {"word": list(word), "outputs": list(outputs), "complete": complete,
+                         "survivors_before": before}
+                if safe_mode:
+                    entry['safety'] = {'model_class': 'temporal' if selection_space.temporal else 'static',
+                                       'candidate_count': len(selection_ids), 'model_safe': True}
+                probes.append(entry)
+                survivors = space.survivors(fit_evidence(probes), anchors)
+                entry["survivors_after"] = len(survivors)
+            else:
+                stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
+                break
+        else:
+            word = selection_space.choose_probe(selection_ids, policy, remaining_actions, seen,
+                                                seed=92821 + len(probes), safe_only=safe_mode)
+            if word is None:
+                stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
+                break
+            seen.add(word)
+            outputs = []
+            complete = False
+            try:
+                outputs = query(word)
+                complete = True
+            except InterfaceError as exc:
+                error = {"code": exc.code, "message": str(exc)}
+                outputs = getattr(exc, 'trace', {}).get('outputs', [])
+            entry = {"word": list(word), "outputs": list(outputs), "complete": complete,
+                     "survivors_before": before}
+            if safe_mode:
+                entry['safety'] = {'model_class': 'temporal' if selection_space.temporal else 'static',
+                                   'candidate_count': len(selection_ids), 'model_safe': True}
+            probes.append(entry)
+            survivors = space.survivors(fit_evidence(probes), anchors)
+            entry["survivors_after"] = len(survivors)
         if progress:
             progress(counts["target_calls"], budget, f"{len(survivors)} mappings remain")
         if error:
@@ -284,7 +355,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             space, survivors, probes, error, escalation_info = _acquire(
                 public, config.policy, config.budget, target.query, target.counts, cancel, progress,
                 temporal=temporal, admission=config.admission, escalate=config.escalate,
-                probe_safety=config.probe_safety
+                probe_safety=config.probe_safety,
+                step=target.step, reset=target.reset
             )
             counts = dict(target.counts)
         else:

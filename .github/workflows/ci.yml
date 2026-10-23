@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, codex/crosswire-design ]
+  pull_request:
+    branches: [ main, codex/crosswire-design ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build pytest
+          pip install -e .
+
+      - name: Run automated test suite
+        run: |
+          python -m pytest -q --tb=short
+
+      - name: Build wheel package
+        run: |
+          python -m build --wheel
+
+      - name: Verify package installation
+        run: |
+          pip install dist/*.whl --force-reinstall
+
+      - name: Verify scientific receipt replay
+        run: |
+          python -m crosswire verify reports/pilot-calibration-safe-receipt.json
+          python -m crosswire verify reports/pilot-calibration-unrestricted-receipt.json
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run browser workbench end-to-end checks
+        run: |
+          node tools/check_workbench.cjs
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: output/playwright/
