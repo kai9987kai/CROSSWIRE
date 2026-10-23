@@ -2,7 +2,7 @@
 
 Procedural mechanisms are authored as control logic. They never consume the
 public reference transition table. Table mechanisms use separate literal data.
-Seed varies labels only: parent clusters deliberately remain small.
+Seed varies labels only; generated_protocol has a separate structural seed.
 """
 from collections import deque
 from dataclasses import dataclass
@@ -21,6 +21,7 @@ class Case:
 
 
 _DESCRIPTIONS = {
+    'generated_protocol': ('in_family', 'Versioned synthetic structural instances: two safe diagnostics precede one or two progress stages with independently sampled commands and fallback dynamics.'),
     'routing': ('in_family', 'Designed adaptive-policy control: three safe diagnostic actions precede a commit that must use the distinguished command.'),
     'latch': ('in_family', 'Arm then release a latch; hazards are absorbing.'),
     'handshake': ('in_family', 'Three-stage handshake with a reset command.'),
@@ -86,6 +87,48 @@ def _digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
 
+_PROTOCOL_GENERATOR = 'crosswire-generated-protocol-v1'
+
+
+def _protocol_parameters(instance_seed):
+    """Sample primitive control parameters without consuming the label RNG.
+
+    Every stage is reachable. Diagnostics never emit a terminal event, and a
+    goal path uses three or four actions. These are synthetic generator draws,
+    not evidence that any natural target population follows this distribution.
+    """
+    rng = random.Random(instance_seed)
+    patterns = [list(pattern) for pattern in itertools.product((0, 3), repeat=3)
+                if len(set(pattern)) > 1]
+    diagnostics = [list(rng.choice(patterns)) for _ in range(2)]
+    progress = []
+    for index in range(rng.randint(1, 2)):
+        advance, fallback = rng.sample(range(3), 2)
+        progress.append({'advance': advance, 'fallback': fallback,
+                         'fallback_state': rng.randrange(index + 3),
+                         'fallback_output': rng.choice((0, 3))})
+        # The final progress step emits goal, so no unused neutral parameter
+        # is sampled for it. Intermediate advancement gets a neutral event.
+        if index:
+            progress[index - 1]['advance_output'] = rng.choice((0, 3))
+    return {'diagnostics': diagnostics, 'progress': progress}
+
+
+def _protocol_table(parameters):
+    """Materialize a public reference from control parameters, never a target."""
+    stages = parameters['progress']
+    goal, hazard = len(stages) + 2, len(stages) + 3
+    rows = [tuple((index + 1, event) for event in outputs)
+            for index, outputs in enumerate(parameters['diagnostics'])]
+    for index, stage in enumerate(stages):
+        row = [(hazard, 2)] * 3
+        row[stage['advance']] = (index + 3, 1 if index == len(stages) - 1 else stage['advance_output'])
+        row[stage['fallback']] = (stage['fallback_state'], stage['fallback_output'])
+        rows.append(tuple(row))
+    rows.extend((tuple((goal, 1) for _ in range(3)), tuple((hazard, 2) for _ in range(3))))
+    return tuple(rows)
+
+
 def _grounded_anchors(family, output_map):
     """Publish only raw-symbol meanings valid throughout this experiment.
 
@@ -107,7 +150,8 @@ def _grounded_anchors(family, output_map):
     return {output_map[1]:1, output_map[2]:2}
 
 
-def make_case(family, seed=17, implementation='procedural', split='development', anchors=False, horizon=4):
+def make_case(family, seed=17, implementation='procedural', split='development', anchors=False, horizon=4,
+              *, instance_seed=None):
     if family not in _DESCRIPTIONS:
         raise ValueError('unknown family')
     if implementation not in ('table', 'procedural'):
@@ -116,9 +160,13 @@ def make_case(family, seed=17, implementation='procedural', split='development',
         raise ValueError('unknown split')
     if type(seed) is not int or not 0 <= seed <= 2**32-1:
         raise ValueError('seed must be unsigned 32-bit integer')
+    if instance_seed is not None and (type(instance_seed) is not int or not 0 <= instance_seed <= 2**32-1):
+        raise ValueError('instance_seed must be an unsigned 32-bit integer or None')
+    if family != 'generated_protocol' and instance_seed is not None:
+        raise ValueError('instance_seed is supported only by generated_protocol')
     if type(anchors) is not bool or type(horizon) is not int or not 1 <= horizon <= 6:
         raise ValueError('invalid anchors or horizon')
-    source_family = family if family in ('routing','latch','handshake','symmetric','neutral','long_trace','rotary','interlock') else 'latch'
+    source_family = family if family in ('generated_protocol','routing','latch','handshake','symmetric','neutral','long_trace','rotary','interlock') else 'latch'
     if family == 'extra_state':
         source_family = 'long_trace'
     mechanism = family if family in ('incompatible','extra_state') else source_family
@@ -133,10 +181,25 @@ def make_case(family, seed=17, implementation='procedural', split='development',
     if family == 'malformed':
         private.update(fault_mode='malformed', fault_after=0)
     parent = _digest({'source_family':source_family, 'semantic_version':1})
-    public = {'reference': Machine('reference', _table(source_family)).to_dict(),
+    design = None
+    if family == 'generated_protocol':
+        structural_seed = 0 if instance_seed is None else instance_seed
+        parameters = _protocol_parameters(structural_seed)
+        private.update(instance_seed=structural_seed, generator=_PROTOCOL_GENERATOR,
+                       mechanism_parameters=parameters)
+        reference_table = _protocol_table(parameters)
+        dynamics_hash = _digest({'initial': 0, 'inputs': 3, 'outputs': 4, 'transitions': reference_table})
+        parent = _digest({'generator': _PROTOCOL_GENERATOR, 'dynamics_hash': dynamics_hash})
+        design = {'generator': _PROTOCOL_GENERATOR, 'dynamics_hash': dynamics_hash,
+                  'sampling_unit': 'generated_semantic_dynamics'}
+    else:
+        reference_table = _table(source_family)
+    public = {'reference': Machine('reference', reference_table).to_dict(),
               'contract': contract, 'target_id': _digest(private),
               'anchors': _grounded_anchors(family,output_map) if anchors else {},
               'parent_instance_id': parent}
+    if design is not None:
+        public['instance_design'] = design
     return Case(public, private)
 
 
@@ -188,7 +251,8 @@ class _Engine:
 
 class _TableEngine(_Engine):
     def __init__(self, config, work=None):
-        self.transitions = _table(config['mechanism'])
+        self.transitions = (_protocol_table(config['mechanism_parameters'])
+                            if config['mechanism'] == 'generated_protocol' else _table(config['mechanism']))
         super().__init__(config, work)
 
     def _transition(self, action):
@@ -198,6 +262,23 @@ class _TableEngine(_Engine):
 class _ProceduralEngine(_Engine):
     def _transition(self, action):
         family, state = self.config['mechanism'], self.state
+        if family == 'generated_protocol':
+            parameters = self.config['mechanism_parameters']
+            stages = parameters['progress']
+            goal, hazard = len(stages) + 2, len(stages) + 3
+            if state == goal:
+                return goal, 1
+            if state == hazard:
+                return hazard, 2
+            if state < 2:
+                return state + 1, parameters['diagnostics'][state][action]
+            index = state - 2
+            stage = stages[index]
+            if action == stage['advance']:
+                return state + 1, 1 if index == len(stages) - 1 else stage['advance_output']
+            if action == stage['fallback']:
+                return stage['fallback_state'], stage['fallback_output']
+            return hazard, 2
         if family == 'routing':
             if state < 3:
                 return state + 1, 0 if action == 0 else 3

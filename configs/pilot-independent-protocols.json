@@ -1,0 +1,17 @@
+{
+  "families": ["generated_protocol"],
+  "instance_seeds": [1086403294, 3345179875, 2292068731, 1576243029, 1748994377, 3755511987, 3401703359, 1339975701, 2531305899, 3755517491, 1731955854, 619042882, 1616307191, 4106850140, 1223370761, 2467781857, 3344421178, 3050058121, 1170689128, 2880625474, 3197723763, 3032234287, 92124842, 642515718, 974945490, 3920501283, 3058244900, 2575615354, 782576727, 3596022451, 583869406, 1207436356],
+  "seeds": [17, 42],
+  "budgets": [16],
+  "policies": ["fixed", "entropy"],
+  "admissions": ["robust"],
+  "implementations": ["procedural"],
+  "anchors": false,
+  "split": "evaluation",
+  "horizon": 4,
+  "execution_mode": "shielded",
+  "temporal": false,
+  "escalate": false,
+  "probe_safety": "model_safe",
+  "risk_tolerance": 0.0
+}

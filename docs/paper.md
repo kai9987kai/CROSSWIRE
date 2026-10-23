@@ -110,15 +110,15 @@ Furthermore, under Simplex runtime monitoring (`recovery` mode), fallback execut
 
 If the live belief is refuted ($\mathcal{V}_t = \emptyset$, indicating target drift or misspecification outside the hypothesis class), the shield refuses to speculate on uncertified fallback actions and immediately halts deployment (`INTERVENED_ANOMALY`). This prevents ungrounded fallback maneuvers from inadvertently triggering latent hazards.
 
-### 2.9 Submodular Equivalence Class Edge Cutting (EC2)
+### 2.9 EC2-Inspired Contract Edge Cutting
 A central bottleneck in active learning for interface synthesis is that traditional query selection algorithms either treat candidate models homogeneously (counting unweighted disagreement pairs) or maximize output entropy across the entire hypothesis space. However, in goal-oriented contract satisfaction, candidate adapters that share identical contract-admissible plans belong to the same **Contract Equivalence Class**:
 $$\mathcal{E}(S) = \{\alpha \in \mathcal{V} \mid \text{safe\_words}(\alpha) = S\}$$
 Separating two adapters within the same class $\mathcal{E}$ yields zero information regarding which plan to admit or which hazards to avoid.
 
-CROSSWIRE formalizes and implements Equivalence Class Edge Cutting (EC2; Guillory & Bilmes 2010; Golovin & Krause 2011). Given surviving classes $\{\mathcal{E}_1, \dots, \mathcal{E}_m\}$, the weighted edge cut of a probe word $w$ is:
+CROSSWIRE implements a contract edge-cut heuristic inspired by [Golovin, Krause and Ray's EC2 (2010)](https://papers.nips.cc/paper_files/paper/2010/hash/1e6e0a04d20f50967c64dac2d639a577-Abstract.html). Given surviving classes $\{\mathcal{E}_1, \dots, \mathcal{E}_m\}$, the weighted edge cut of a probe word $w$ is:
 $$\text{Cut}_{i,j}(w) = |\mathcal{E}_i| \cdot |\mathcal{E}_j| - \sum_{p \in \Sigma_O^L} T_i(p) \cdot T_j(p)$$
 $$\text{Score}_{\text{EC2}}(w) = \frac{\sum_{1 \le i < j \le m} d_J(S_i, S_j) \cdot \text{Cut}_{i,j}(w)}{1 + |w|}$$
-where $d_J(S_i, S_j) = \frac{|S_i \Delta S_j|}{\max(1, |S_i \cup S_j|)}$ is the Jaccard distance between admissible deployment sets, $T_i(p)$ is the count of adapters in $\mathcal{E}_i$ predicting raw output $p$, and $1 + |w|$ normalizes for system-call query cost (reset + steps). Under adaptive submodularity, EC2 achieves near-optimal decision resolution with complexity $O(m^2 \cdot |\Sigma_O|^L)$ per candidate word, avoiding unnecessary queries on contract-equivalent models.
+where $d_J(S_i, S_j) = \frac{|S_i \Delta S_j|}{\max(1, |S_i \cup S_j|)}$ is the Jaccard distance between admissible deployment sets, $T_i(p)$ counts adapters predicting raw output $p$, and $1 + |w|$ charges reset plus actions. The implementation groups the existing weighted disagreement objective by contract class. No adaptive-submodularity or approximation guarantee has been established for this modified objective; the original EC2 theorem is not a theorem about this implementation.
 
 ### 2.10 Receding-Horizon Dynamic Replanning Shield
 In classical runtime shielding, encountering an unexpected observation or an upcoming plan hazard causes the controller to immediately abort or execute a single-step fallback. However, during execution, each intermediate observation $o_t$ prunes the live belief set ($\mathcal{V}_t \subset \mathcal{V}_{t-1}$). Consequently, alternative goal-reaching paths that were previously blocked by eliminated adapters may now be provably safe under all remaining candidates.
@@ -129,10 +129,17 @@ CROSSWIRE introduces the **Receding-Horizon Replanning Shield** (`replan` mode).
 2. If such a suffix $w'$ exists, the shield dynamically adopts $w'$ (`REPLANNED_ONLINE_SAFE`), logs the detour event, and continues execution towards the goal.
 3. If no safe replanned path exists within the remaining horizon, the shield safely falls back to conservative recovery or aborts (`INTERVENED_HAZARD_AVERTED`).
 
-### 2.11 Risk-Controlled Version-Space Admission
-Between strict zero-hazard consensus ($\hat{R}_{\text{hazard}} = 0$) and forced-fit point estimation, CROSSWIRE provides a risk-calibrated admission framework grounded in conformal risk control (Bates et al. 2021; Angelopoulos et al. 2022). For a user-specified risk tolerance $\epsilon \in [0.0, 1.0)$, a candidate plan $w$ is admitted if and only if:
+### 2.11 Candidate-Fraction Version-Space Admission
+Between strict zero-hazard consensus and forced-fit point estimation, CROSSWIRE provides exact enumeration of hazardous and successful candidate fractions. The API retains the name `risk_controlled`. For a configured tolerance $\epsilon \in [0.0, 1.0)$, a candidate plan $w$ is admitted if and only if:
 $$\hat{R}_{\text{hazard}}(w; \mathcal{V}) \le \epsilon \quad \text{and} \quad \hat{G}_{\text{goal}}(w; \mathcal{V}) \ge 1 - \epsilon$$
-where empirical hazard and goal rates are evaluated across the entire surviving version space $\mathcal{V}$. When $\epsilon = 0.0$, the rule strictly reduces to robust consensus, while positive $\epsilon$ enables provably bounded risk-tolerant coordination.
+These are uniformly weighted fractions over the finite surviving model set, not independent empirical samples or calibrated probabilities about the target. Zero tolerance reduces to robust consensus. Positive tolerance permits failure under some interpretations. Unlike [conformal risk control](https://github.com/aangelopoulos/conformal-risk), no exchangeable calibration sample or expected test-loss guarantee is established here. The independent checker validates the configured tolerance, the supplied fractions and both count-based thresholds without an additional rounding allowance. Unselected plans have undefined rates.
+
+### 2.12 Model-Safe Calibration
+Deployment safety does not account for hazards triggered while learning. With `probe_safety=model_safe`, every proposed calibration word is checked before dispatch:
+$$\forall \alpha \in \mathcal{V}(D_t),\quad h \notin \alpha.\mathrm{semantic}(w).$$
+The constraint covers every prefix, fixed-pool probes and dynamically generated counterexamples. With escalation enabled, the calibration envelope includes all static and latency-1 adapters from the first query, even while fitting starts in the static class. A separate checker re-enumerates sequential pre-probe beliefs from public evidence and checks the full dispatched word, including an interrupted suffix. No eligible safe query causes conservative stopping without consuming a target call.
+
+This applies the model-conditional principle of [shielding during learning](https://ojs.aaai.org/index.php/AAAI/article/view/11797) to CROSSWIRE's finite probe policies. It assumes model inclusion, stationarity, deterministic resets and truthful anchors. Search is bounded; abstention does not establish impossibility of all safe experiments. Private semantic negative controls remain necessary.
 
 ---
 
@@ -337,11 +344,11 @@ We conducted a dedicated 36-run comparative evaluation (`reports/pilot-escalatio
 
 ### 4.7 Receding-Horizon Replanning, EC2 Probing & Risk-Controlled Benchmark (96 Runs)
 
-To evaluate advanced runtime resilience, submodular active probing, and distribution-free risk calibration under partial observability, we implemented three complementary algorithms and executed a 96-run empirical benchmark (`reports/pilot-replanning-ec2-receipt.json`):
+The historical 96-run benchmark (`reports/pilot-replanning-ec2-receipt.json`) evaluated runtime resilience and contract-directed probing. Its `risk_controlled` configurations used the default zero tolerance and therefore provide no positive-tolerance calibration evidence:
 
-1. **Submodular Equivalence Class Edge Cutting (`ec2`):** Grounded in Guillory & Bilmes (2010), the `ec2` active probing policy clusters surviving candidate adapters $\mathcal{V}$ into contract decision classes $\mathcal{E}_1, \dots, \mathcal{E}_m$ according to their admitted safe deployment plans. The policy selects candidate probe sequences $w \in \Sigma_I^{\le 3}$ that cut edges across distinct decision classes, weighted by Jaccard distance $d_J(S_i, S_j) = 1 - \frac{|S_i \cap S_j|}{|S_i \cup S_j|}$. Wasted target interactions that distinguish functionally equivalent adapters are filtered out, focusing query budget purely on resolving the contract admission decision.
+1. **Contract Edge Cutting (`ec2`):** The EC2-inspired heuristic groups candidates by contract-admissible plans and weights cross-class raw disagreement by Jaccard distance. Intra-class pairs receive zero weight. This is an implementation heuristic without a transferred submodularity guarantee.
 2. **Receding-Horizon Dynamic Replanning Shield (`replan` mode):** When deploying a planned action sequence, intermediate target responses prune the live belief set $\mathcal{V}_t \subseteq \mathcal{V}$. If upcoming planned actions threaten to trigger a hazard or reach an unmodeled dead-end under the remaining survivors, the replanning shield executes online receding-horizon search (`_find_safe_suffix`). It synthesizes an alternative safe suffix detour path ($w_{\text{safe}}$ with length up to $H - t$) that satisfies the contract goal across all remaining survivors without encountering hazards (`REPLANNED_ONLINE_SAFE`), dynamically salvaging the deployment without aborting.
-3. **Risk-Controlled Version-Space Admission (`risk_controlled` mode):** Inspired by conformal risk control and Learn-Then-Test frameworks (Angelopoulos et al. 2022), the admission engine calculates the empirical hazard risk $\hat{R}_{\text{hazard}}(w; \mathcal{V})$ and goal success rate $\hat{G}_{\text{goal}}(w; \mathcal{V})$ over the surviving belief set. Plans are admitted if $\hat{R}_{\text{hazard}} \le \epsilon$ and $\hat{G}_{\text{goal}} \ge 1 - \delta$ for user-specified risk tolerance $\epsilon \in [0.0, 1.0)$ and goal threshold $\delta$. At $\epsilon = 0.0$, the policy recovers robust consensus while admitting provable risk tolerance bounds under certified evidence certificates.
+3. **Candidate-Fraction Admission (`risk_controlled`):** The engine counts hazardous and contract-satisfying interpretations. One configured tolerance bounds both hazardous and unsuccessful fractions. This benchmark used zero tolerance, equivalent to robust consensus; it does not establish a probabilistic risk-control result.
 
 #### Empirical Evaluation (96 Runs)
 The 96-run study evaluated combinations of probing policies (`ec2`, `task`, `entropy`, `fixed`) and admission modes (`robust`, `risk_controlled`) across in-family (`handshake`, `latch`) and out-of-family pipeline-delayed (`delay`) interfaces at budgets $B \in \{0, 16\}$ under closed-loop replanning execution:
@@ -365,9 +372,9 @@ The 96-run study evaluated combinations of probing policies (`ec2`, `task`, `ent
 | `ec2/risk_controlled` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
 
 *Key Findings:*
-1. **Decision-Preserving Submodular Probing:** On `handshake` and `latch`, `ec2` cut all cross-decision ambiguity within 8.5 target interactions, achieving 100% useful coverage and 0% selective harm. Crucially, when paired with autonomous model escalation on `delay`, `ec2` successfully identified valid temporal adapters with 100% coverage, while `fixed` probing failed completely (0% coverage).
+1. **Contract-Directed Probing:** In this pilot, `ec2` achieved useful coverage on both `handshake` and `latch` cases at a mean 8.5 calibration calls. This finite result does not establish submodularity or general query-efficiency guarantees.
 2. **Dynamic Replanning Efficacy:** In deployments where early observations pruned surviving models, `replan` execution dynamically searched and executed verified alternative safe suffixes, successfully guiding executions to the goal state while recording 0 runtime hazards.
-3. **Certified Risk Control:** At zero risk tolerance ($\epsilon = 0.0$), `risk_controlled` matched robust consensus with 100% precision across all test fixtures. All admitted runs carried independent public certificates verifying both risk bounds and goal coverage.
+3. **Candidate-Fraction Checking:** At zero tolerance, `risk_controlled` matched robust consensus in this pilot. Public certificates check finite candidate claims, not the target's real-world risk distribution.
 4. **Overall Corpus Verification:** With this study, CROSSWIRE's total verified empirical benchmark corpus reaches **853 runs across 10 benchmarks**, all backed by cryptographically determinable receipts and replayable public certificates.
 
 ---
@@ -384,7 +391,7 @@ The empirical evidence provides a clear answer to our research question:
 
 ### 5.2 Honest Scope Limitations
 1. **Alphabet and State Cardinality:** Experiments were conducted on finite alphabets ($|\Sigma_I|=3, |\Sigma_O|=4$) and state sizes ($|Q| \le 7$). While representative of protocol handshakes and discrete controllers, scaling to large or continuous alphabets requires symbolic or approximate candidate representations.
-2. **Post-Calibration Non-Stationarity:** While open-loop execution is vulnerable to post-calibration drift, CROSSWIRE's Closed-Loop Dynamic Runtime Shield mitigates this risk by dynamically evaluating surviving candidate consistency at every step and halting before catastrophic hazard transitions can occur.
+2. **Post-Calibration Non-Stationarity:** Runtime shielding can halt on detected raw anomalies and block actions hazardous under a surviving model. An unmodeled semantic change can cause harm before any distinguishable observation appears; the pilot interception results do not guarantee safety under arbitrary drift.
 
 ---
 

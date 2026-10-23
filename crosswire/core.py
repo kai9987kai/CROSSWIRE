@@ -313,17 +313,33 @@ class CandidateSpace:
                 self.work['pair_checks'] += na * nb
         return total
 
-    def choose_probe(self, ids, policy, remaining_steps, seen, seed=0):
+    def probe_is_safe(self, ids, word):
+        """Check prefix hazard freedom under every live semantic interpretation.
+
+        This is conditional on inclusion in the declared finite model family;
+        raw response agreement alone does not certify the target's semantics.
+        """
+        ids = self._ids(ids)
+        word = _word(word, self.machine.inputs)
+        return bool(ids) and all(self.contract.hazard not in self.semantic(i, word) for i in ids)
+
+    def choose_probe(self, ids, policy, remaining_steps, seen, seed=0, safe_only=False):
         if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2'):
             raise ValueError('unknown probe policy')
+        if type(safe_only) is not bool:
+            raise TypeError('safe_only must be a boolean')
         ids = self._ids(ids)
         _integer(remaining_steps, 'remaining steps')
         _integer(seed, 'seed', maximum=2**32 - 1)
         seen = {_word(w, self.machine.inputs) for w in seen}
+        if not ids:
+            return None
         # remaining_steps is the action allowance after the caller has reserved
         # the reset for this query. Scores still charge reset + actions in their
         # information/cost ratio.
         eligible = [w for w in self._probes if w not in seen and len(w) <= remaining_steps]
+        if safe_only:
+            eligible = [w for w in eligible if self.probe_is_safe(ids, w)]
         if not eligible and policy != 'counterexample':
             return None
         if policy == 'fixed':
@@ -408,7 +424,8 @@ class CandidateSpace:
                         if not weights[i][j]:
                             continue
                         witness = self.distinguishing_word(classes[i][1][0], classes[j][1][0], limit)
-                        if witness is not None and witness not in seen and witness not in pool:
+                        if (witness is not None and witness not in seen and witness not in pool
+                                and (not safe_only or self.probe_is_safe(ids, witness))):
                             pool.append(witness)
             best, best_score = None, 0.0
             for word in pool:
@@ -445,11 +462,15 @@ class CandidateSpace:
     def plan(self, ids, mode='robust', transcripts=None, anchors=None, risk_tolerance=0.0):
         if mode not in ('robust', 'one_best', 'unique', 'fit', 'identity', 'abstain', 'risk_controlled'):
             raise ValueError('unknown admission mode')
+        # The bounds reject NaN/infinity as well as unsupported numeric aliases;
+        # validating before any empty-belief return keeps the public API strict.
+        if type(risk_tolerance) not in (int, float) or not 0 <= risk_tolerance < 1:
+            raise ValueError('risk_tolerance must be a finite number in [0, 1)')
         ids = self._ids(ids)
         if mode == 'risk_controlled':
             if not ids:
                 return {'status': 'FAMILY_CONTRADICTED', 'admitted': False, 'word': None,
-                        'candidate_count': 0, 'risk_metrics': {'hazard_risk': 1.0, 'goal_rate': 0.0, 'tolerance': risk_tolerance}}
+                        'candidate_count': 0, 'risk_metrics': {'hazard_risk': None, 'goal_rate': None, 'tolerance': risk_tolerance}}
             n = len(ids)
             admissible_candidates = []
             for w in self._deployment:
@@ -457,11 +478,11 @@ class CandidateSpace:
                 g_count = sum(self.contract.accepts(self.semantic(i, w)) for i in ids)
                 h_risk = h_count / n
                 g_rate = g_count / n
-                if h_risk <= (risk_tolerance + 1e-9) and g_rate >= (1.0 - risk_tolerance - 1e-9):
+                if h_risk <= risk_tolerance and (n - g_count) / n <= risk_tolerance:
                     admissible_candidates.append((w, h_risk, g_rate))
             if not admissible_candidates:
                 return {'status': 'UNRESOLVED', 'admitted': False, 'word': None,
-                        'candidate_count': n, 'risk_metrics': {'hazard_risk': 1.0, 'goal_rate': 0.0, 'tolerance': risk_tolerance}}
+                        'candidate_count': n, 'risk_metrics': {'hazard_risk': None, 'goal_rate': None, 'tolerance': risk_tolerance}}
             best_w, best_h_risk, best_g_rate = min(
                 admissible_candidates,
                 key=lambda item: (len(item[0]), item[1], -item[2], item[0])

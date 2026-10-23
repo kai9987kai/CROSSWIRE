@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import sys
 
-from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, RunConfig, run, run_study
+from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, RunConfig, run, run_study
 from .fixtures import catalog
 from .receipts import check_envelope, pack, replay
 
@@ -26,16 +26,23 @@ def main(argv=None):
     commands = parser.add_subparsers(dest='command', required=True)
     one = commands.add_parser('run')
     defaults = asdict(RunConfig())
-    for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode'):
+    for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode', 'probe_safety'):
         choices = {'family': [f['id'] for f in catalog()], 'implementation': ['table', 'procedural'],
                    'split': ['development', 'evaluation'], 'policy': POLICIES, 'admission': ADMISSIONS,
-                   'execution_mode': EXECUTION_MODES}[name]
-        one.add_argument('--' + name, default=defaults[name], choices=choices)
+                   'execution_mode': EXECUTION_MODES, 'probe_safety': PROBE_SAFETY_MODES}[name]
+        flags = ['--' + name]
+        if '_' in name:
+            flags.append('--' + name.replace('_', '-'))
+        one.add_argument(*flags, default=defaults[name], choices=choices)
     for name in ('seed', 'budget', 'horizon'):
         one.add_argument('--' + name, default=defaults[name], type=int)
+    one.add_argument('--instance-seed', '--instance_seed', type=int, default=defaults['instance_seed'],
+                     help='Structural seed for generated_protocol; --seed changes opaque labels only')
     one.add_argument('--anchors', action='store_true')
     one.add_argument('--temporal', action='store_true')
     one.add_argument('--escalate', action='store_true')
+    one.add_argument('--risk-tolerance', '--risk_tolerance', type=float, default=defaults['risk_tolerance'],
+                     help='Allowed fraction of uniformly weighted surviving models (not calibrated target risk)')
     one.add_argument('--out', type=Path)
     study = commands.add_parser('study')
     study.add_argument('--config', type=Path, required=True)

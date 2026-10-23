@@ -5,6 +5,7 @@ from collections import defaultdict
 from contextlib import ExitStack
 from dataclasses import asdict, dataclass, fields
 from itertools import product
+import math
 import random
 import threading
 import time
@@ -19,6 +20,7 @@ from .identity import canonical_hash, scientific_view, source_hash
 POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
 EXECUTION_MODES = ("open_loop", "shielded", "recovery", "replan")
+PROBE_SAFETY_MODES = ('unrestricted', 'model_safe')
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
 
@@ -41,6 +43,13 @@ class RunConfig:
     execution_mode: str = "open_loop"
     temporal: bool = False
     escalate: bool = False
+    probe_safety: str = 'unrestricted'
+    risk_tolerance: float = 0.0
+    instance_seed: int | None = None
+
+    def __post_init__(self):
+        if self.family == 'generated_protocol' and self.instance_seed is None:
+            object.__setattr__(self, 'instance_seed', 0)
 
     @classmethod
     def from_dict(cls, values: dict) -> "RunConfig":
@@ -55,12 +64,26 @@ class RunConfig:
             value = getattr(self, key)
             if type(value) is not int or not low <= value <= high:
                 raise ValueError(f"{key} must be an integer in [{low}, {high}]")
+        if self.instance_seed is not None and (
+                type(self.instance_seed) is not int or not 0 <= self.instance_seed <= 2**32 - 1):
+            raise ValueError('instance_seed must be an unsigned 32-bit integer or null')
+        if self.instance_seed is not None and self.family != 'generated_protocol':
+            raise ValueError('instance_seed is supported only by generated_protocol')
         if type(self.anchors) is not bool:
             raise ValueError("anchors must be a boolean")
         if type(self.temporal) is not bool:
             raise ValueError("temporal must be a boolean")
         if type(self.escalate) is not bool:
             raise ValueError("escalate must be a boolean")
+        if self.probe_safety not in PROBE_SAFETY_MODES:
+            raise ValueError('Unknown probe_safety mode')
+        if (type(self.risk_tolerance) not in (int, float) or not 0 <= self.risk_tolerance < 1
+                or not math.isfinite(self.risk_tolerance)):
+            raise ValueError('risk_tolerance must be a finite number in [0, 1)')
+        if self.risk_tolerance and self.admission != 'risk_controlled':
+            raise ValueError('Positive risk_tolerance requires risk_controlled admission')
+        if self.policy == 'aalpy' and self.probe_safety != 'unrestricted':
+            raise ValueError('The AALpy baseline does not support model_safe calibration')
         if self.escalate and self.temporal:
             raise ValueError("escalate cannot be combined with temporal=True (starts at static and escalates)")
         if self.execution_mode not in EXECUTION_MODES:
@@ -117,7 +140,7 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
              cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False,
-             admission: str = 'robust', escalate: bool = False):
+             admission: str = 'robust', escalate: bool = False, probe_safety: str = 'unrestricted'):
     """This function receives no Case, private map, target states or family label."""
     space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
@@ -127,6 +150,12 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
     error = None
     escalated = False
     escalation_history = []
+    safe_mode = probe_safety == 'model_safe'
+    # An enabled larger class must be guarded before it becomes necessary for
+    # fitting. Static predictions alone cannot protect a delayed target.
+    safety_space = (CandidateSpace(space.machine, space.contract, temporal=True)
+                    if safe_mode and escalate else space)
+    stop_reason = 'CALL_CAP'
     # `budget` is the shared system-call cap: every reset and every action
     # attempt counts, so all methods compare at the same total target access.
     while counts["target_calls"] < budget:
@@ -137,13 +166,18 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
         else:
             ready = space.plan(survivors, "robust")["admitted"]
         if ready:
+            stop_reason = 'CONTRACT_READY'
             break
         remaining_actions = budget - counts["target_calls"] - 1  # one reset per query
         if remaining_actions < 1:
             break
-        word = space.choose_probe(survivors, policy, remaining_actions, seen,
-                                  seed=92821 + len(probes))
+        selection_space = safety_space if safe_mode else space
+        selection_ids = (selection_space.survivors(fit_evidence(probes), anchors)
+                         if selection_space is not space else survivors)
+        word = selection_space.choose_probe(selection_ids, policy, remaining_actions, seen,
+                                            seed=92821 + len(probes), safe_only=safe_mode)
         if word is None:
+            stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
             break
         seen.add(word)
         before = len(survivors)
@@ -157,12 +191,16 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
             outputs = getattr(exc, 'trace', {}).get('outputs', [])
         entry = {"word": list(word), "outputs": list(outputs), "complete": complete,
                  "survivors_before": before}
+        if safe_mode:
+            entry['safety'] = {'model_class': 'temporal' if selection_space.temporal else 'static',
+                               'candidate_count': len(selection_ids), 'model_safe': True}
         probes.append(entry)
         survivors = space.survivors(fit_evidence(probes), anchors)
         entry["survivors_after"] = len(survivors)
         if progress:
             progress(counts["target_calls"], budget, f"{len(survivors)} mappings remain")
         if error:
+            stop_reason = 'INTERFACE_ERROR'
             break
         if not survivors:
             if escalate and not space.temporal:
@@ -181,9 +219,16 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
                 if progress:
                     progress(counts["target_calls"], budget, f"Escalated to temporal model class: {len(survivors)} mappings")
                 if not survivors:
+                    stop_reason = 'MODEL_CONTRADICTED'
                     break
             else:
+                stop_reason = 'MODEL_CONTRADICTED'
                 break
+    if safety_space is not space and safe_mode:
+        # Count the independent envelope selection work as well as fitting and
+        # any discarded static search work. No target calls are hidden here.
+        for key in space.work:
+            space.work[key] += safety_space.work[key]
     escalation_info = {
         "enabled": escalate,
         "escalated": escalated,
@@ -191,6 +236,10 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
         "history": escalation_history,
         "model_class": "temporal" if space.temporal else "static",
         "structural_complexity": 1 if space.temporal else 0,
+        'calibration': {'mode': probe_safety, 'stop_reason': stop_reason,
+                        'safety_model_class': 'temporal' if (temporal or (safe_mode and escalate)) else 'static',
+                        'scope': 'Bounded probe search within the remaining call cap; model-safe means hazard-free '
+                                 'under every evidence-compatible enabled model, conditional on truthful semantics.'},
     }
     return space, survivors, probes, error, escalation_info
 
@@ -208,7 +257,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
     if frozen_source != _PROCESS_SOURCE_HASH:
         raise RuntimeError('Source changed since runtime import; restart CROSSWIRE before creating evidence')
     _check_cancel(cancel)
-    case = make_case(config.family, config.seed, config.implementation, config.split, config.anchors, config.horizon)
+    case = make_case(config.family, config.seed, config.implementation, config.split, config.anchors, config.horizon,
+                     instance_seed=config.instance_seed)
     public = case.public
     counts = dict(reset_attempts=0, step_attempts=0, reset_successes=0, step_successes=0, target_calls=0)
     baseline = {"name": config.policy, "privileged": config.admission == "oracle"}
@@ -233,7 +283,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             target = resources.enter_context(TargetProcess(case.private))
             space, survivors, probes, error, escalation_info = _acquire(
                 public, config.policy, config.budget, target.query, target.counts, cancel, progress,
-                temporal=temporal, admission=config.admission, escalate=config.escalate
+                temporal=temporal, admission=config.admission, escalate=config.escalate,
+                probe_safety=config.probe_safety
             )
             counts = dict(target.counts)
         else:
@@ -256,7 +307,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         else:
             anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
             decision = space.plan(survivors, config.admission, transcripts=fit_evidence(probes),
-                                  anchors=anchors)
+                                  anchors=anchors, risk_tolerance=config.risk_tolerance)
             if config.admission == "fit":
                 baseline["fit_diagnostics"] = fit_diagnostics(space, fit_evidence(probes), anchors)
         if error:
@@ -265,6 +316,11 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         elif config.policy == 'aalpy' and not baseline.get('model_complete') and config.admission != 'oracle':
             decision = {'status': 'UNRESOLVED', 'admitted': False, 'word': None,
                         'candidate_count': 0, 'reason': 'Budget exhausted before a complete classical model'}
+        decision['calibration'] = escalation_info.pop('calibration', {
+            'mode': config.probe_safety,
+            'stop_reason': 'CLASSICAL_BASELINE' if config.policy == 'aalpy' else 'NOT_REQUESTED',
+            'safety_model_class': 'temporal' if (config.temporal or config.escalate) else 'static',
+            'scope': 'Calibration safety is conditional on the declared finite enabled model and truthful anchors.'})
         decision["escalation"] = escalation_info
         if decision["status"] == "FAMILY_CONTRADICTED" and config.escalate:
             static_count = len(space.adapters) // (1 + space.machine.outputs) if space.temporal else len(space.adapters)
@@ -327,6 +383,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                         "audit_execution_steps": audit["audit_execution_steps"]},
             "baseline": baseline,
         }
+        if 'instance_design' in public:
+            result['instance_design'] = public['instance_design']
         if source_hash() != frozen_source:
             raise RuntimeError('Source changed during run; discard mixed-revision evidence')
         result["scientific_hash"] = canonical_hash(scientific_view(result))
@@ -336,8 +394,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         tracemalloc.stop()
 
 
-_CONDITION_FIELDS = ('anchors', 'split', 'horizon', 'execution_mode', 'temporal', 'escalate')
-_CONDITION_DEFAULTS = (False, 'development', 4, 'open_loop', False, False)
+_CONDITION_FIELDS = ('anchors', 'split', 'horizon', 'execution_mode', 'temporal', 'escalate', 'probe_safety', 'risk_tolerance')
+_CONDITION_DEFAULTS = (False, 'development', 4, 'open_loop', False, False, 'unrestricted', 0.0)
 
 
 def _condition(configuration: dict) -> tuple:
@@ -398,6 +456,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
     horizon and split. Label seeds and implementations are matched within each
     semantic parent before whole-parent resampling. Duplicate cells are refused
     instead of allowing their last value to silently determine the contrast.
+    Policy pairs also fix admission; admission contrasts use robust as reference.
     """
     scopes = {f["id"]: f["scope"] for f in catalog()}
     comparisons = {'policy': defaultdict(dict), 'admission': defaultdict(dict)}
@@ -408,28 +467,32 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
         if scopes.get(c["family"]) != "in_family":
             continue
         conditions = _condition(c)
-        cell = (c['family'], c['seed'], c['implementation'])
+        cell = (c['family'], c['seed'], c['implementation'], c.get('instance_seed'))
         parent = row['parent_instance_id']
         identity = (c['budget'], conditions, parent, cell, c['policy'], c['admission'])
         if identity in seen:
             raise ValueError('Duplicate matched analysis cell; each condition/method must occur once')
         seen.add(identity)
         outcome = int(row['audit']['contract_satisfied'] is True)
-        if c['admission'] == 'robust':
-            key = (c['budget'], conditions, 'robust', parent, cell)
-            comparisons['policy'][key][c['policy']] = outcome
+        key = (c['budget'], conditions, c['admission'], parent, cell)
+        comparisons['policy'][key][c['policy']] = outcome
         key = (c['budget'], conditions, c['policy'], parent, cell)
         comparisons['admission'][key][c['admission']] = outcome
 
     output = []
     for axis, cells in comparisons.items():
-        reference = 'task' if axis == 'policy' else 'robust'
         strata = sorted({key[:3] for key in cells})
         for budget, conditions, fixed in strata:
             stratum = (budget, conditions, fixed)
-            methods = sorted({method for key, values in cells.items() if key[:3] == stratum
-                              for method in values} - {reference})
-            for method in methods:
+            methods = sorted({method for key, values in cells.items() if key[:3] == stratum for method in values})
+            if axis == 'policy':
+                # Preserve task-relative signs while making arbitrary selected
+                # policy pairs (e.g. entropy vs fixed) analyzable too.
+                ordered = (['task'] if 'task' in methods else []) + [m for m in methods if m != 'task']
+                contrasts = [(a, b) for i, a in enumerate(ordered) for b in ordered[i + 1:]]
+            else:
+                contrasts = [('robust', m) for m in methods if m != 'robust']
+            for reference, method in contrasts:
                 per_parent = defaultdict(list)
                 families = set()
                 for key, values in cells.items():
@@ -445,7 +508,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
                 rng = random.Random(68219)
                 draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
                 output.append({
-                    'contrast': f'task - {method}' if axis == 'policy' else f'{method} - robust',
+                    'contrast': f'{reference} - {method}' if axis == 'policy' else f'{method} - robust',
                     'comparison_axis': axis,
                     'fixed_admission' if axis == 'policy' else 'fixed_policy': fixed,
                     'outcome': 'useful_coverage', 'budget': budget,
@@ -463,14 +526,16 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
 
 
 STUDY_DEFAULTS = {"families": ["latch", "symmetric", "neutral"], "seeds": [17], "budgets": [0, 8],
-                  "policies": ["random", "task"], "admissions": ["robust"], "implementations": ["procedural"]}
+                  "policies": ["random", "task"], "admissions": ["robust"], "implementations": ["procedural"],
+                  'instance_seeds': [None]}
 
 
 def study_configs(spec: dict) -> list[RunConfig]:
     if not isinstance(spec, dict):
         raise ValueError("Study must be an object")
     allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
-               "anchors", "split", "horizon", "execution_mode", "temporal", "escalate"}
+               "anchors", "split", "horizon", "execution_mode", "temporal", "escalate", "probe_safety", "risk_tolerance",
+               'instance_seeds'}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -486,12 +551,17 @@ def study_configs(spec: dict) -> list[RunConfig]:
         total *= len(values)
     if total > 512:
         raise ValueError("Study exceeds 512 runs; split the protocol explicitly")
-    return [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation"), values),
+    configs = [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation", 'instance_seed'), values),
                                          anchors=spec.get("anchors", False), split=spec.get("split", "development"),
                                          horizon=spec.get("horizon", 4),
                                          execution_mode=spec.get("execution_mode", "open_loop"),
                                          temporal=spec.get("temporal", False),
-                                         escalate=spec.get("escalate", False))) for values in product(*dimensions)]
+                                         escalate=spec.get("escalate", False),
+                                         probe_safety=spec.get('probe_safety', 'unrestricted'),
+                                         risk_tolerance=spec.get('risk_tolerance', 0.0))) for values in product(*dimensions)]
+    if len({canonical_hash(asdict(cfg)) for cfg in configs}) != len(configs):
+        raise ValueError('Duplicate effective study configuration; null generated instance and zero are identical')
+    return configs
 
 
 def run_study(spec: dict, cancel: Callable[[], bool] | None = None, progress: Callable | None = None) -> dict:
@@ -512,6 +582,8 @@ def run_study(spec: dict, cancel: Callable[[], bool] | None = None, progress: Ca
     value = {"schema": "crosswire-study-v1", "protocol": protocol, "protocol_hash": protocol_hash,
              "source_hash": frozen_source, "rows": rows, "summary": summarize(rows),
              "paired": paired_comparisons(rows)}
+    from .reliability import reliability_summary
+    value['reliability'] = reliability_summary(rows)
     value["scientific_hash"] = canonical_hash(scientific_view(value))
     if progress:
         progress(len(configs), len(configs), "Complete; decisions and private audits recorded")

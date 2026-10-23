@@ -3,7 +3,8 @@
 **Date:** 23 October 2026  
 **Commit:** `codex/crosswire-design`  
 **Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
-**Overall Status:** PASS (173/173 tests passing, clean wheel install verified, browser e2e verified, 853 total empirical runs verified)
+**Record type:** Full verification report. Current upgrade evidence includes safe calibration, model-mismatch diagnostics, and independent protocol reliability (321 passed tests).
+**Overall Status:** PASS (321/321 tests passing, clean wheel install verified, browser e2e verified, 997 total empirical runs across 13 benchmarks)
 
 ---
 
@@ -12,7 +13,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================= 173 passed in 127.39s =============================
+============================= 321 passed in 93.24s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -129,6 +130,9 @@ Ten systematic empirical benchmarks were executed and preserved as self-containe
 | **Adaptive Contingent Policy Benchmark** | `reports/pilot-adaptive-receipt.json` | `6e07673c27941fc7…` | `cbc85a6cbc260e98…` | 48 |
 | **Pilot Escalation, Entropy & Recovery** | `reports/pilot-escalation-receipt.json` | `74257f9947c445e3…` | `741aac4f5f86eb51…` | 36 |
 | **EC2, Replanning Shield & Risk Control** | `reports/pilot-replanning-ec2-receipt.json` | `88c6426ff020be84…` | `e76ceb0c228977fd…` | 96 |
-| **Total Empirical Runs** | | | | **853** |
+| **Model-Safe Probing Calibration** | `reports/pilot-calibration-safe-receipt.json` | `25e80327cf35821a…` | `6cd97b3fc725d461…` | 8 |
+| **Unrestricted Calibration Baseline** | `reports/pilot-calibration-unrestricted-receipt.json` | `c6725eb7f3f6cbb6…` | `f0df1cc43058eacc…` | 8 |
+| **Independent Protocols Reliability** | `reports/pilot-independent-protocols-receipt.json` | `9d66e5b7df0645b2…` | `039cc5257f627ff4…` | 128 |
+| **Total Empirical Runs** | | | | **997** |
 
-All receipts are cryptographically bound to explicit source and protocol hashes. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.
+Receipts bind explicit source and protocol hashes. Historical receipts require their original implementation revision; the current source must reject mismatched revisions rather than silently relabeling them.

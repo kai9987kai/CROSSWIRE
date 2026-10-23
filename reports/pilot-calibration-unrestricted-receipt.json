@@ -1,0 +1,7732 @@
+{
+  "schema": "crosswire-receipt-v1",
+  "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+  "payload": {
+    "schema": "crosswire-study-v1",
+    "protocol": {
+      "families": [
+        "latch",
+        "routing",
+        "neutral",
+        "semantic_corruption"
+      ],
+      "seeds": [
+        17,
+        42
+      ],
+      "budgets": [
+        8
+      ],
+      "policies": [
+        "entropy"
+      ],
+      "admissions": [
+        "robust"
+      ],
+      "implementations": [
+        "procedural"
+      ],
+      "instance_seeds": [
+        null
+      ],
+      "anchors": false,
+      "split": "evaluation",
+      "horizon": 4,
+      "execution_mode": "shielded",
+      "probe_safety": "unrestricted",
+      "risk_tolerance": 0.0,
+      "exploratory": true,
+      "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
+      "pre_execution_source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079"
+    },
+    "protocol_hash": "c6725eb7f3f6cbb63b5158f1d6dda57bd91e90ffaba5ab9530e32bdd3e5c9eec",
+    "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+    "rows": [
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "32ae399a29e6dd41d4ba7eb9ea7024ff887f45a2161fd0a2f14a631f8e380db3",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 71,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 4,
+                      "2": 4
+                    },
+                    "observed_output": 1,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 1,
+                      "1": 2,
+                      "2": 1
+                    },
+                    "observed_output": 1,
+                    "survivors_before": 4,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                3
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                1,
+                1
+              ],
+              "before": 8,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "a852c03f49faa6614cecb2b537ac5a525a8c4a699f37763ad0814d72fd4849ad"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              1,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "a54af6e3de75dcc77e63fca5ad593b9c485e60dedd59ee88cae90dc580c502d1",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            2,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "semantic_events": [
+            0,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            1
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            4
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "6b8d097d6dac2e716e94f9100e677dddd084ae2436ee570cd1b9514813fd93a7",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 195,
+          "audit_execution_steps": 52,
+          "audit_reference_steps": 206,
+          "audit_target_model_steps": 206,
+          "audit_resets": 22,
+          "audit_oracle_word_candidates": 5,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 2,
+          "target_calls": 6,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.5,
+          "wall_seconds": 0.74936620000517,
+          "parent_peak_traced_bytes": 4018300,
+          "audit_product_pairs": 195,
+          "audit_execution_steps": 52
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "d8144602592654ac3d8733780161b1913998c0a1cabef1c141f7f7b95e3f92bc"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "38e36c1ff8566b9c409f13039b075adbc3695a1f799ba88f97f81b2a7fefebef",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 5,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 4,
+                      "2": 4
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 1,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 4,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                3
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 8,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "3b5abcfe144c36961752291819413222162ea792e49cf0eba3117df28dd8fdb2"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "abaa292487e700a79153a8b71b8cc88c3881eb8c59ca30ce8c66c5fe54877076",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            2,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 64,
+          "audit_reference_steps": 208,
+          "audit_target_model_steps": 208,
+          "audit_resets": 28,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 2,
+          "target_calls": 6,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.5,
+          "wall_seconds": 0.7387574999884237,
+          "parent_peak_traced_bytes": 3573533,
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 64
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "6103a9cb4928c5bf787cf40a846caa908a7b72b5ce160dac7c6a4427f4124448"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "routing",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "b826db2816a18a7f021adb506154e1151a4c8c8286b9be9abd1c4f5d36308dcf",
+        "parent_instance_id": "d9df2549b62312301cac460e8d57eca90b4f3c66ba7cd7bf56eedf61e0edf07f",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "candidate_count": 4,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 4,
+          "observational_classes": 2,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 1,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 25,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 28,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 4,
+                "scored_symbols": 3,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "0": 4,
+                      "2": 4
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 3,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 4,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                2
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2
+              ],
+              "outputs": [
+                2
+              ],
+              "before": 8,
+              "after": 4
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "0a398b2f8b3232ecd4cfe24ee6fac7e0a8eefc5eff489d57d95d31e71b372118"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              2
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 4
+          }
+        ],
+        "decision_frozen_hash": "b5482a76e109911cbf234661c15cf4ade1e5384f6a0b91368ee0c6f19584f014",
+        "deployment": {
+          "word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "executed_word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "outputs": [
+            0,
+            0,
+            0,
+            3
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            4,
+            4,
+            4,
+            4,
+            2
+          ],
+          "target_steps": 4,
+          "resets": 1,
+          "target_calls": 5,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            0,
+            0,
+            3
+          ],
+          "semantic_events": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 4,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 2,
+          "raw_equivalent_map_ids": [
+            4,
+            28
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "1fdf1fad90b81e77b570de88da96fe9c9bc302515c56e4032ba48d2cf3420672",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 192,
+          "audit_execution_steps": 256,
+          "audit_reference_steps": 232,
+          "audit_target_model_steps": 232,
+          "audit_resets": 127,
+          "audit_oracle_word_candidates": 40,
+          "calibration_hazardous_probes": 0,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 3,
+          "resets": 2,
+          "target_calls": 5,
+          "source_steps": 192,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.484375,
+          "wall_seconds": 0.6614881999994395,
+          "parent_peak_traced_bytes": 3785625,
+          "audit_product_pairs": 192,
+          "audit_execution_steps": 256
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "af1afb12acf67899fb304ceee83e30067c76928a7d534dd935e07b93e603c6dd"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "routing",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            [
+              [
+                2,
+                0
+              ],
+              [
+                2,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            [
+              [
+                3,
+                0
+              ],
+              [
+                3,
+                3
+              ],
+              [
+                3,
+                3
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                4,
+                1
+              ]
+            ],
+            [
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ],
+              [
+                5,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "27185d934dae46f8f0dc111348d1c7175e5e9f8bb516eae67e4a2c427482aacd",
+        "parent_instance_id": "d9df2549b62312301cac460e8d57eca90b4f3c66ba7cd7bf56eedf61e0edf07f",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "candidate_count": 4,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 4,
+          "observational_classes": 2,
+          "contract_classes": 1
+        },
+        "candidates": [
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 71,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 119,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 4,
+                "scored_symbols": 3,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "0": 4,
+                      "3": 4
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 3,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 4,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                3
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 8,
+              "after": 4
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "243f6c767e1853a7c1fd5af62b4d60f1521d92d2562753c361ab68b17270ebf1"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 4
+          }
+        ],
+        "decision_frozen_hash": "b763caec135b9be93e46fdedb6eb86f090d3696fa2870ba3e82b62a62a393da1",
+        "deployment": {
+          "word": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "executed_word": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "outputs": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            4,
+            4,
+            4,
+            4,
+            2
+          ],
+          "target_steps": 4,
+          "resets": 1,
+          "target_calls": 5,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "semantic_events": [
+            3,
+            3,
+            3,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 4,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 2,
+          "raw_equivalent_map_ids": [
+            69,
+            117
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "371d767e75d1b607b344ed741868e9781855b7801a111e0eda342cea0220664f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 192,
+          "audit_execution_steps": 263,
+          "audit_reference_steps": 232,
+          "audit_target_model_steps": 232,
+          "audit_resets": 130,
+          "audit_oracle_word_candidates": 41,
+          "calibration_hazardous_probes": 0,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 3,
+          "resets": 2,
+          "target_calls": 5,
+          "source_steps": 192,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.46875,
+          "wall_seconds": 0.6594387999939499,
+          "parent_peak_traced_bytes": 3785145,
+          "audit_product_pairs": 192,
+          "audit_execution_steps": 263
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "752c1a95b79cf52186c4a7457234710c51a5d1015189ba660ecbbd3bc4da93f9"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "neutral",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                3
+              ]
+            ],
+            [
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "e16426c22417f53f956a3b7ce1f28492b2a68c55e09e2e468b96667121f96339",
+        "parent_instance_id": "dffb9b68c36b5d330241901b1e67c7c42b6740ba9f8012d0fa6a0f88e74e10d6",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            2
+          ],
+          "candidate_count": 144,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 144,
+          "observational_classes": 72,
+          "contract_classes": 3
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 1,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 2,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 3,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 5,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 6,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 7,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 8,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 9,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 10,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 11,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 12,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 13,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 14,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 15,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 16,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 17,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 18,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 19,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 20,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 21,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 22,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 23,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 24,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 25,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 26,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 27,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 28,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 29,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 30,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 31,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 32,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 33,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 34,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 35,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 36,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 37,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 38,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 39,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 40,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 41,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 42,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 43,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 44,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 45,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 46,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 47,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 48,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 49,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 50,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 51,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 52,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 53,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 54,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 55,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 56,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 57,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 58,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 59,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 60,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 61,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 62,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 63,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 64,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 65,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 66,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 67,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 68,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 70,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 71,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 72,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 73,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 74,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 75,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 76,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 77,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 78,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 79,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 80,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 81,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 82,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 83,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 84,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 85,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 86,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 87,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 88,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 89,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 90,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 91,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 92,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 93,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 94,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 95,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 96,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 97,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 98,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 99,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 100,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 101,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 102,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 103,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 104,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 105,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 106,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 107,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 108,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 109,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 110,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 111,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 112,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 113,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 114,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 115,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 116,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 118,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 119,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 120,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 121,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 122,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 123,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 124,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 125,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 126,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 127,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 128,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 129,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 130,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 131,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 132,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 133,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 134,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 135,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 136,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 137,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 138,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 139,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 140,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 141,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 142,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 143,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 144,
+                "scored_symbols": 0,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": []
+              }
+            },
+            "observed_symbols": 0,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 144,
+          "evidence_count": 0,
+          "elimination": [],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "8b2b7f93bf504ce574f13575f8e549b39717f5146b22bd7a2b680379a6cc68bd"
+        },
+        "probes": [],
+        "decision_frozen_hash": "f27e61e378f4f4a0623ef28c10ae399ab929617eb5768fb3043e6d6eb3ed5ee3",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            2
+          ],
+          "executed_word": [
+            0,
+            1,
+            2
+          ],
+          "outputs": [
+            3,
+            3,
+            3
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            144,
+            36,
+            12,
+            12
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            3,
+            3,
+            3
+          ],
+          "semantic_events": [
+            1,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 2,
+          "raw_equivalent_map_ids": [
+            4,
+            41
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "7eb562e4ef6d33b889b35eff91d5f6032a1f8bf23eb8133c5674b529e60c2f67",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 186,
+          "audit_execution_steps": 10,
+          "audit_reference_steps": 206,
+          "audit_target_model_steps": 206,
+          "audit_resets": 3,
+          "audit_oracle_word_candidates": 1,
+          "calibration_hazardous_probes": 0,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 0,
+          "resets": 0,
+          "target_calls": 0,
+          "source_steps": 984,
+          "candidate_expansions": 17280,
+          "pair_checks": 0,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.484375,
+          "wall_seconds": 0.6896465000027092,
+          "parent_peak_traced_bytes": 4734390,
+          "audit_product_pairs": 186,
+          "audit_execution_steps": 10
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "e05e50b9db57607dd52c2c79a885834671a46cffeac9a28084fd0fad0f6fd698"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "neutral",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                1
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                3
+              ]
+            ],
+            [
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                1
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "654cb5e901a7b26d795c02c80b4b08ea0eb71d9d297417d466328c43f41dce9d",
+        "parent_instance_id": "dffb9b68c36b5d330241901b1e67c7c42b6740ba9f8012d0fa6a0f88e74e10d6",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            2
+          ],
+          "candidate_count": 144,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 144,
+          "observational_classes": 72,
+          "contract_classes": 3
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 1,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 2,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 3,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 5,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 6,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 7,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 8,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 9,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 10,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 11,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 12,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 13,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 14,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 15,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 16,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 17,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 18,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 19,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 20,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 21,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 22,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 23,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 24,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 25,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 26,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 27,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 28,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 29,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 30,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 31,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 32,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 33,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 34,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 35,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 36,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 37,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 38,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 39,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 40,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 41,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 42,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 43,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 44,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 45,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 46,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 47,
+            "input_map": [
+              0,
+              2,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 48,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 49,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 50,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 51,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 52,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 53,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 54,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 55,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 56,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 57,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 58,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 59,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 60,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 61,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 62,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 63,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 64,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 65,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 66,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 67,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 68,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 70,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 71,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 72,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 73,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 74,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 75,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 76,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 77,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 78,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 79,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 80,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 81,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 82,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 83,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 84,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 85,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 86,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 87,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 88,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 89,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 90,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 91,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 92,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 93,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 94,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 95,
+            "input_map": [
+              1,
+              2,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 96,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 97,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 98,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 99,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 100,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 101,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 102,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 103,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 104,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 105,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 106,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 107,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 108,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 109,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 110,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 111,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 112,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 113,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 114,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 115,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 116,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 117,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 118,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 119,
+            "input_map": [
+              2,
+              0,
+              1
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 120,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 121,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              1,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 122,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 123,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 124,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 125,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 126,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 127,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              0,
+              3,
+              2
+            ]
+          },
+          {
+            "id": 128,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 129,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 130,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 131,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              1,
+              3,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 132,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "id": 133,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              0,
+              3,
+              1
+            ]
+          },
+          {
+            "id": 134,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              0,
+              3
+            ]
+          },
+          {
+            "id": 135,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 136,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 137,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              2,
+              3,
+              1,
+              0
+            ]
+          },
+          {
+            "id": 138,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 139,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 140,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              0,
+              2
+            ]
+          },
+          {
+            "id": 141,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 142,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              0,
+              1
+            ]
+          },
+          {
+            "id": 143,
+            "input_map": [
+              2,
+              1,
+              0
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 144,
+                "scored_symbols": 0,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": []
+              }
+            },
+            "observed_symbols": 0,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 144,
+          "evidence_count": 0,
+          "elimination": [],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "b418ffcb77ee1f556d55443d626701402dcc4a55273a5f5c45147b81ab96eb2e"
+        },
+        "probes": [],
+        "decision_frozen_hash": "68d13812341ab672a95be8dd4a98290a648884b45e6f3cd9523bcca2f23354bd",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            2
+          ],
+          "executed_word": [
+            0,
+            1,
+            2
+          ],
+          "outputs": [
+            3,
+            1,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            144,
+            36,
+            8,
+            4
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            3,
+            1,
+            1
+          ],
+          "semantic_events": [
+            0,
+            1,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 2,
+          "raw_equivalent_map_ids": [
+            69,
+            96
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "4408a3814a256e01ee860c5e431fc431c94562dd9fc87dc794563e3ebbff3ebc",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 170,
+          "audit_execution_steps": 11,
+          "audit_reference_steps": 204,
+          "audit_target_model_steps": 204,
+          "audit_resets": 4,
+          "audit_oracle_word_candidates": 2,
+          "calibration_hazardous_probes": 0,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 0,
+          "resets": 0,
+          "target_calls": 0,
+          "source_steps": 984,
+          "candidate_expansions": 17280,
+          "pair_checks": 0,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.46875,
+          "wall_seconds": 0.7321915999928024,
+          "parent_peak_traced_bytes": 4733755,
+          "audit_product_pairs": 170,
+          "audit_execution_steps": 11
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "feb08a6d1b84617ce8fd8e827cdffe49bf8152a8eba9f8da0362a35efd224f3f"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "semantic_corruption",
+          "seed": 17,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "fe7f4d7a7e733fbccce2291275fffd9071840f2a90076bc1bf2c1300bcf17b1c",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 4,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 71,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 4,
+                      "2": 4
+                    },
+                    "observed_output": 1,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 1,
+                      "1": 2,
+                      "2": 1
+                    },
+                    "observed_output": 1,
+                    "survivors_before": 4,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                3
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                1,
+                1
+              ],
+              "before": 8,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "f7e9a5d9471fd553e9a5a1428181aeca44b0e367b1ca294639693a1cc31c8b15"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              1,
+              1
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "d18814d0037182f6c918d51114ca1b929107daeea3adae9799d2fe64c5ea2bdd",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            2,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "hazard": true,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "semantic_events": [
+            0,
+            2,
+            2
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            2
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            4
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "6b8d097d6dac2e716e94f9100e677dddd084ae2436ee570cd1b9514813fd93a7",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 195,
+          "audit_execution_steps": 40,
+          "audit_reference_steps": 206,
+          "audit_target_model_steps": 206,
+          "audit_resets": 16,
+          "audit_oracle_word_candidates": 3,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 2,
+          "target_calls": 6,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.484375,
+          "wall_seconds": 0.6916713000100572,
+          "parent_peak_traced_bytes": 3823556,
+          "audit_product_pairs": 195,
+          "audit_execution_steps": 40
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "93e49e8d3ec2b2d2a4239e9deb8175cbae408c60e645fc0d7d12170657a1f2d9"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "semantic_corruption",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "evaluation",
+          "anchors": false,
+          "budget": 8,
+          "horizon": 4,
+          "policy": "entropy",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null
+        },
+        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "c9ddf287a2a587502ab412c3d6ccb8b7d640e61425b987ad894e614b61a8e819",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 5,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              3,
+              2,
+              1
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 0,
+                    "step": 2,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "0": 12,
+                      "1": 8,
+                      "2": 8,
+                      "3": 8
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 8,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 4,
+                      "2": 4
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 8,
+                    "survivors_after": 4,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 1,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 4,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 2,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0,
+                1
+              ],
+              "outputs": [
+                0,
+                3
+              ],
+              "before": 144,
+              "after": 8
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 8,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "980d33c2c2a5a4d20ef8aae7864d2396597b7adb63108ab817833b3850630268"
+        },
+        "probes": [
+          {
+            "word": [
+              0,
+              1
+            ],
+            "outputs": [
+              0,
+              3
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 8
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 8,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "8d011a23e749897939595add5a66551fb000f467b8b9f5fec12229ff53949fa1",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            2,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "hazard": true,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            2
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            2
+          ],
+          "true_map_retained": null,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 40,
+          "audit_reference_steps": 208,
+          "audit_target_model_steps": 208,
+          "audit_resets": 16,
+          "audit_oracle_word_candidates": 3,
+          "calibration_hazardous_probes": 0,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 2,
+          "target_calls": 6,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 5920,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 0.46875,
+          "wall_seconds": 0.6622268999926746,
+          "parent_peak_traced_bytes": 3560243,
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 40
+        },
+        "baseline": {
+          "name": "entropy",
+          "privileged": false
+        },
+        "scientific_hash": "8faa738f8f514d5e6be55be6bd6f0f329712a07454af8aa53a70cebcaa9ac6dc"
+      }
+    ],
+    "summary": [
+      {
+        "method": "entropy/robust",
+        "family": "latch",
+        "scope": "in_family",
+        "budget": 8,
+        "requests": 2,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 2,
+        "calibration_hazardous_runs": 2,
+        "mean_target_calls": 6.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 10.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 2.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "entropy/robust",
+        "family": "neutral",
+        "scope": "in_family",
+        "budget": 8,
+        "requests": 2,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 0,
+        "calibration_hazardous_runs": 0,
+        "mean_target_calls": 0.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 4.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 0.0,
+        "mean_resets": 0.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "entropy/robust",
+        "family": "routing",
+        "scope": "in_family",
+        "budget": 8,
+        "requests": 2,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 0,
+        "calibration_hazardous_runs": 0,
+        "mean_target_calls": 5.0,
+        "mean_deployment_calls": 5.0,
+        "mean_total_calls": 10.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 3.0,
+        "mean_resets": 2.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "entropy/robust",
+        "family": "semantic_corruption",
+        "scope": "out_of_family",
+        "budget": 8,
+        "requests": 2,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "admitted": 2,
+        "successful": 0,
+        "harmful": 2,
+        "hazardous": 2,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 1,
+        "calibration_hazardous_runs": 1,
+        "mean_target_calls": 6.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 10.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 0.0,
+        "feasible_useful_coverage": 0.0,
+        "selective_harm": 1.0,
+        "population_harm": 1.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 2.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": -1.0,
+          "0.1": -1.0,
+          "0.5": -1.0,
+          "1": -1.0
+        }
+      }
+    ],
+    "paired": [],
+    "reliability": [
+      {
+        "method": "entropy/robust",
+        "family": "latch",
+        "budget": 8,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 1.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 0.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "entropy/robust",
+        "family": "neutral",
+        "budget": 8,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 1.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 0.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "entropy/robust",
+        "family": "routing",
+        "budget": 8,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 1.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 0.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "entropy/robust",
+        "family": "semantic_corruption",
+        "budget": 8,
+        "anchors": false,
+        "split": "evaluation",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 0.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 1.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      }
+    ],
+    "scientific_hash": "f0df1cc43058eaccddbf7d809cae81c35f3ef6489deb9bb8786e82697ff08840"
+  },
+  "payload_hash": "25f98567867408612d0b3b8081b5e2bd7eaedd9dd73fc1a84a6b4d4b6f20247d"
+}

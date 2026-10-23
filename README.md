@@ -37,11 +37,12 @@ When independently developed controllers, agents, or tools communicate without a
 
 ## Key Capabilities & Architecture
 
-- **Consensus Admission vs. Point Estimation:** Eliminates selective harm by verifying safety across all candidate mappings.
-- **Equivalence Class Edge Cutting (EC2 Active Probing):** Submodular active learning policy that partitions candidates into contract decision classes and prioritizes probes cutting cross-class edges, eliminating wasted exploration on contract-equivalent models.
+- **Consensus Admission vs. Point Estimation:** Requires contract satisfaction across all surviving candidate mappings, conditional on model inclusion and truthful semantic anchors.
+- **Model-Safe Calibration:** Optionally rejects calibration probes that could trigger a hazard under any surviving model. All seven finite probe policies support the constraint, including generated long counterexamples. Independent certificates check each word against its pre-probe belief; escalation guards the full enabled temporal class from the first query.
+- **Contract Edge Cutting (`ec2`):** An EC2-inspired heuristic partitions candidates into contract decision classes and prioritizes cross-class disagreement. The current Jaccard-weighted objective does not inherit a proved adaptive-submodularity or approximation guarantee.
 - **Receding-Horizon Dynamic Replanning Shield:** Actively monitors intermediate deployment outputs; when updated beliefs reveal upcoming plan risks, dynamically synthesizes and executes verified safe detour suffixes (`REPLANNED_ONLINE_SAFE`), achieving goal completion where static shields abort.
-- **Risk-Controlled Version-Space Admission:** Formulates finite-sample empirical hazard and goal bounds over surviving hypothesis spaces with certifiable risk tolerance.
-- **Autonomous Model-Class Escalation (SRM):** Implements Structural Risk Minimization across nested hypothesis spaces $\mathcal{H}_0 \subset \mathcal{H}_1$. Starts at parsimonious static bijections (144 models) and autonomously escalates to temporal latency-aware models (720 models) upon refutation, emitting unforgeable structural contradiction certificates if all nested classes fail.
+- **Configurable Candidate-Fraction Admission:** `risk_controlled` checks exact hazardous and unsuccessful fractions over uniformly weighted surviving models against `risk_tolerance`. Zero requires consensus. These fractions are not calibrated probabilities of target harm or conformal risk bounds.
+- **Autonomous Model-Class Escalation:** Starts with static bijections (144 models) and escalates to temporal latency-aware models (720 models) upon refutation. Independent certificates check refutation of the declared finite class; hashes bind their content.
 - **Information-Theoretic Active Probing (Shannon Entropy):** Probing policy that maximizes output predictive entropy $H(O \mid w)$ per query cost, identifying valid adapters in up to 50% fewer target interactions.
 - **Independent Evidence Verification & Minimal Contradiction Cores:** Decoupled certificate verifier independently re-enumerates models, verifies surviving beliefs against public transcripts, extracts deletion-minimal contradiction witnesses, and binds immutable certificates before private auditing.
 - **Simplex Safe Fallback Recovery Shielding:** Dynamically monitors execution step-by-step; upon detecting observation anomaly or impending hazard, dispatches a verified minimum-hazard recovery action to restore the system to a safe baseline state (`RECOVERED_SAFE_FALLBACK`).
@@ -53,7 +54,7 @@ When independently developed controllers, agents, or tools communicate without a
 - **Freeze-Before-Audit Protocol:** Scientific decisions, survivor counts, and probe histories freeze into cryptographic digests before private semantic evaluation.
 - **Classical Learning Baseline:** Pinned integration with AALpy 1.6.2 ($L^*$ algorithm) under identical target interaction budgets.
 - **Cryptographic Scientific Receipts:** Every run and study generates self-contained JSON receipts with source hash bindings and exact determinism checking.
-- **Local Browser Workbench:** Dark-mode responsive UI featuring live state graph inspection, candidate mapping matrices, probe timelines, dynamic shield badges, receipt export/import, replanning events, and SVG study coverage charts.
+- **Local Browser Workbench:** Responsive UI with model-safe calibration and tolerance controls, graph inspection, mapping matrices, probe timelines, shield events, and receipt export/import. Study comparisons expose exact conditions and allow individual run inspection while retaining the parent receipt.
 
 ---
 
@@ -98,6 +99,12 @@ crosswire run --family delay --temporal --execution_mode shielded --budget 16 --
 # Run counterexample-guided active probing (CEGP)
 crosswire run --family latch --policy counterexample --budget 16 --out reports/cegp.json
 
+# Guard calibration before dispatch (conservative abstention is an expected result)
+crosswire run --family routing --anchors --policy entropy --probe-safety model_safe --budget 16 --out reports/safe-routing.json
+
+# Explore an explicit allowed fraction of surviving models
+crosswire run --family latch --admission risk_controlled --risk-tolerance 0.2 --out reports/candidate-fractions.json
+
 # Verify and replay a scientific receipt
 crosswire verify reports/delay.json
 
@@ -108,11 +115,15 @@ crosswire study --config configs/pilot-shield-shielded.json --out reports/shield
 crosswire catalog
 ```
 
+Model-safe calibration depends on the enabled finite hypothesis class, stationarity, deterministic resets, and truthful anchors. It can stop without probing when every raw action could be hazardous. `NO_ELIGIBLE_SAFE_PROBE` describes the bounded probe pool and remaining call cap, not a proof that no safe experiment exists. Calibration and deployment hazards remain separate private-audit measurements. The optional AALpy baseline does not support guarded calibration and rejects that combination.
+
+Use `crosswire check <receipt>` for independent public-model checking and `crosswire verify <receipt>` for actual target replay. Receipts bind their original Python source revision; historical receipts require that revision to replay. Current safety experiments and research boundaries are documented in [the calibration upgrade notes](research/2026-10-23-safe-calibration.md).
+
 ---
 
 ## Empirical Benchmark Findings
 
-In a 757-run systematic evaluation across 17 synthetic fixture environments:
+Historical pilot findings across synthetic fixture environments are listed below. They belong to the source revisions recorded in their receipts and are exploratory, rather than an independent replication or a guarantee about real systems.
 
 1. **Autonomous Escalation & Shannon Entropy Efficiency:** In a 36-run benchmark (`reports/pilot-escalation-receipt.json`), Shannon entropy active probing resolved valid adapters in **4.5 mean calls** on `latch` compared to 8.5 for `task` and 9.0 for `fixed` (nearly 50% query savings). On pipeline-delayed targets (`delay`), fixed probing stalled and failed (0% coverage), while autonomous escalation promoted the hypothesis space to $\mathcal{H}_1$ and achieved successful connection. On unconnectable targets (`incompatible`), the engine certified structural contradiction across all candidate classes.
 2. **Simplex Safe Recovery:** In the presence of runtime anomalies during deployment, Simplex recovery shielding intercepted the divergence, safely dispatched a verified minimum-hazard fallback action, and averted impending hazards with zero safety violations.
@@ -131,7 +142,7 @@ In a 757-run systematic evaluation across 17 synthetic fixture environments:
 ## Documentation & Research
 
 - [Standalone Research Paper](docs/paper.md): Comprehensive theoretical formulation, experimental methodology, empirical tables, and epistemological bounds.
-- [Verification Report](docs/verification.md): Full test suite results, packaging verification, Playwright browser test logs, and receipt hashes.
+- [Current Verification Report](docs/verification-safe-calibration.md): 261 passing tests, packaging checks, browser flows and replayed calibration pilots. [Historical verification](docs/verification.md) retains earlier evidence.
 - [Pre-Implementation Design Specification](docs/superpowers/specs/2026-10-22-crosswire-design.md): The approved design specification.
 - [Portfolio Research & Prior Art Reviews](research/portfolio-index.md): Source code reviews and commit hashes of all 26 related repositories.
 - [Recent Research Context](research/recent-research.md): Representation stitching, active automata learning, and interface theory context.
