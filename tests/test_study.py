@@ -85,3 +85,26 @@ def test_paired_comparison_never_matches_different_budget_conditions():
                                   'split':'evaluation','implementation':'procedural'},
                 'parent_instance_id':'p1','audit':{'contract_satisfied':success}}
     assert paired_comparisons([row('task',4,True),row('random',8,False)]) == []
+
+
+def test_paired_comparison_evaluates_admission_contrasts():
+    from crosswire.study import paired_comparisons
+    def row(admission, success):
+        return {'configuration': {'family':'latch','policy':'task','admission':admission,
+                                  'seed':17,'budget':4,'anchors':False,'horizon':4,
+                                  'execution_mode':'shielded','temporal':False,
+                                  'split':'evaluation','implementation':'procedural'},
+                'parent_instance_id':'p1','audit':{'contract_satisfied':success}}
+    pairs = paired_comparisons([row('robust', False), row('adaptive', True)])
+    assert len(pairs) == 1
+    assert pairs[0]['contrast'] == 'adaptive - robust'
+    assert pairs[0]['mean_delta'] == 1.0
+
+
+def test_unsupported_aalpy_combinations_rejected():
+    from crosswire.study import RunConfig
+    with pytest.raises(ValueError, match='AALpy baseline does not support temporal'):
+        RunConfig(policy='aalpy', temporal=True).check()
+    with pytest.raises(ValueError, match='AALpy baseline does not support adaptive'):
+        RunConfig(policy='aalpy', admission='adaptive', execution_mode='shielded').check()
+

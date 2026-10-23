@@ -28,19 +28,21 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
     deployment_audit = None
     counterfactual_hazard = False
     if decision["admitted"]:
+        plan = decision["policy"] if decision.get("word") is None else decision["word"]
         if deployment['complete']:
-            actual = evaluate_deployment(private, probes, decision["word"], work=work)
+            actual = evaluate_deployment(private, probes, plan, work=work)
             reproduced = actual['outputs'] == deployment['outputs']
             if not reproduced:
                 actual = {**actual, 'goal_success': False, 'contract_satisfied': False}
-            deployment_audit = {'completed': True, 'executed_prefix_length': len(decision['word']),
+            executed_len = len(deployment.get('executed_word') or decision.get('word') or ())
+            deployment_audit = {'completed': True, 'executed_prefix_length': executed_len,
                                 'reconstruction_matches_observed': reproduced, 'prefix_hazard': actual['hazard'],
                                 'counterfactual_hazard': actual['hazard']}
         else:
             # Only the successfully executed prefix happened. Fixture faults
             # fail before the engine steps, so the failed call emitted no event.
             # The unexecuted suffix is never simulated as if it occurred.
-            executed = list(decision["word"][:len(deployment['outputs'])])
+            executed = list((deployment.get('executed_word') or decision.get('word') or ())[:len(deployment['outputs'])])
             prefix = (evaluate_deployment(private, probes, executed, work=work) if executed
                       else {'outputs': [], 'semantic_events': [], 'hazard': False})
             hazard_key = private['contract']['hazard']
@@ -50,8 +52,11 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
                       # Observed prefix hazard is evidence; absence is not proof of safety.
                       'hazard': True if prefix_hazard else None}
             # Counterfactual audit: would the full unshielded plan have triggered a hazard?
-            counterfactual = evaluate_deployment(private, probes, decision["word"], work=work)
-            counterfactual_hazard = bool(counterfactual.get('hazard', False))
+            if decision.get("word") is not None:
+                counterfactual = evaluate_deployment(private, probes, decision["word"], work=work)
+                counterfactual_hazard = bool(counterfactual.get('hazard', False))
+            else:
+                counterfactual_hazard = False
             deployment_audit = {'completed': False, 'executed_prefix_length': len(executed),
                                 'reconstruction_matches_observed': prefix['outputs'] == deployment['outputs'],
                                 'prefix_hazard': prefix_hazard, 'counterfactual_hazard': counterfactual_hazard,

@@ -21,6 +21,7 @@ class Case:
 
 
 _DESCRIPTIONS = {
+    'routing': ('in_family', 'Designed adaptive-policy control: three safe diagnostic actions precede a commit that must use the distinguished command.'),
     'latch': ('in_family', 'Arm then release a latch; hazards are absorbing.'),
     'handshake': ('in_family', 'Three-stage handshake with a reset command.'),
     'symmetric': ('in_family', 'Two behaviorally symmetric terminals require a semantic anchor.'),
@@ -46,6 +47,10 @@ def catalog():
 
 
 def _table(family):
+    if family == 'routing':
+        return (((1,0),(1,3),(1,3)), ((2,0),(2,3),(2,3)),
+                ((3,0),(3,3),(3,3)), ((4,1),(5,2),(5,2)),
+                ((4,1),(4,1),(4,1)), ((5,2),(5,2),(5,2)))
     if family == 'latch':
         return (((1,0),(0,3),(3,2)), ((1,3),(2,1),(3,2)),
                 ((2,1),(2,1),(3,2)), ((3,2),(3,2),(3,2)))
@@ -113,7 +118,7 @@ def make_case(family, seed=17, implementation='procedural', split='development',
         raise ValueError('seed must be unsigned 32-bit integer')
     if type(anchors) is not bool or type(horizon) is not int or not 1 <= horizon <= 6:
         raise ValueError('invalid anchors or horizon')
-    source_family = family if family in ('latch','handshake','symmetric','neutral','long_trace','rotary','interlock') else 'latch'
+    source_family = family if family in ('routing','latch','handshake','symmetric','neutral','long_trace','rotary','interlock') else 'latch'
     if family == 'extra_state':
         source_family = 'long_trace'
     mechanism = family if family in ('incompatible','extra_state') else source_family
@@ -193,6 +198,12 @@ class _TableEngine(_Engine):
 class _ProceduralEngine(_Engine):
     def _transition(self, action):
         family, state = self.config['mechanism'], self.state
+        if family == 'routing':
+            if state < 3:
+                return state + 1, 0 if action == 0 else 3
+            if state == 3:
+                return (4,1) if action == 0 else (5,2)
+            return state, 1 if state == 4 else 2
         if family == 'rotary':
             if state >= 3:
                 return state, 1 if state == 3 else 2
@@ -280,7 +291,18 @@ def evaluate_deployment(private, probes, word, work=None):
     engine = make_engine(private, work)
     try:
         _replay_calibration(engine, probes)
-        outputs = [engine.step(symbol) for symbol in word]
+        outputs = []
+        if isinstance(word, dict):
+            node = word
+            while isinstance(node, dict) and 'action' in node:
+                raw = engine.step(node['action'])
+                outputs.append(raw)
+                branches = node.get('branches', {})
+                if str(raw) not in branches:
+                    break
+                node = branches[str(raw)]
+        elif word is not None:
+            outputs = [engine.step(symbol) for symbol in word]
         events = list(engine.semantic_events)
         goal, hazard = private['contract']['goal'], private['contract']['hazard']
         result = {'outputs': outputs, 'semantic_events': events,

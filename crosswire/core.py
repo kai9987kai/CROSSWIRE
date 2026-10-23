@@ -110,7 +110,6 @@ class Adapter:
     def __post_init__(self):
         _integer(self.id, 'adapter id')
         _integer(self.delay, 'delay', minimum=0, maximum=1)
-        _integer(self.init_output, 'init_output', minimum=0)
         for name in ('input_map', 'output_map'):
             mapping = tuple(getattr(self, name))
             if not mapping:
@@ -120,6 +119,7 @@ class Adapter:
             if len(set(mapping)) != len(mapping):
                 raise ValueError(f'{name} must be bijective')
             object.__setattr__(self, name, mapping)
+        _integer(self.init_output, 'init_output', maximum=len(self.output_map) - 1)
 
     def to_dict(self):
         result = {'id': self.id, 'input_map': list(self.input_map), 'output_map': list(self.output_map)}
@@ -436,14 +436,20 @@ class CandidateSpace:
         if identifier in self._signatures:
             return self._signatures[identifier]
         adapter = self._adapter(identifier)
-        states, pending, rows = {self.machine.initial}, deque([self.machine.initial]), {}
+        # Delayed observations depend on both the source state and the previous
+        # semantic output. Minimize that augmented transducer, so raw-equivalent
+        # static/delayed models can merge while distinct buffers remain separate.
+        initial = (self.machine.initial, adapter.init_output if adapter.delay else None)
+        states, pending, rows = {initial}, deque([initial]), {}
         while pending:
             state = pending.popleft()
+            source_state, buffered = state
             row = []
             for symbol in adapter.input_map:
-                following, output = self.machine.transitions[state][symbol]
+                source_next, output = self.machine.transitions[source_state][symbol]
                 self.work['source_steps'] += 1
-                row.append((following, adapter.output_map[output]))
+                following = (source_next, output if adapter.delay else None)
+                row.append((following, adapter.output_map[buffered if adapter.delay else output]))
                 if following not in states:
                     states.add(following)
                     pending.append(following)
@@ -460,7 +466,7 @@ class CandidateSpace:
                 break
             classes = refined
         representatives = {classes[s]: s for s in sorted(states)}
-        start = classes[self.machine.initial]
+        start = classes[initial]
         canonical, pending, result = {start: 0}, deque([start]), []
         while pending:
             current = pending.popleft()

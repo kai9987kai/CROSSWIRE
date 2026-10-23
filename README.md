@@ -38,6 +38,7 @@ When independently developed controllers, agents, or tools communicate without a
 ## Key Capabilities & Architecture
 
 - **Consensus Admission vs. Point Estimation:** Eliminates selective harm by verifying safety across all candidate mappings.
+- **Adaptive Contracts (Observation-Dependent Policies):** Extends interface synthesis from linear words to contingent AND/OR policy trees certified by an independent tree checker (Proof-Carrying Code). Chooses each action based on the observed response, achieving 100% useful coverage on routing interlocks without prior calibration.
 - **Closed-Loop Dynamic Runtime Shielding:** Actively monitors intermediate target responses step-by-step; detects behavioral anomalies/drift and preemptively averts latent hazards before irreversible actions are committed.
 - **Temporal / Latency-Aware Adapter Algebra:** Expands the adapter candidate space to 720 models supporting stateful pipeline delays ($d \in \{0, 1\}$) and initial buffer search, enabling verified connections to asynchronous interfaces.
 - **Counterexample-Guided Active Probing (CEGP):** Optimized $O(W \cdot N)$ active exploration selecting probes that maximize pairwise disagreement across candidate models.
@@ -104,16 +105,17 @@ crosswire catalog
 
 ## Empirical Benchmark Findings
 
-In a 673-run systematic evaluation across 16 synthetic fixture environments:
+In a 721-run systematic evaluation across 17 synthetic fixture environments:
 
-1. **Zero Selective Harm (In-Family):** Across 350 runs on in-family mechanisms, robust consensus admission achieved **0% selective harm** and **0 hazards**. Whenever a connection was admitted, it was 100% successful.
-2. **Task-Relevant Probing Efficiency:** Contract-relevant active probing achieved **71.4% useful coverage** in an average of only 7.4 calls (at budget 16), significantly outperforming fixed sequential probing (9.7 calls).
-3. **Dynamic Anomaly Interception & Causal Hazard Deflection:** In stressful out-of-family environments, the **Closed-Loop Dynamic Runtime Shield** intercepted unexpected behavioral divergences across 8 deployment runs. Causal counterfactual auditing verified that where unshielded plans ran into catastrophic absorbing hazards (`alias` and `delay`), the shield preemptively deflected both hazards with zero harm.
-4. **Temporal Adapter Synthesis:** On asynchronous interfaces with pipeline latency (`delay`), static bijections suffered 0% admission due to transition contradictions. Enabling temporal adapter synthesis expanded the search space to 720 models and achieved **100% useful coverage with 0% selective harm**.
-5. **Decision-Focused CEGP Distinguishing Witnesses:** On deep mechanisms (`long_trace`) where fixed-horizon length-3 probes left candidate adapters indistinguishable (forcing 0% admission), Counterexample-Guided Active Probing (CEGP) dynamically synthesized the 4-step distinguishing witness `[0, 0, 0, 0]`, achieving **100% useful coverage** (+1.000 mean paired difference).
-6. **Classical System Identification Bottleneck:** Under small call caps ($B \le 32$), classical automata learning (AALpy $L^*$) requires 100–250 queries for full state identification and thus abstains entirely (0% coverage). CROSSWIRE's task-directed ambiguity reduction solves the task with an order-of-magnitude fewer interactions.
-7. **Falsification & Honest Negative Controls:** Under semantic corruption (where sensor outputs match raw predictions but underlying physical events are swapped), black-box consensus admitted connections that failed private auditing (100% harm). This rigorously demonstrates that ungrounded behavioral observation cannot substitute for semantic anchors.
-8. **Forced-Fit Catastrophe:** Forced-fit point estimation (`fit`) admitted 33.3% of misspecified stress cases but incurred **62.5% selective harm**, proving the necessity of ambiguity preservation over single-point optimization.
+1. **Adaptive Contracts vs. Open-Loop Stalling:** On the designed `routing` interlock control, fixed non-branching sequences suffered 0% admission at budget zero because commit actions depend on the unknown input map. Adaptive policy synthesis certified an observation-dependent policy tree that achieved **100% useful coverage at budget zero without requiring any prior target interactions**, delivering a **+0.500 mean useful coverage advantage** on in-family fixtures (`[+0.000, +1.000]`).
+2. **Zero Selective Harm (In-Family):** Across in-family mechanisms, robust consensus admission achieved **0% selective harm** and **0 hazards**. Whenever a connection was admitted, it was 100% successful.
+3. **Task-Relevant Probing Efficiency:** Contract-relevant active probing achieved **71.4% useful coverage** in an average of only 7.4 calls (at budget 16), significantly outperforming fixed sequential probing (9.7 calls).
+4. **Dynamic Anomaly Interception & Causal Hazard Deflection:** In stressful out-of-family environments, the **Closed-Loop Dynamic Runtime Shield** intercepted unexpected behavioral divergences across 8 deployment runs. Causal counterfactual auditing verified that where unshielded plans ran into catastrophic absorbing hazards (`alias` and `delay`), the shield preemptively deflected both hazards with zero harm.
+5. **Temporal Adapter Synthesis:** On asynchronous interfaces with pipeline latency (`delay`), static bijections suffered 0% admission due to transition contradictions. Enabling temporal adapter synthesis expanded the search space to 720 models and achieved **100% useful coverage with 0% selective harm**.
+6. **Decision-Focused CEGP Distinguishing Witnesses:** On deep mechanisms (`long_trace`) where fixed-horizon length-3 probes left candidate adapters indistinguishable (forcing 0% admission), Counterexample-Guided Active Probing (CEGP) dynamically synthesized the 4-step distinguishing witness `[0, 0, 0, 0]`, achieving **100% useful coverage** (+1.000 mean paired difference).
+7. **Classical System Identification Bottleneck:** Under small call caps ($B \le 32$), classical automata learning (AALpy $L^*$) requires 100–250 queries for full state identification and thus abstains entirely (0% coverage). CROSSWIRE's task-directed ambiguity reduction solves the task with an order-of-magnitude fewer interactions.
+8. **Falsification & Honest Negative Controls:** Under semantic corruption (where sensor outputs match raw predictions but underlying physical events are swapped), black-box consensus admitted connections that failed private auditing (100% harm). This rigorously demonstrates that ungrounded behavioral observation cannot substitute for semantic anchors.
+9. **Forced-Fit Catastrophe:** Forced-fit point estimation (`fit`) admitted 33.3% of misspecified stress cases but incurred **62.5% selective harm**, proving the necessity of ambiguity preservation over single-point optimization.
 
 ---
 

@@ -17,7 +17,7 @@ from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 
 POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample")
-ADMISSIONS = ("robust", "one_best", "unique", "fit", "identity", "abstain", "oracle")
+ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle")
 EXECUTION_MODES = ("open_loop", "shielded")
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
@@ -66,6 +66,12 @@ class RunConfig:
             raise ValueError("Unknown implementation or split")
         if self.policy not in POLICIES or self.admission not in ADMISSIONS:
             raise ValueError("Unknown probe/admission policy")
+        if self.admission == 'adaptive' and self.execution_mode != 'shielded':
+            raise ValueError('Adaptive admission requires shielded execution')
+        if self.policy == 'aalpy' and self.temporal:
+            raise ValueError('The AALpy baseline does not support temporal adapters')
+        if self.policy == 'aalpy' and self.admission == 'adaptive':
+            raise ValueError('The AALpy baseline does not support adaptive admission')
 
 
 def _check_cancel(cancel: Callable[[], bool] | None) -> None:
@@ -103,7 +109,8 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 
 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
-             cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False):
+             cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False,
+             admission: str = 'robust'):
     """This function receives no Case, private map, target states or family label."""
     space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
@@ -115,7 +122,12 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
     # attempt counts, so all methods compare at the same total target access.
     while counts["target_calls"] < budget:
         _check_cancel(cancel)
-        if space.plan(survivors, "robust")["admitted"]:
+        if admission == 'adaptive':
+            from .adaptive import synthesize_policy
+            ready = synthesize_policy(space, survivors, cancel=cancel)['admitted']
+        else:
+            ready = space.plan(survivors, "robust")["admitted"]
+        if ready:
             break
         remaining_actions = budget - counts["target_calls"] - 1  # one reset per query
         if remaining_actions < 1:
@@ -178,7 +190,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             baseline.update(detail)
         elif config.budget and config.admission != "oracle":
             target = resources.enter_context(TargetProcess(case.private))
-            space, survivors, probes, error = _acquire(public, config.policy, config.budget, target.query, target.counts, cancel, progress, temporal=temporal)
+            space, survivors, probes, error = _acquire(public, config.policy, config.budget, target.query, target.counts, cancel, progress, temporal=temporal, admission=config.admission)
             counts = dict(target.counts)
         else:
             space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
@@ -189,6 +201,9 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             word = oracle_plan(case.private, config.horizon)
             decision = {"status": "ORACLE_DIAGNOSTIC", "admitted": word is not None,
                         "word": word, "candidate_count": len(survivors)}
+        elif config.admission == 'adaptive':
+            from .adaptive import synthesize_policy
+            decision = synthesize_policy(space, survivors, cancel=cancel)
         else:
             anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
             decision = space.plan(survivors, config.admission, transcripts=fit_evidence(probes),
@@ -212,9 +227,13 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             _check_cancel(cancel)
             if target is None:
                 target = resources.enter_context(TargetProcess(case.private))
-            from .shield import execute_deployment
-            deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,
-                                            mode=config.execution_mode, cancel=cancel)
+            if config.admission == 'adaptive':
+                from .adaptive import execute_policy
+                deployment = execute_policy(target, decision['policy'], space, survivors, cancel)
+            else:
+                from .shield import execute_deployment
+                deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,
+                                                mode=config.execution_mode, cancel=cancel)
         from .audit import evaluate
         audit = evaluate(case, space, survivors, decision, probes, deployment)
         peak = tracemalloc.get_traced_memory()[1]
@@ -265,6 +284,11 @@ def summarize(rows: list[dict]) -> list[dict]:
             "hazardous": sum(r["audit"]["hazard"] is True for r in members),
             "hazards_averted": sum(r["audit"].get("hazard_averted") is True for r in members),
             "shield_interventions": sum(r["audit"].get("shield_intervened") is True for r in members),
+            "calibration_hazardous_probes": sum(r['audit']['calibration_hazardous_probes'] for r in members),
+            "calibration_hazardous_runs": sum(r['audit']['calibration_hazardous_probes'] > 0 for r in members),
+            "mean_target_calls": sum(r['metrics']['target_calls'] for r in members) / n,
+            "mean_deployment_calls": sum(r['deployment']['target_calls'] for r in members) / n,
+            "mean_total_calls": sum(r['metrics']['target_calls'] + r['deployment']['target_calls'] for r in members) / n,
             "interface_errors": sum(r["decision"]["status"] == "INTERFACE_ERROR"
                                     or bool((r.get("deployment") or {}).get("error")) for r in members),
             "acquisition_interface_errors": sum(r["decision"]["status"] == "INTERFACE_ERROR" for r in members),
@@ -297,7 +321,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
         # Out-of-family/control cases are never pooled into primary in-family effect.
         if scopes.get(c["family"]) != "in_family" or c["admission"] != "robust":
             continue
-        cell = tuple(c.get(k) for k in ("family", "seed", "implementation", "anchors", "split", "horizon"))
+        cell = tuple(c.get(k) for k in ("family", "seed", "implementation", "anchors", "split", "horizon", "execution_mode", "temporal"))
         cells[(c["budget"], row["parent_instance_id"], cell)][c["policy"]] = \
             int(row["audit"]["contract_satisfied"] is True)
     policies = sorted({p for values in cells.values() for p in values} - {"task"})
@@ -317,6 +341,37 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
             rng = random.Random(68219)
             draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
             output.append({"contrast": f"task - {method}", "outcome": "useful_coverage",
+                           "budget": budget, "budget_unit": "target calls (resets + actions)",
+                           "parent_clusters": len(delta),
+                           "matched_cells": sum(len(v) for v in per_parent.values()),
+                           "families_pooled": sorted(families),
+                           "mean_delta": sum(delta) / len(delta),
+                           "descriptive_95_interval": [draws[49], draws[1949]],
+                           "scope": "exploratory parent-cluster paired bootstrap within one call cap; "
+                                    "in-family fixtures pooled; few clusters, no confirmatory claim"})
+    adm_cells = defaultdict(dict)
+    for row in rows:
+        c = row["configuration"]
+        if scopes.get(c["family"]) != "in_family":
+            continue
+        cell = tuple(c.get(k) for k in ("family", "seed", "implementation", "anchors", "split", "horizon", "execution_mode", "temporal", "policy"))
+        adm_cells[(c["budget"], row["parent_instance_id"], cell)][c["admission"]] = \
+            int(row["audit"]["contract_satisfied"] is True)
+    admissions = sorted({a for values in adm_cells.values() for a in values} - {"robust"})
+    for budget in sorted({key[0] for key in adm_cells}):
+        for adm in admissions:
+            per_parent = defaultdict(list)
+            families = set()
+            for (b, parent, cell), values in adm_cells.items():
+                if b == budget and "robust" in values and adm in values:
+                    per_parent[parent].append(values[adm] - values["robust"])
+                    families.add(cell[0])
+            if not per_parent:
+                continue
+            delta = [sum(v) / len(v) for _, v in sorted(per_parent.items())]
+            rng = random.Random(68219)
+            draws = sorted(sum(rng.choice(delta) for _ in delta) / len(delta) for _ in range(2000))
+            output.append({"contrast": f"{adm} - robust", "outcome": "useful_coverage",
                            "budget": budget, "budget_unit": "target calls (resets + actions)",
                            "parent_clusters": len(delta),
                            "matched_cells": sum(len(v) for v in per_parent.values()),

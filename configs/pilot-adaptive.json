@@ -1,0 +1,11 @@
+{
+  "families": ["routing", "latch", "semantic_corruption"],
+  "seeds": [17, 23],
+  "budgets": [0, 8],
+  "policies": ["fixed", "task"],
+  "admissions": ["robust", "adaptive"],
+  "implementations": ["procedural"],
+  "execution_mode": "shielded",
+  "horizon": 4,
+  "split": "evaluation"
+}

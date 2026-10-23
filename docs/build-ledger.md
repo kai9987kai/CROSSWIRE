@@ -61,3 +61,14 @@ Ruling: parallelize disjoint core, target-protocol and browser files — active 
   - Causal counterfactual auditing (`crosswire/audit.py`): simulates unshielded trajectory on private target to verify whether the unshielded run would have encountered a hazard, preventing phantom safety attribution and ensuring scientifically honest reporting.
   - Cross-portfolio survey of 95 additional `kai9987kai` repositories (`research/portfolio-index.md`): extracted lessons from `Bot-research-lab`, `Habitat-Genome-Compiler`, `BIOLAB`, `Hybrid-Intel-Studio`, `Italtensor`, and `1313-Game`.
   - Full test suite passing (91/91 passed in 45.08s). Total verified empirical evaluations: 673 runs.
+- [x] **Task 8 (Adaptive Contracts, Observation-Dependent Contingent Policies, & Certificate Checking):**
+  - Synthesizer (`crosswire/adaptive.py`): bounded AND/OR iterative deepening tree search over public adapter beliefs. Searches minimal worst-case-depth contingent trees that branch on raw outputs.
+  - Independent Policy Verifier (`verify_policy` in `crosswire/adaptive.py`): re-evaluates all branch obligations independently from public model predictions; rejects missing branches, extra unmodeled branches, horizon violations, or unverified leaf stops.
+  - Monitored Execution (`execute_policy` in `crosswire/adaptive.py`): closes the loop with the target process; tracks active belief updates and halts on unmodeled responses or anomaly before hazards occur.
+  - Routing Fixture (`routing` in `crosswire/fixtures.py`): designed control where 3 diagnostic actions inform a commit action; proves adaptive policy admission achieves goal without prior calibration where fixed words cannot.
+  - Transducer Signature Augmentation (`crosswire/core.py`): fixed temporal observational signatures to track `(state, buffer)` state spaces, correctly distinguishing delay initializations.
+  - Shield Precondition Conservatism (`crosswire/shield.py`): blocks actions if hazardous under *any* surviving interpretation.
+  - Audit & Replay Extension (`crosswire/fixtures.py`, `crosswire/audit.py`, `crosswire/receipts.py`): audited execution of policy trees, private verification of semantic satisfaction, and bit-exact replay.
+  - UI Workbench (`crosswire/web/app.js`, `crosswire/web/index.html`): renders branching policy trees, highlights executed paths, and displays certificate validity.
+  - Empirical Benchmark (`reports/pilot-adaptive-receipt.json` & `reports/pilot-adaptive.md`, 48 runs): verified +0.500 useful coverage delta at budget 0 on in-family fixtures; verified honest abstention/failure on `semantic_corruption`.
+  - Full test suite passing (109/109 passed in 80.24s). Total verified empirical evaluations: 721 runs.

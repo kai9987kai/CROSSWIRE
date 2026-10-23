@@ -89,3 +89,25 @@ def test_causal_counterfactual_audit_distinguishes_averted_hazards():
     assert res_incomp["audit"]["hazard_averted"] is False
     assert res_incomp["audit"]["deployment_audit"]["counterfactual_hazard"] is False
 
+
+def test_pre_step_guard_blocks_hazard_under_any_surviving_interpretation():
+    case = make_case('latch', seed=17)
+    space = CandidateSpace(Machine.from_dict(case.public['reference']),
+                           Contract.from_dict(case.public['contract']))
+    hazardous = next(a.id for a in space.adapters if space.contract.hazard in space.semantic(a.id, (0,)))
+    safe = next(a.id for a in space.adapters if space.contract.hazard not in space.semantic(a.id, (0,)))
+    shield = RuntimeShield(space, (hazardous, safe), space.contract)
+    with TargetProcess(case.private) as target:
+        output, should_continue = shield.step(target, 0, [])
+        assert target.counts['step_attempts'] == 0
+        assert output is None and should_continue is False
+        assert shield.status == 'INTERVENED_HAZARD_AVERTED'
+        assert shield.history_words == []
+
+
+@pytest.mark.parametrize('mode', ['typo', None, True])
+def test_runtime_shield_rejects_unknown_execution_modes(mode):
+    space = _simple_space()
+    with pytest.raises(ValueError, match='mode'):
+        RuntimeShield(space, (0,), space.contract, mode=mode)
+

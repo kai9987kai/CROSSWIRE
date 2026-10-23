@@ -19,6 +19,8 @@ class RuntimeShield:
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
                  contract: Contract, mode: str = "shielded"):
+        if mode not in ('open_loop', 'shielded'):
+            raise ValueError('Unknown execution mode')
         self.space = space
         self.contract = contract
         self.mode = mode
@@ -50,14 +52,15 @@ class RuntimeShield:
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
             return None, False
 
-        # Pre-step hazard check: if planned_action is guaranteed to cause a hazard under ALL surviving adapters
+        # Consensus safety requires every surviving interpretation to permit the
+        # next action, including before the first target observation is available.
         candidate_prefix = tuple(self.history_words) + (planned_action,)
-        if all(self.contract.hazard in self.space.semantic(aid, candidate_prefix)
+        if any(self.contract.hazard in self.space.semantic(aid, candidate_prefix)
                for aid in self.active_survivors):
             self.status = "INTERVENED_HAZARD_AVERTED"
             self.intervened = True
             self.hazard_averted = True
-            self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} is unanimously hazardous under surviving adapters")
+            self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard under a surviving adapter")
             return None, False
 
         # Execute single step

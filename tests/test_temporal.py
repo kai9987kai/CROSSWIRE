@@ -47,3 +47,50 @@ def test_temporal_adapter_eliminates_delay_fixture_mismatch():
     assert len(zero_loss) > 0
     # At least one zero loss adapter has delay == 1
     assert any(space.adapters[aid].delay == 1 for aid in zero_loss)
+
+
+def test_observational_classes_distinguish_delay_and_initial_buffer():
+    space = CandidateSpace(_machine(), Contract(), temporal=True)
+    ids = (0, 144, 147)  # identity maps: static, delay with initial 0, initial 3
+    assert space.predict(0, (0, 0)) != space.predict(144, (0, 0))
+    assert space.predict(144, (0,)) != space.predict(147, (0,))
+    assert space.ambiguity(ids)['observational_classes'] == 3
+
+
+def test_observational_classes_merge_equivalent_static_and_delayed_models():
+    machine = Machine('constant observation', (((0, 0), (0, 0), (0, 0)),))
+    space = CandidateSpace(machine, Contract(), temporal=True)
+    assert space.ambiguity((0, 144))['observational_classes'] == 1
+    assert space.ambiguity((0, 144, 145))['observational_classes'] == 2
+
+
+def test_temporal_classes_match_independent_exact_product_comparisons():
+    machine = _machine()
+    space = CandidateSpace(machine, Contract(horizon=1), temporal=True)
+    selected = (0, 1, 24, 144, 145, 147, 148, 240, 241, 288)
+    representatives = []
+    for identifier in selected:
+        adapter = space.adapters[identifier]
+        if adapter.delay:
+            # Independently materialize all source-state/output-buffer states.
+            rows = tuple(tuple((following * machine.outputs + output, adapter.output_map[buffer])
+                               for following, output in (machine.transitions[state][symbol]
+                                                          for symbol in adapter.input_map))
+                         for state in range(len(machine.transitions)) for buffer in range(machine.outputs))
+            initial = machine.initial * machine.outputs + adapter.init_output
+        else:
+            rows = tuple(tuple((row[symbol][0], adapter.output_map[row[symbol][1]])
+                               for symbol in adapter.input_map) for row in machine.transitions)
+            initial = machine.initial
+        target = Machine('materialized adapter', rows, initial=initial)
+        if not any(compare_adapter(machine, space.adapters[other], target)['equivalent']
+                   for other in representatives):
+            representatives.append(identifier)
+    assert space.ambiguity(selected)['observational_classes'] == len(representatives)
+
+
+@pytest.mark.parametrize('delay', [0, 1])
+@pytest.mark.parametrize('initial', [4, 100])
+def test_adapter_rejects_initial_buffer_outside_output_alphabet(delay, initial):
+    with pytest.raises(ValueError, match='init_output'):
+        Adapter(0, (0, 1, 2), (0, 1, 2, 3), delay=delay, init_output=initial)

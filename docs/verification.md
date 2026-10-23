@@ -1,9 +1,9 @@
 # CROSSWIRE Verification Report
 
 **Date:** 23 October 2026  
-**Commit:** `083f847`  
-**Platform:** Windows (Python 3.12.9 64-bit, Node.js v20+, Chromium 1243)  
-**Overall Status:** PASS (91/91 tests passing, clean wheel install verified, browser e2e verified, 673 total empirical runs verified)
+**Commit:** `codex/crosswire-design`  
+**Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
+**Overall Status:** PASS (109/109 tests passing, clean wheel install verified, browser e2e verified, 721 total empirical runs verified)
 
 ---
 
@@ -12,7 +12,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================== 91 passed in 45.08s ==============================
+============================= 109 passed in 80.24s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -20,17 +20,19 @@ The automated test suite runs via `pytest` without external dependencies (except
 | Test File | Tests Passed | Subsystem & Invariant Checked |
 |---|---:|---|
 | `tests/test_core.py` | 17 | 144 bijective adapter permutations; prefix hazard safety; true-map retention; equivalence classes; empty-family non-vacuous handling; shortest lexicographic product counterexample BFS. |
-| `tests/test_fixtures.py` | 21 | Procedural vs. table target implementations; 16 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation. |
+| `tests/test_fixtures.py` | 21 | Procedural vs. table target implementations; 17 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation; routing control. |
 | `tests/test_interfaces.py` | 13 | Subprocess lifecycle; exact-PID cleanup; line-delimited JSON protocol; malformed message recovery; timeout enforcement; attempted vs. successful call accounting. |
 | `tests/test_baselines.py` | 3 | Pinned AALpy 1.6.2 $L^*$ integration; budget-limited SUL and equivalence oracle; comparison transition step counting; global RNG isolation. |
 | `tests/test_receipts.py` | 7 | Canonical JSON serialization; SHA-256 payload and scientific hashing; envelope validation; tampering rejection; exact scientific replay. |
-| `tests/test_study.py` | 10 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; stratified paired comparisons within budget strata. |
+| `tests/test_study.py` | 13 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; stratified paired comparisons within budget strata; paired admission contrasts; AALpy configuration guards. |
 | `tests/test_server.py` | 5 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection. |
 | `tests/test_cli.py` | 4 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`. |
-| `tests/test_shield.py` | 5 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch; causal counterfactual hazard averted auditing. |
-| `tests/test_temporal.py` | 3 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); 3-tuple product Mealy state comparison; empirical resolution of pipeline delay. |
+| `tests/test_shield.py` | 7 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch (any surviving interpretation); causal counterfactual hazard averted auditing; execution mode validation. |
+| `tests/test_temporal.py` | 7 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
 | `tests/test_cegp.py` | 3 | Decision-focused counterexample-guided active probing (CEGP); $O(W \cdot N)$ marginal frequency pair disagreement counting; dynamic synthesis of distinguishing witnesses beyond fixed probe pool. |
-| **Total** | **91** | **Complete local coverage of contract specifications, runtime dynamics, and witness synthesis.** |
+| `tests/test_adaptive.py` | 5 | Observation-dependent contingent policy synthesis (AND/OR tree search); independent policy certificate verification (branch completeness, horizon bounds, zero hazard); certificate tampering rejection; search cap handling; full execution trace replay and audit. |
+| `tests/test_web.py` | 4 | Local workbench server endpoints, static file serving, and receipt export. |
+| **Total** | **109** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, and adaptive contingent policies.** |
 
 ---
 
@@ -119,6 +121,7 @@ Six systematic empirical benchmarks were executed and preserved as self-containe
 | **Shielded Closed-Loop Benchmark** | `reports/pilot-shield-shielded-receipt.json` | `a88c531ea7fad346…` | `924a7b12de35f87c…` | 36 |
 | **Temporal Adapter Synthesis** | `reports/pilot-temporal-receipt.json` | `674907c7f02dcdb7…` | `f0eee9109c032893…` | 4 |
 | **CEGP Distinguishing Witness Benchmark** | `reports/pilot-cegp-longtrace-receipt.json` | `968ed5dfe5874e08…` | `e931c96b3d027d34…` | 4 |
-| **Total Empirical Runs** | | | | **673** |
+| **Adaptive Contingent Policy Benchmark** | `reports/pilot-adaptive-receipt.json` | `6e07673c27941fc7…` | `cbc85a6cbc260e98…` | 48 |
+| **Total Empirical Runs** | | | | **721** |
 
 All receipts are cryptographically bound to explicit source and protocol hashes. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.
