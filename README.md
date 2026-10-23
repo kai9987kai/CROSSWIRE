@@ -38,8 +38,12 @@ When independently developed controllers, agents, or tools communicate without a
 ## Key Capabilities & Architecture
 
 - **Consensus Admission vs. Point Estimation:** Eliminates selective harm by verifying safety across all candidate mappings.
+- **Equivalence Class Edge Cutting (EC2 Active Probing):** Submodular active learning policy that partitions candidates into contract decision classes and prioritizes probes cutting cross-class edges, eliminating wasted exploration on contract-equivalent models.
+- **Receding-Horizon Dynamic Replanning Shield:** Actively monitors intermediate deployment outputs; when updated beliefs reveal upcoming plan risks, dynamically synthesizes and executes verified safe detour suffixes (`REPLANNED_ONLINE_SAFE`), achieving goal completion where static shields abort.
+- **Risk-Controlled Version-Space Admission:** Formulates finite-sample empirical hazard and goal bounds over surviving hypothesis spaces with certifiable risk tolerance.
 - **Autonomous Model-Class Escalation (SRM):** Implements Structural Risk Minimization across nested hypothesis spaces $\mathcal{H}_0 \subset \mathcal{H}_1$. Starts at parsimonious static bijections (144 models) and autonomously escalates to temporal latency-aware models (720 models) upon refutation, emitting unforgeable structural contradiction certificates if all nested classes fail.
 - **Information-Theoretic Active Probing (Shannon Entropy):** Probing policy that maximizes output predictive entropy $H(O \mid w)$ per query cost, identifying valid adapters in up to 50% fewer target interactions.
+- **Independent Evidence Verification & Minimal Contradiction Cores:** Decoupled certificate verifier independently re-enumerates models, verifies surviving beliefs against public transcripts, extracts deletion-minimal contradiction witnesses, and binds immutable certificates before private auditing.
 - **Simplex Safe Fallback Recovery Shielding:** Dynamically monitors execution step-by-step; upon detecting observation anomaly or impending hazard, dispatches a verified minimum-hazard recovery action to restore the system to a safe baseline state (`RECOVERED_SAFE_FALLBACK`).
 - **Adaptive Contracts (Observation-Dependent Policies):** Extends interface synthesis from linear words to contingent AND/OR policy trees certified by an independent tree checker (Proof-Carrying Code). Chooses each action based on the observed response, achieving 100% useful coverage on routing interlocks without prior calibration.
 - **Closed-Loop Dynamic Runtime Shielding:** Actively monitors intermediate target responses step-by-step; detects behavioral anomalies/drift and preemptively averts latent hazards before irreversible actions are committed.
@@ -49,7 +53,7 @@ When independently developed controllers, agents, or tools communicate without a
 - **Freeze-Before-Audit Protocol:** Scientific decisions, survivor counts, and probe histories freeze into cryptographic digests before private semantic evaluation.
 - **Classical Learning Baseline:** Pinned integration with AALpy 1.6.2 ($L^*$ algorithm) under identical target interaction budgets.
 - **Cryptographic Scientific Receipts:** Every run and study generates self-contained JSON receipts with source hash bindings and exact determinism checking.
-- **Local Browser Workbench:** Dark-mode responsive UI featuring live state graph inspection, candidate mapping matrices, probe timelines, dynamic shield badges, receipt export/import, and SVG study coverage charts.
+- **Local Browser Workbench:** Dark-mode responsive UI featuring live state graph inspection, candidate mapping matrices, probe timelines, dynamic shield badges, receipt export/import, replanning events, and SVG study coverage charts.
 
 ---
 

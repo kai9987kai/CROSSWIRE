@@ -144,14 +144,14 @@ def check_result(result: dict) -> dict:
         if type(decision['admitted']) is not bool:
             raise ValueError('Admission must be boolean')
         admission = config.get('admission', 'robust')
-        if admission not in ('robust', 'adaptive', 'unique', 'one_best', 'fit', 'identity', 'oracle', 'abstain'):
+        if admission not in ('robust', 'adaptive', 'unique', 'one_best', 'fit', 'identity', 'oracle', 'abstain', 'risk_controlled'):
             raise ValueError('Unknown admission rule')
         diagnostic = baseline or admission in ('one_best', 'fit', 'identity', 'oracle')
         report.update(model_class=model_class, checked_adapters=len(adapters), candidate_count=len(survivors),
                       evidence_count=len(constraints), elimination=elimination)
         status = decision['status']
-        if status not in ('IDENTIFIED', 'TASK_ADMISSIBLE', 'ADAPTIVE_ADMISSIBLE', 'FAMILY_CONTRADICTED',
-                          'UNRESOLVED', 'SEARCH_LIMIT', 'INTERFACE_ERROR', 'ORACLE_DIAGNOSTIC'):
+        if status not in ('IDENTIFIED', 'TASK_ADMISSIBLE', 'ADAPTIVE_ADMISSIBLE', 'RISK_CONTROLLED_ADMISSIBLE',
+                          'FAMILY_CONTRADICTED', 'UNRESOLVED', 'SEARCH_LIMIT', 'INTERFACE_ERROR', 'ORACLE_DIAGNOSTIC'):
             raise ValueError('Unknown decision status')
         if diagnostic:
             report.update(kind='diagnostic', reason='Diagnostic baseline; no all-candidate admission guarantee')
@@ -160,7 +160,7 @@ def check_result(result: dict) -> dict:
                 raise ValueError('Empty or abstaining belief cannot certify admission')
             if admission == 'unique' and len(survivors) != 1:
                 raise ValueError('Unique admission requires one surviving adapter')
-            if status not in ('IDENTIFIED', 'TASK_ADMISSIBLE', 'ADAPTIVE_ADMISSIBLE'):
+            if status not in ('IDENTIFIED', 'TASK_ADMISSIBLE', 'ADAPTIVE_ADMISSIBLE', 'RISK_CONTROLLED_ADMISSIBLE'):
                 raise ValueError('Admission conflicts with decision status')
             checked_nodes = 0
 
@@ -197,13 +197,32 @@ def check_result(result: dict) -> dict:
                 if decision.get('word') is not None:
                     raise ValueError('Adaptive policy must not claim a fixed word')
                 visit(decision['policy'], survivors, ())
+                report.update(kind='admission', checked_policy_nodes=checked_nodes,
+                              reason='Every surviving interpretation satisfies the declared finite contract')
+            elif admission == 'risk_controlled':
+                risk_metrics = decision.get('risk_metrics', {})
+                tolerance = float(risk_metrics.get('tolerance', 0.0))
+                word = _sequence(decision['word'], machine.inputs, 'admitted word')
+                if not 1 <= len(word) <= contract.horizon:
+                    raise ValueError('Admitted word exceeds the contract horizon')
+                traces = {i: _trace(machine, adapters[i], word) for i in survivors}
+                h_count = sum(contract.hazard in semantic for _, semantic in traces.values())
+                g_count = sum(bool(semantic and semantic[-1] == contract.goal and contract.hazard not in semantic)
+                              for _, semantic in traces.values())
+                h_risk = h_count / len(survivors)
+                g_rate = g_count / len(survivors)
+                if h_risk > (tolerance + 1e-9) or g_rate < (1.0 - tolerance - 1e-9):
+                    raise ValueError(f'Admitted word violates risk tolerance: hazard_risk={h_risk}, goal_rate={g_rate}, tolerance={tolerance}')
+                report.update(kind='risk_controlled' if tolerance > 0 else 'admission',
+                              risk_metrics={'hazard_risk': h_risk, 'goal_rate': g_rate, 'tolerance': tolerance},
+                              reason=f'Risk-controlled admission certified: hazard_risk={h_risk:.4f} <= {tolerance}, goal_rate={g_rate:.4f}')
             else:
                 word = _sequence(decision['word'], machine.inputs, 'admitted word')
                 if not 1 <= len(word) <= contract.horizon:
                     raise ValueError('Admitted word exceeds the contract horizon')
                 check_prefix(word, survivors, terminal=True)
-            report.update(kind='admission', checked_policy_nodes=checked_nodes,
-                          reason='Every surviving interpretation satisfies the declared finite contract')
+                report.update(kind='admission', checked_policy_nodes=checked_nodes,
+                              reason='Every surviving interpretation satisfies the declared finite contract')
         elif status == 'FAMILY_CONTRADICTED':
             if survivors:
                 raise ValueError('Contradiction claimed while consistent adapters remain')

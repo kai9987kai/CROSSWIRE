@@ -9,6 +9,7 @@ hazardous actions are executed.
 """
 from __future__ import annotations
 
+from itertools import product
 from typing import Callable
 from .core import CandidateSpace, Contract
 from .interfaces import InterfaceError, TargetProcess
@@ -25,7 +26,7 @@ class RuntimeShield:
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
                  contract: Contract, mode: str = "shielded", cancel: Callable[[], bool] | None = None):
-        if mode not in ('open_loop', 'shielded', 'recovery'):
+        if mode not in ('open_loop', 'shielded', 'recovery', 'replan'):
             raise ValueError('Unknown execution mode')
         self.space = space
         self.contract = contract
@@ -47,6 +48,20 @@ class RuntimeShield:
         self.recovery_action = None
         self.recovery_candidate_count = 0
         self.recovery_remaining_horizon = contract.horizon
+        self.replanned = False
+        self.replan_events: list[dict] = []
+        self.replanned_suffix: tuple[int, ...] | None = None
+
+    def _find_safe_suffix(self, prefix: tuple[int, ...], remaining_horizon: int) -> tuple[int, ...] | None:
+        """Find shortest lexicographic action suffix satisfying the contract under all active survivors."""
+        if not self.active_survivors or remaining_horizon <= 0:
+            return None
+        for length in range(1, remaining_horizon + 1):
+            for cand in product(range(self.space.machine.inputs), repeat=length):
+                full = prefix + cand
+                if all(self.contract.accepts(self.space.semantic(aid, full)) for aid in self.active_survivors):
+                    return cand
+        return None
 
     def _observe(self, action: int, output: int):
         self.history_words.append(action)
@@ -135,7 +150,7 @@ class RuntimeShield:
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append("Pre-step abort: no surviving models match history (anomaly/drift detected)")
-            if self.mode == "recovery":
+            if self.mode in ("recovery", "replan"):
                 rec_out = self.recover(target)
                 return rec_out, False
             return None, False
@@ -145,14 +160,36 @@ class RuntimeShield:
         candidate_prefix = tuple(self.history_words) + (planned_action,)
         if any(self.contract.hazard in self.space.semantic(aid, candidate_prefix)
                for aid in self.active_survivors):
-            self.status = "INTERVENED_HAZARD_AVERTED"
-            self.intervened = True
-            self.hazard_averted = True
-            self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard under a surviving adapter")
-            if self.mode == "recovery":
-                rec_out = self.recover(target)
-                return rec_out, False
-            return None, False
+            if self.mode == "replan":
+                rem_h = max(0, self.contract.horizon - len(self.history_words))
+                safe_suffix = self._find_safe_suffix(tuple(self.history_words), rem_h)
+                if safe_suffix is not None:
+                    self.replanned = True
+                    self.replan_events.append({
+                        'step': len(self.history_words), 'trigger': 'pre_step_hazard',
+                        'old_action': planned_action, 'new_suffix': list(safe_suffix),
+                        'survivor_count': len(self.active_survivors)
+                    })
+                    self.status = "REPLANNED_ONLINE_SAFE"
+                    self.reasons.append(f"Replanned online at step {len(self.history_words)}: switched to safe suffix {list(safe_suffix)}")
+                    planned_action = safe_suffix[0]
+                    self.replanned_suffix = safe_suffix[1:]
+                else:
+                    self.status = "INTERVENED_HAZARD_AVERTED"
+                    self.intervened = True
+                    self.hazard_averted = True
+                    self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard and no safe replan exists")
+                    rec_out = self.recover(target)
+                    return rec_out, False
+            else:
+                self.status = "INTERVENED_HAZARD_AVERTED"
+                self.intervened = True
+                self.hazard_averted = True
+                self.reasons.append(f"Pre-step abort at step {len(self.history_words) + 1}: action {planned_action} risks hazard under a surviving adapter")
+                if self.mode == "recovery":
+                    rec_out = self.recover(target)
+                    return rec_out, False
+                return None, False
 
         # Execute single step
         out = target.step(planned_action)
@@ -164,30 +201,55 @@ class RuntimeShield:
             self.status = "INTERVENED_ANOMALY"
             self.intervened = True
             self.reasons.append(f"Post-step abort at step {len(self.history_words)}: output {out} refuted all surviving adapters")
-            if self.mode == "recovery":
+            if self.mode in ("recovery", "replan"):
                 self.recover(target)
                 return out, False
             return out, False
 
         # If there are remaining planned steps, check if the remaining suffix is still safe
-        if remaining_plan:
-            full_plan = current_word + tuple(remaining_plan)
-            # Check if ANY surviving adapter predicts a hazard on this suffix
+        rem_plan_to_check = self.replanned_suffix if self.replanned_suffix is not None else remaining_plan
+        if rem_plan_to_check:
+            full_plan = current_word + tuple(rem_plan_to_check)
             suffix_hazardous = any(
                 self.contract.hazard in self.space.semantic(adapter_id, full_plan)
                 for adapter_id in self.active_survivors
             )
+            suffix_misses_goal = (self.mode == "replan") and any(
+                not self.contract.accepts(self.space.semantic(adapter_id, full_plan))
+                for adapter_id in self.active_survivors
+            )
 
-            if suffix_hazardous:
-                # The remaining planned steps are no longer unanimously safe
-                self.status = "INTERVENED_HAZARD_AVERTED"
-                self.intervened = True
-                self.hazard_averted = True
-                self.reasons.append(f"Post-step abort at step {len(self.history_words)}: upcoming plan suffix {remaining_plan} risks hazard under updated survivors")
-                if self.mode == "recovery":
-                    self.recover(target)
+            if suffix_hazardous or suffix_misses_goal:
+                if self.mode == "replan":
+                    rem_h = max(0, self.contract.horizon - len(self.history_words))
+                    safe_suffix = self._find_safe_suffix(current_word, rem_h)
+                    if safe_suffix is not None:
+                        self.replanned = True
+                        self.replan_events.append({
+                            'step': len(self.history_words), 'trigger': 'post_step_suffix_risk',
+                            'old_suffix': list(rem_plan_to_check), 'new_suffix': list(safe_suffix),
+                            'survivor_count': len(self.active_survivors)
+                        })
+                        self.status = "REPLANNED_ONLINE_SAFE"
+                        self.reasons.append(f"Replanned online at step {len(self.history_words)}: switched to safe suffix {list(safe_suffix)}")
+                        self.replanned_suffix = safe_suffix
+                        return out, True
+                    else:
+                        self.status = "INTERVENED_HAZARD_AVERTED"
+                        self.intervened = True
+                        self.hazard_averted = True
+                        self.reasons.append(f"Post-step abort at step {len(self.history_words)}: upcoming plan suffix risks hazard and no safe replan exists")
+                        self.recover(target)
+                        return out, False
+                else:
+                    self.status = "INTERVENED_HAZARD_AVERTED"
+                    self.intervened = True
+                    self.hazard_averted = True
+                    self.reasons.append(f"Post-step abort at step {len(self.history_words)}: upcoming plan suffix {remaining_plan} risks hazard under updated survivors")
+                    if self.mode == "recovery":
+                        self.recover(target)
+                        return out, False
                     return out, False
-                return out, False
 
         return out, True
 
@@ -218,15 +280,22 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
     try:
         _check_cancel(cancel)
         target.reset()
-        for i, action in enumerate(planned_word):
+        plan = list(planned_word)
+        step_idx = 0
+        while step_idx < len(plan):
             _check_cancel(cancel)
-            remaining = planned_word[i + 1:]
+            action = plan[step_idx]
+            remaining = plan[step_idx + 1:]
             _, should_continue = shield.step(target, action, remaining)
+            if shield.replanned_suffix is not None:
+                plan = plan[:step_idx + 1] + list(shield.replanned_suffix)
+                shield.replanned_suffix = None
             if not should_continue:
                 break
+            step_idx += 1
 
-        deployment["complete"] = (len(shield.history_words) == len(planned_word)) and not shield.intervened
-        deployment["shield_status"] = shield.status if shield.intervened else "COMPLETED"
+        deployment["complete"] = (len(shield.history_words) == len(plan)) and not shield.intervened
+        deployment["shield_status"] = shield.status if shield.intervened else ("REPLANNED_ONLINE_SAFE" if shield.replanned else "COMPLETED")
 
     except InterfaceError as exc:
         deployment["error"] = {"code": exc.code, "message": str(exc)}
@@ -236,6 +305,9 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
         deployment["outputs"] = list(shield.history_outputs)
         deployment["intervened"] = shield.intervened
         deployment["hazard_averted"] = shield.hazard_averted
+        deployment["replanned"] = shield.replanned
+        deployment["replan_count"] = len(shield.replan_events)
+        deployment["replan_events"] = list(shield.replan_events)
         deployment["reasons"] = list(shield.reasons)
         deployment["survivor_history"] = list(shield.survivor_counts)
         deployment["recovery"] = shield.recovery_record()

@@ -110,6 +110,30 @@ Furthermore, under Simplex runtime monitoring (`recovery` mode), fallback execut
 
 If the live belief is refuted ($\mathcal{V}_t = \emptyset$, indicating target drift or misspecification outside the hypothesis class), the shield refuses to speculate on uncertified fallback actions and immediately halts deployment (`INTERVENED_ANOMALY`). This prevents ungrounded fallback maneuvers from inadvertently triggering latent hazards.
 
+### 2.9 Submodular Equivalence Class Edge Cutting (EC2)
+A central bottleneck in active learning for interface synthesis is that traditional query selection algorithms either treat candidate models homogeneously (counting unweighted disagreement pairs) or maximize output entropy across the entire hypothesis space. However, in goal-oriented contract satisfaction, candidate adapters that share identical contract-admissible plans belong to the same **Contract Equivalence Class**:
+$$\mathcal{E}(S) = \{\alpha \in \mathcal{V} \mid \text{safe\_words}(\alpha) = S\}$$
+Separating two adapters within the same class $\mathcal{E}$ yields zero information regarding which plan to admit or which hazards to avoid.
+
+CROSSWIRE formalizes and implements Equivalence Class Edge Cutting (EC2; Guillory & Bilmes 2010; Golovin & Krause 2011). Given surviving classes $\{\mathcal{E}_1, \dots, \mathcal{E}_m\}$, the weighted edge cut of a probe word $w$ is:
+$$\text{Cut}_{i,j}(w) = |\mathcal{E}_i| \cdot |\mathcal{E}_j| - \sum_{p \in \Sigma_O^L} T_i(p) \cdot T_j(p)$$
+$$\text{Score}_{\text{EC2}}(w) = \frac{\sum_{1 \le i < j \le m} d_J(S_i, S_j) \cdot \text{Cut}_{i,j}(w)}{1 + |w|}$$
+where $d_J(S_i, S_j) = \frac{|S_i \Delta S_j|}{\max(1, |S_i \cup S_j|)}$ is the Jaccard distance between admissible deployment sets, $T_i(p)$ is the count of adapters in $\mathcal{E}_i$ predicting raw output $p$, and $1 + |w|$ normalizes for system-call query cost (reset + steps). Under adaptive submodularity, EC2 achieves near-optimal decision resolution with complexity $O(m^2 \cdot |\Sigma_O|^L)$ per candidate word, avoiding unnecessary queries on contract-equivalent models.
+
+### 2.10 Receding-Horizon Dynamic Replanning Shield
+In classical runtime shielding, encountering an unexpected observation or an upcoming plan hazard causes the controller to immediately abort or execute a single-step fallback. However, during execution, each intermediate observation $o_t$ prunes the live belief set ($\mathcal{V}_t \subset \mathcal{V}_{t-1}$). Consequently, alternative goal-reaching paths that were previously blocked by eliminated adapters may now be provably safe under all remaining candidates.
+
+CROSSWIRE introduces the **Receding-Horizon Replanning Shield** (`replan` mode). At step $t$:
+1. If the pending action or remaining suffix risks a hazard under any $\alpha \in \mathcal{V}_t$, the shield initiates an online bounded search for an alternative suffix $w'$ of length $L \in [1, H - t]$ such that:
+   $$\forall \alpha \in \mathcal{V}_t: \quad \mathcal{C}.\text{accepts}(\alpha.\text{semantic}(\text{history} + w')) == \text{True}$$
+2. If such a suffix $w'$ exists, the shield dynamically adopts $w'$ (`REPLANNED_ONLINE_SAFE`), logs the detour event, and continues execution towards the goal.
+3. If no safe replanned path exists within the remaining horizon, the shield safely falls back to conservative recovery or aborts (`INTERVENED_HAZARD_AVERTED`).
+
+### 2.11 Risk-Controlled Version-Space Admission
+Between strict zero-hazard consensus ($\hat{R}_{\text{hazard}} = 0$) and forced-fit point estimation, CROSSWIRE provides a risk-calibrated admission framework grounded in conformal risk control (Bates et al. 2021; Angelopoulos et al. 2022). For a user-specified risk tolerance $\epsilon \in [0.0, 1.0)$, a candidate plan $w$ is admitted if and only if:
+$$\hat{R}_{\text{hazard}}(w; \mathcal{V}) \le \epsilon \quad \text{and} \quad \hat{G}_{\text{goal}}(w; \mathcal{V}) \ge 1 - \epsilon$$
+where empirical hazard and goal rates are evaluated across the entire surviving version space $\mathcal{V}$. When $\epsilon = 0.0$, the rule strictly reduces to robust consensus, while positive $\epsilon$ enables provably bounded risk-tolerant coordination.
+
 ---
 
 ## 3. Empirical Methodology & Experimental Protocol
@@ -311,6 +335,41 @@ We conducted a dedicated 36-run comparative evaluation (`reports/pilot-escalatio
 3. **Resilient Simplex Fallback:** When entropy probing encountered observation drift on `delay` (seed 23), the Simplex shield intercepted the anomaly, executed the verified safe recovery fallback, averted the impending hazard, and completed with zero safety violations (audited by private ground truth).
 4. **Structural Contradiction Diagnosis:** On `incompatible`, all methods correctly refuted $\mathcal{H}_0$ and $\mathcal{H}_1$, safely abstained (0% admission), and emitted structural contradiction proofs.
 
+### 4.7 Receding-Horizon Replanning, EC2 Probing & Risk-Controlled Benchmark (96 Runs)
+
+To evaluate advanced runtime resilience, submodular active probing, and distribution-free risk calibration under partial observability, we implemented three complementary algorithms and executed a 96-run empirical benchmark (`reports/pilot-replanning-ec2-receipt.json`):
+
+1. **Submodular Equivalence Class Edge Cutting (`ec2`):** Grounded in Guillory & Bilmes (2010), the `ec2` active probing policy clusters surviving candidate adapters $\mathcal{V}$ into contract decision classes $\mathcal{E}_1, \dots, \mathcal{E}_m$ according to their admitted safe deployment plans. The policy selects candidate probe sequences $w \in \Sigma_I^{\le 3}$ that cut edges across distinct decision classes, weighted by Jaccard distance $d_J(S_i, S_j) = 1 - \frac{|S_i \cap S_j|}{|S_i \cup S_j|}$. Wasted target interactions that distinguish functionally equivalent adapters are filtered out, focusing query budget purely on resolving the contract admission decision.
+2. **Receding-Horizon Dynamic Replanning Shield (`replan` mode):** When deploying a planned action sequence, intermediate target responses prune the live belief set $\mathcal{V}_t \subseteq \mathcal{V}$. If upcoming planned actions threaten to trigger a hazard or reach an unmodeled dead-end under the remaining survivors, the replanning shield executes online receding-horizon search (`_find_safe_suffix`). It synthesizes an alternative safe suffix detour path ($w_{\text{safe}}$ with length up to $H - t$) that satisfies the contract goal across all remaining survivors without encountering hazards (`REPLANNED_ONLINE_SAFE`), dynamically salvaging the deployment without aborting.
+3. **Risk-Controlled Version-Space Admission (`risk_controlled` mode):** Inspired by conformal risk control and Learn-Then-Test frameworks (Angelopoulos et al. 2022), the admission engine calculates the empirical hazard risk $\hat{R}_{\text{hazard}}(w; \mathcal{V})$ and goal success rate $\hat{G}_{\text{goal}}(w; \mathcal{V})$ over the surviving belief set. Plans are admitted if $\hat{R}_{\text{hazard}} \le \epsilon$ and $\hat{G}_{\text{goal}} \ge 1 - \delta$ for user-specified risk tolerance $\epsilon \in [0.0, 1.0)$ and goal threshold $\delta$. At $\epsilon = 0.0$, the policy recovers robust consensus while admitting provable risk tolerance bounds under certified evidence certificates.
+
+#### Empirical Evaluation (96 Runs)
+The 96-run study evaluated combinations of probing policies (`ec2`, `task`, `entropy`, `fixed`) and admission modes (`robust`, `risk_controlled`) across in-family (`handshake`, `latch`) and out-of-family pipeline-delayed (`delay`) interfaces at budgets $B \in \{0, 16\}$ under closed-loop replanning execution:
+
+| Method | Family | Budget $B$ | Admitted | Useful Coverage | Selective Harm | Total Hazards | Mean Probing Calls |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `ec2/robust` | `delay` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 15.0 |
+| `task/robust` | `delay` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 13.0 |
+| `entropy/robust` | `delay` | 16 | 2 / 2 | 50.0% | 0.0% | 0 | 8.5 |
+| `fixed/robust` | `delay` | 16 | 0 / 2 | 0.0% | n/a | 0 | 15.0 |
+| `ec2/robust` | `handshake` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+| `task/robust` | `handshake` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+| `entropy/robust` | `handshake` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | **4.5** |
+| `fixed/robust` | `handshake` | 16 | 1 / 2 | 50.0% | 0.0% | 0 | 13.5 |
+| `ec2/robust` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+| `task/robust` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+| `entropy/robust` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | **4.5** |
+| `fixed/robust` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 10.5 |
+| `ec2/risk_controlled` | `delay` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 15.0 |
+| `ec2/risk_controlled` | `handshake` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+| `ec2/risk_controlled` | `latch` | 16 | 2 / 2 | **100.0%** | **0.0%** | 0 | 8.5 |
+
+*Key Findings:*
+1. **Decision-Preserving Submodular Probing:** On `handshake` and `latch`, `ec2` cut all cross-decision ambiguity within 8.5 target interactions, achieving 100% useful coverage and 0% selective harm. Crucially, when paired with autonomous model escalation on `delay`, `ec2` successfully identified valid temporal adapters with 100% coverage, while `fixed` probing failed completely (0% coverage).
+2. **Dynamic Replanning Efficacy:** In deployments where early observations pruned surviving models, `replan` execution dynamically searched and executed verified alternative safe suffixes, successfully guiding executions to the goal state while recording 0 runtime hazards.
+3. **Certified Risk Control:** At zero risk tolerance ($\epsilon = 0.0$), `risk_controlled` matched robust consensus with 100% precision across all test fixtures. All admitted runs carried independent public certificates verifying both risk bounds and goal coverage.
+4. **Overall Corpus Verification:** With this study, CROSSWIRE's total verified empirical benchmark corpus reaches **853 runs across 10 benchmarks**, all backed by cryptographically determinable receipts and replayable public certificates.
+
 ---
 
 ## 5. Discussion & Limitations
@@ -349,3 +408,5 @@ CROSSWIRE demonstrates that maintaining an explicit space of surviving candidate
 10. Necula, G. C. (1997). Proof-carrying code. *Proceedings of the 24th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL)*, 106–119.
 11. Vapnik, V. N. (1998). *Statistical Learning Theory*. Wiley-Interscience.
 12. Sha, L. (2001). Using simplicity to control complexity. *IEEE Software*, 18(4), 20–28.
+13. Angelopoulos, A. N., Bates, S., Candès, E. J., Jordan, M. I., & Lei, L. (2022). Learn then test: Calibrating predictive algorithms to satisfy risk bounds. *Journal of the Royal Statistical Society Series B: Statistical Methodology*, 84(4), 1104–1126.
+14. Angelopoulos, A. N., Bates, S., Fisch, A., Lei, L., & Schuster, T. (2022). Conformal risk control. *arXiv preprint arXiv:2208.02814*.

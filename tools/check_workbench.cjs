@@ -28,8 +28,16 @@ const python = process.env.CROSSWIRE_PYTHON || path.join(root, '.venv', process.
         await page.waitForFunction(() => !document.querySelector('#run-button').disabled);
         await page.selectOption('#admission', 'adaptive');
         assert.equal(await page.inputValue('#execution_mode'), 'shielded', 'Adaptive selection must choose a compatible deployment mode');
+        await page.selectOption('#execution_mode', 'replan');
+        assert.equal(await page.inputValue('#execution_mode'), 'replan', 'Adaptive mode must permit replanning shield');
         await page.selectOption('#execution_mode', 'recovery');
         assert.equal(await page.inputValue('#execution_mode'), 'recovery', 'Adaptive mode must permit certified recovery');
+        await page.selectOption('#policy', 'ec2');
+        assert.equal(await page.inputValue('#policy'), 'ec2', 'Workbench must allow selecting EC2 active probing');
+        await page.selectOption('#policy', 'task');
+        await page.selectOption('#admission', 'risk_controlled');
+        assert.equal(await page.inputValue('#admission'), 'risk_controlled', 'Workbench must allow risk-controlled admission');
+        await page.selectOption('#admission', 'adaptive');
         await page.check('#temporal');
         await page.check('#escalate');
         assert.equal(await page.isChecked('#temporal'), false);

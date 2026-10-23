@@ -314,7 +314,7 @@ class CandidateSpace:
         return total
 
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0):
-        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy'):
+        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2'):
             raise ValueError('unknown probe policy')
         ids = self._ids(ids)
         _integer(remaining_steps, 'remaining steps')
@@ -351,6 +351,21 @@ class CandidateSpace:
                 score = h / (1 + len(word))
                 if score > best_score:
                     best, best_score = word, score
+            return best
+        if policy == 'ec2':
+            # Equivalence Class Edge Cutting (EC2):
+            # Prioritizes probes that cut edges between differing contract decision classes.
+            classes = self._decision_classes(ids)
+            if len(classes) <= 1:
+                return min(eligible, key=lambda w: (len(w), w)) if eligible else None
+            weights = [[len(sa ^ sb) / max(1, len(sa | sb)) for sb, _ in classes] for sa, _ in classes]
+            best, best_score = None, -1.0
+            for word in eligible:
+                score = self._weighted_separation(classes, word, weights) / (1 + len(word))
+                if score > best_score:
+                    best, best_score = word, score
+            if best_score <= 0.0:
+                return min(eligible, key=lambda w: (len(w), w)) if eligible else None
             return best
         if policy == 'disagreement':
             best, best_score = None, 0
@@ -427,10 +442,43 @@ class CandidateSpace:
                 best, best_score = word, score
         return best
 
-    def plan(self, ids, mode='robust', transcripts=None, anchors=None):
-        if mode not in ('robust', 'one_best', 'unique', 'fit', 'identity', 'abstain'):
+    def plan(self, ids, mode='robust', transcripts=None, anchors=None, risk_tolerance=0.0):
+        if mode not in ('robust', 'one_best', 'unique', 'fit', 'identity', 'abstain', 'risk_controlled'):
             raise ValueError('unknown admission mode')
         ids = self._ids(ids)
+        if mode == 'risk_controlled':
+            if not ids:
+                return {'status': 'FAMILY_CONTRADICTED', 'admitted': False, 'word': None,
+                        'candidate_count': 0, 'risk_metrics': {'hazard_risk': 1.0, 'goal_rate': 0.0, 'tolerance': risk_tolerance}}
+            n = len(ids)
+            admissible_candidates = []
+            for w in self._deployment:
+                h_count = sum(self.contract.hazard in self.semantic(i, w) for i in ids)
+                g_count = sum(self.contract.accepts(self.semantic(i, w)) for i in ids)
+                h_risk = h_count / n
+                g_rate = g_count / n
+                if h_risk <= (risk_tolerance + 1e-9) and g_rate >= (1.0 - risk_tolerance - 1e-9):
+                    admissible_candidates.append((w, h_risk, g_rate))
+            if not admissible_candidates:
+                return {'status': 'UNRESOLVED', 'admitted': False, 'word': None,
+                        'candidate_count': n, 'risk_metrics': {'hazard_risk': 1.0, 'goal_rate': 0.0, 'tolerance': risk_tolerance}}
+            best_w, best_h_risk, best_g_rate = min(
+                admissible_candidates,
+                key=lambda item: (len(item[0]), item[1], -item[2], item[0])
+            )
+            status = 'IDENTIFIED' if n == 1 else ('TASK_ADMISSIBLE' if best_h_risk == 0.0 and best_g_rate == 1.0 else 'RISK_CONTROLLED_ADMISSIBLE')
+            return {
+                'status': status,
+                'admitted': True,
+                'word': list(best_w),
+                'candidate_count': n,
+                'risk_metrics': {
+                    'hazard_risk': best_h_risk,
+                    'goal_rate': best_g_rate,
+                    'tolerance': risk_tolerance,
+                    'candidate_count': n
+                }
+            }
         chosen = ids
         if mode == 'fit':
             losses = self.losses(transcripts or [], anchors)

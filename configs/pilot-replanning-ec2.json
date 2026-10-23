@@ -1,0 +1,12 @@
+{
+  "families": ["latch", "handshake", "delay"],
+  "seeds": [17, 23],
+  "budgets": [0, 16],
+  "policies": ["fixed", "task", "entropy", "ec2"],
+  "admissions": ["robust", "risk_controlled"],
+  "implementations": ["procedural"],
+  "execution_mode": "replan",
+  "escalate": true,
+  "horizon": 4,
+  "split": "evaluation"
+}

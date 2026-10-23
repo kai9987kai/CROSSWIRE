@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const state = {catalog:null, active:null, completed:null, busy:false};
-const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield'};
+const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',ec2:'Equivalence class edge cutting (EC2)',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',risk_controlled:'Risk-controlled version space',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield',replan:'Receding-horizon replanning shield'};
 function element(tag, text, cls){const node=document.createElement(tag);if(text!==undefined&&text!==null)node.textContent=String(text);if(cls)node.className=cls;return node;}
 function svgElement(tag, attrs={}, text){const node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));if(text!==undefined)node.textContent=String(text);return node;}
 function readable(value){if(value===null||value===undefined)return 'Not available';if(typeof value==='boolean')return value?'Yes':'No';if(typeof value==='object')return JSON.stringify(value);return String(value);}
@@ -128,7 +128,9 @@ function renderDeployment(deployment){
     if(executed.length)section.append(table(['Step','Target action','Raw output','Survivors after observation'],executed.map((action,i)=>[i+1,action,outputs[i]??null,deployment.survivor_history?.[i+1]??null])));
     else section.append(element('p','No target actions were executed.','fineprint'));
     section.append(keyValues({complete:deployment.complete,mode:labels[deployment.mode]||deployment.mode,shield_status:deployment.shield_status,intervened:deployment.intervened,deployment_calls:deployment.target_calls}));
+    if(deployment.replanned)section.append(element('p',`Replanned online: safe detours were synthesized during deployment (${deployment.replan_count||1} replans).`,'fineprint'));
     for(const reason of deployment.reasons||[])section.append(element('p',reason,'fineprint'));
+    if(deployment.replan_events?.length)section.append(rawDetails('Replanning events',deployment.replan_events));
     if(deployment.error)section.append(rawDetails('Deployment error',deployment.error));
     return section;
 }
@@ -136,6 +138,7 @@ function renderCertificate(cert,search){
     const c=cert||{},section=panel('Public model evidence',c.valid===true?'CERTIFICATE CHECKED':'CERTIFICATE UNVERIFIED');
     section.append(element('p',c.scope||'Public model evidence only; does not authenticate private audits or target execution.','fineprint'));
     section.append(keyValues(Object.fromEntries(Object.entries(c).filter(([k,v])=>v===null||typeof v!=='object'))));
+    if(c.elimination?.length&&c.kind==='unresolved')section.append(rawDetails('Minimal contradiction core & elimination cascade',c.elimination));
     section.append(rawDetails('Full certificate and search bounds',{certificate:c,search}));
     return section;
 }
@@ -145,6 +148,7 @@ function renderRun(result,container){
     dec.append(element('p','02 / FROZEN DECISION','eyebrow'),element('h2',d.status||'Status unavailable'),element('div',d.admitted?(d.policy?'Branching policy admitted':`Plan: ${word(d.word)}`):'No plan admitted','word'),element('p',`Admission: ${labels[result.configuration?.admission]||result.configuration?.admission||'—'} · ${readable(d.candidate_count??ambiguity.map_count)} candidate mappings`));
     if(d.reason)dec.append(element('p',d.reason,'fineprint'));
     if(d.search)dec.append(element('p',`Policy search: ${number(d.search.expanded_nodes)} / ${number(d.search.node_limit)} nodes · ${d.search.complete===true?'complete within bounds':'incomplete within bounds'}`,'fineprint'));
+    if(d.risk_metrics)dec.append(element('p',`Risk metrics: empirical hazard risk ${number(d.risk_metrics.hazard_risk)} (tol ${number(d.risk_metrics.tolerance)}) · goal rate ${number(d.risk_metrics.goal_rate)}`,'fineprint'));
     if(d.escalation?.escalated)dec.append(element('p','Escalated to temporal model class after static refutation','fineprint'));
     if(d.structural_contradiction)dec.append(element('p','Structural contradiction: no adapter in static or temporal class explains trace','fineprint'));
     const outcome=element('section',null,`panel status-card${audit.contract_satisfied===true?' good':audit.contract_satisfied===false?' bad':''}`);
@@ -152,6 +156,7 @@ function renderRun(result,container){
     if(dep.intervened)outcome.append(element('p',`Shield intervened: ${readable(dep.reasons?.[0]||dep.shield_status)}`,'fineprint'));
     if(audit.hazard_averted===true)outcome.append(element('p','Private counterfactual audit reports a deployment hazard averted.','fineprint'));
     if(dep.recovery?.succeeded)outcome.append(element('p','Simplex fail-safe recovery successfully executed without hazard.','fineprint'));
+    if(dep.replanned)outcome.append(element('p',`Replanned online: ${dep.replan_count||1} safe detours executed.`,'fineprint'));
     statusGrid.append(dec,outcome);container.append(statusGrid);
     container.append(metricCards([['Surviving mappings',ambiguity.map_count],['Observation classes',ambiguity.observational_classes],['Contract classes',ambiguity.contract_classes],['Acquisition calls',metrics.target_calls],['Deployment calls',metrics.deployment_calls??dep.target_calls],['Total target calls',metrics.total_calls??(Number.isFinite(metrics.target_calls)&&Number.isFinite(dep.target_calls)?metrics.target_calls+dep.target_calls:null)],['Hazardous calibration probes',audit.calibration_hazardous_probes],['Deployment hazard',audit.hazard],['Deployment mode',labels[result.configuration?.execution_mode]||result.configuration?.execution_mode]]));
     if(d.policy)container.append(renderPolicy(d,dep));

@@ -16,9 +16,9 @@ from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy")
-ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle")
-EXECUTION_MODES = ("open_loop", "shielded", "recovery")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2")
+ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
+EXECUTION_MODES = ("open_loop", "shielded", "recovery", "replan")
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
 
@@ -291,6 +291,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                                  'anchors': public.get('anchors', {}), "survivors": list(survivors),
                                  'evidence_certificate': evidence_certificate})
         deployment = {'word': decision['word'], 'outputs': [], 'complete': False,
+                      'mode': config.execution_mode,
                       'error': None, 'target_steps': 0, 'resets': 0, 'target_calls': 0}
         if decision['admitted']:
             _check_cancel(cancel)

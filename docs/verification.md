@@ -3,7 +3,7 @@
 **Date:** 23 October 2026  
 **Commit:** `codex/crosswire-design`  
 **Platform:** Windows (Python 3.12.10 64-bit, Node.js v20+, Chromium)  
-**Overall Status:** PASS (158/158 tests passing, clean wheel install verified, browser e2e verified, 757 total empirical runs verified)
+**Overall Status:** PASS (173/173 tests passing, clean wheel install verified, browser e2e verified, 853 total empirical runs verified)
 
 ---
 
@@ -12,7 +12,7 @@
 The automated test suite runs via `pytest` without external dependencies (except optional pinned `aalpy==1.6.2` for baseline testing).
 
 ```
-============================= 158 passed in 145.07s =============================
+============================= 173 passed in 127.39s =============================
 ```
 
 ### 1.1 Test Suite Breakdown by Subsystem
@@ -26,15 +26,18 @@ The automated test suite runs via `pytest` without external dependencies (except
 | `tests/test_certificates.py` | 11 | Independent finite public-evidence certificate generation and validation; clean re-enumeration of static/latency-1 adapter spaces; verification of surviving belief sets from public transcripts; deletion-minimal contradiction core extraction; verification of admitted plans and policy trees; unmodeled target scope boundaries. |
 | `tests/test_cli.py` | 3 | CLI commands `run`, `study`, `verify`, `replay`, `catalog`, `serve`, and `check` with JSON evidence envelope verification. |
 | `tests/test_core.py` | 14 | 144 bijective adapter permutations; prefix hazard safety; true-map retention; equivalence classes; empty-family non-vacuous handling; shortest lexicographic product counterexample BFS. |
+| `tests/test_ec2.py` | 6 | Equivalence Class Edge Cutting (EC2) active probing; contract equivalence class partitioning; cross-class Jaccard distance weighting; zero intra-class score filtering; query cost normalization; temporal model compatibility. |
 | `tests/test_escalation.py` | 7 | Information-theoretic Shannon entropy probe selection; deterministic tie-breaking and empty belief handling; autonomous model-class escalation ($\mathcal{H}_0 \to \mathcal{H}_1$) on delayed interfaces; structural contradiction certificate emission when nested classes are refuted; in-family non-spurious escalation; Simplex safe fallback recovery execution; configuration validation guards. |
 | `tests/test_fixtures.py` | 37 | Procedural vs. table target implementations; 17 fixture families; grounded anchor validation; hidden permutations; private raw machine extraction; deterministic seeded variation; routing control. |
 | `tests/test_interfaces.py` | 7 | Subprocess lifecycle; exact-PID cleanup; line-delimited JSON protocol; malformed message recovery; timeout enforcement; attempted vs. successful call accounting. |
 | `tests/test_receipts.py` | 3 | Canonical JSON serialization; SHA-256 payload and scientific hashing; envelope validation; tampering rejection; exact scientific replay. |
+| `tests/test_replan.py` | 5 | Receding-horizon dynamic replanning shield (`replan` mode); pre-step and post-step suffix risk detection; online synthesis of certified safe alternative detours (`REPLANNED_ONLINE_SAFE`); fallback to recovery/abort when no detour exists. |
+| `tests/test_risk_controlled.py` | 4 | Risk-controlled version-space admission (`risk_controlled` mode); empirical version-space hazard and goal calculation; zero-tolerance consensus equivalence; positive-tolerance majority admission; certificate verification and tampering rejection. |
 | `tests/test_server.py` | 6 | Async job queue; thread-safe scientific execution; cancellable import and replay jobs; static file path traversal rejection (`..` escaping blocked); origin protection; raw text receipt payload import. |
 | `tests/test_shield.py` | 20 | Closed-loop dynamic runtime shield; mid-deployment anomaly detection when survivors collapse; pre-step preemptive hazard interception before target dispatch (any surviving interpretation); conservative Simplex safe fallback recovery requirements (consistent non-empty belief, remaining horizon, zero modeled hazards across all survivors); immediate abstention on contradiction. |
 | `tests/test_study.py` | 23 | Bounded run/study configuration validation; freeze-before-audit digest; unified reset+step system-call cap; partial deployment prefix auditing; forced-fit residual diagnostics; exact-cell condition-stratified paired comparisons (matching execution mode, escalation, split, anchors, and horizon); paired admission contrasts; AALpy configuration guards. |
 | `tests/test_temporal.py` | 10 | Temporal latency-aware adapter algebra ($|\mathcal{A}|=720$ with delay-1 and init-output); augmented transducer signatures tracking `(state, buffer)`; 3-tuple product Mealy state comparison; exact product equivalence merging. |
-| **Total** | **158** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, evidence integrity, and Simplex recovery.** |
+| **Total** | **173** | **Complete local coverage of contract specifications, runtime dynamics, witness synthesis, adaptive policies, model escalation, evidence integrity, Simplex recovery, EC2 active probing, replanning shielding, and risk-controlled admission.** |
 
 ---
 
@@ -112,7 +115,7 @@ Browser automation was conducted using Playwright on headless Chromium against a
 
 ## 5. Scientific Receipt Provenance & Reproducibility
 
-Nine systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
+Ten systematic empirical benchmarks were executed and preserved as self-contained scientific receipts:
 
 | Benchmark | Output Receipt | Protocol Hash | Scientific Hash | Total Runs |
 |---|---|---|---|---:|
@@ -125,6 +128,7 @@ Nine systematic empirical benchmarks were executed and preserved as self-contain
 | **CEGP Distinguishing Witness Benchmark** | `reports/pilot-cegp-longtrace-receipt.json` | `968ed5dfe5874e08…` | `e931c96b3d027d34…` | 4 |
 | **Adaptive Contingent Policy Benchmark** | `reports/pilot-adaptive-receipt.json` | `6e07673c27941fc7…` | `cbc85a6cbc260e98…` | 48 |
 | **Pilot Escalation, Entropy & Recovery** | `reports/pilot-escalation-receipt.json` | `74257f9947c445e3…` | `741aac4f5f86eb51…` | 36 |
-| **Total Empirical Runs** | | | | **757** |
+| **EC2, Replanning Shield & Risk Control** | `reports/pilot-replanning-ec2-receipt.json` | `88c6426ff020be84…` | `e76ceb0c228977fd…` | 96 |
+| **Total Empirical Runs** | | | | **853** |
 
 All receipts are cryptographically bound to explicit source and protocol hashes. Replaying any receipt against the current codebase recomputes identical scientific states and passes validation.
