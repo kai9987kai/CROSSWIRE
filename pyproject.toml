@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "crosswire-lab"
 version = "0.1.0"
 description = "A finite behavioral interoperability research laboratory"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 readme = "README.md"
 license = "MIT"
 authors = [{name = "Kai Piper"}]

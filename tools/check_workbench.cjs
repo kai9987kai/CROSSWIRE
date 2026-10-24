@@ -8,7 +8,8 @@ const root = path.resolve(__dirname, '..');
 let playwright;
 try { playwright = require(process.env.CROSSWIRE_PLAYWRIGHT || 'playwright'); }
 catch { playwright = require(path.join(process.env.USERPROFILE || process.env.HOME, '.codex/skills/develop-web-game/node_modules/playwright')); }
-const python = process.env.CROSSWIRE_PYTHON || path.join(root, '.venv', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python');
+const venvPython = path.join(root, '.venv', process.platform === 'win32' ? 'Scripts/python.exe' : 'bin/python');
+const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venvPython : 'python');
 
 (async () => {
     const child = spawn(python, ['-m', 'crosswire', 'serve', '--port', '0'], {cwd:root, windowsHide:true, stdio:['ignore','pipe','pipe']});

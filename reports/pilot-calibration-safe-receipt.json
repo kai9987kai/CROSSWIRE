@@ -1,6 +1,6 @@
 {
   "schema": "crosswire-receipt-v1",
-  "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+  "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
   "payload": {
     "schema": "crosswire-study-v1",
     "protocol": {
@@ -37,10 +37,10 @@
       "risk_tolerance": 0.0,
       "exploratory": true,
       "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
-      "pre_execution_source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079"
+      "pre_execution_source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09"
     },
-    "protocol_hash": "25e80327cf35821ae5b68b2587121ebc95071e258bc8bc1f9d7bd5b8430e722b",
-    "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+    "protocol_hash": "ae8d07b40ce6daee1a7616e1c6b015f8fc69effaafdfafcc230516896e2f197c",
+    "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
     "rows": [
       {
         "schema": "crosswire-result-v1",
@@ -59,9 +59,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2229,10 +2230,10 @@
           "evidence_count": 0,
           "elimination": [],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "96c583223101091e8ba43fd1e8965fc7741c0ff4fbd0f13aebf0d1c244fae617"
+          "binding_hash": "4ffaf569c5d56857ae32af10c764363f0d891b4763ef2af0d6931af8a45ba013"
         },
         "probes": [],
-        "decision_frozen_hash": "3cc0f8bd56d646714b4c4f18bbeaf4725e68df238b334d00ee6cf07b95ec32d8",
+        "decision_frozen_hash": "bd77ed2b7da7e9a5b67b7b587669b9d3551f368ee4fa3d6420819ac7bb1fa534",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -2245,6 +2246,7 @@
         },
         "audit": {
           "goal_success": null,
+          "change_point": null,
           "hazard": null,
           "hazard_averted": null,
           "shield_intervened": null,
@@ -2289,9 +2291,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.46875,
-          "wall_seconds": 0.6939899999997579,
-          "parent_peak_traced_bytes": 4103922,
+          "parent_cpu_seconds": 1.0625,
+          "wall_seconds": 1.865255900003831,
+          "parent_peak_traced_bytes": 4110377,
           "audit_product_pairs": 195,
           "audit_execution_steps": 19
         },
@@ -2299,7 +2301,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "f363f788b9c021f80c01587f0e6e4b3272e6d333d05454b32a4534de2d9e3381"
+        "scientific_hash": "fb7bb7e0485796eff26e0f45a8bd007f43df6848a6b9e4efb1955bb9ee1b822a"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2318,9 +2320,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4488,10 +4491,10 @@
           "evidence_count": 0,
           "elimination": [],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "a2e1467d041a1db6afdf31faf3246560b7f56b51de0a87a895e8b27d20a3fc42"
+          "binding_hash": "a69045f31f32899c13394b110ac5e6cb5314d9e2a474b52f45c5cc8c78c97301"
         },
         "probes": [],
-        "decision_frozen_hash": "3a09e3f66cb416574c6a20914bca2204b5e68d36a2e1adeaec569c966019b5ba",
+        "decision_frozen_hash": "b6258ffd4dfd80e008f09f6cf598ba706f5eedec1658fedb648356ae39daceed",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -4504,6 +4507,7 @@
         },
         "audit": {
           "goal_success": null,
+          "change_point": null,
           "hazard": null,
           "hazard_averted": null,
           "shield_intervened": null,
@@ -4548,9 +4552,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.484375,
-          "wall_seconds": 0.6848955000023125,
-          "parent_peak_traced_bytes": 3794387,
+          "parent_cpu_seconds": 0.921875,
+          "wall_seconds": 1.5670007999942754,
+          "parent_peak_traced_bytes": 3794826,
           "audit_product_pairs": 187,
           "audit_execution_steps": 23
         },
@@ -4558,7 +4562,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "e089c1cbc03a3a3702de1c49dd310470da5fe9d017c26158f63929baff55d9e0"
+        "scientific_hash": "e98fd29d891aaeda3214bd6712c7c9b1a9343abaaf118d6d29d6426ee92f8d14"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4577,9 +4581,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4892,7 +4897,7 @@
           ],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "951df750555f66f6415976a7c5174a42b09c507f083c57850882e8486322245f"
+          "binding_hash": "1ec3fc6e6143b6b7d3b2e8a7e67ecc9e397f8c8a42ea781b1131cc9b733d8fed"
         },
         "probes": [
           {
@@ -4930,7 +4935,7 @@
             "survivors_after": 4
           }
         ],
-        "decision_frozen_hash": "b2425667913edba4e694fd928e2ef3ce9cc01af9d8a0b757c80e7e643c4380be",
+        "decision_frozen_hash": "00c98028510a37910bf07adb667af18e511593e1244c25f85d626dc5d82827ac",
         "deployment": {
           "word": [
             0,
@@ -4980,10 +4985,26 @@
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
           }
         },
         "audit": {
           "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
           "hazard": false,
           "hazard_averted": false,
           "shield_intervened": false,
@@ -5047,9 +5068,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.453125,
-          "wall_seconds": 0.7416818999918178,
-          "parent_peak_traced_bytes": 3842692,
+          "parent_cpu_seconds": 1.125,
+          "wall_seconds": 2.0186322999943513,
+          "parent_peak_traced_bytes": 3842240,
           "audit_product_pairs": 192,
           "audit_execution_steps": 256
         },
@@ -5057,7 +5078,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "90d217980855ad35f73e904abec0ee49e2492597fde5863834ad62678fa0b723"
+        "scientific_hash": "10046faff6cbf33e6e26ed75bafa73b94e714b1ae0570aae7de2a2a82b8a1028"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5076,9 +5097,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5391,7 +5413,7 @@
           ],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "df5b297f4778426e1efc5493b2f272e347f3d0cdae090d7c43b9c2cf5837d989"
+          "binding_hash": "a46cb4e7803dbf8e4f3d645bffcc8bc57311815aa163ca917c56df8701b712d8"
         },
         "probes": [
           {
@@ -5429,7 +5451,7 @@
             "survivors_after": 4
           }
         ],
-        "decision_frozen_hash": "cc232d4c0e0e9e856d7329b15b68641a4fd02ef01e72973774151ded3fc925bd",
+        "decision_frozen_hash": "b5fa0905a5cf46550a27699d00d03d959ddf98a2f2042f028ec22873fbc5173c",
         "deployment": {
           "word": [
             0,
@@ -5479,10 +5501,26 @@
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
           }
         },
         "audit": {
           "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
           "hazard": false,
           "hazard_averted": false,
           "shield_intervened": false,
@@ -5546,9 +5584,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.5,
-          "wall_seconds": 0.7377328000002308,
-          "parent_peak_traced_bytes": 3838992,
+          "parent_cpu_seconds": 0.9375,
+          "wall_seconds": 1.4529459999976098,
+          "parent_peak_traced_bytes": 3839455,
           "audit_product_pairs": 192,
           "audit_execution_steps": 263
         },
@@ -5556,7 +5594,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "0ee2256f8784e0c205d8a9548483fe0823521e4afea8156d18d97a687eb0e6a6"
+        "scientific_hash": "d33fee56583eb8cde80b7e991600f1b4c9e897828c5e02abbc4cf9f6313a8f23"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5575,9 +5613,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -7722,10 +7761,10 @@
           "elimination": [],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "a1c616481e8d3d6fa046d69faceb3fa8b0cc35d2917f8f9c8e8782d3a12a7020"
+          "binding_hash": "6fc318daeaa2c0aa2a88993474c1a6e7cab391a10cedfe0c51fa7168432b79c7"
         },
         "probes": [],
-        "decision_frozen_hash": "20cb67d2b44db0360eff3fc3d0b5822abdf79b6a15cb6f65dd06cc7654d15ea2",
+        "decision_frozen_hash": "452f94f63424fca141aa7f4e5a5e42b655bb5132feceea87ce9e56d1591c8949",
         "deployment": {
           "word": [
             0,
@@ -7771,10 +7810,26 @@
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
           }
         },
         "audit": {
           "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
           "hazard": false,
           "hazard_averted": false,
           "shield_intervened": false,
@@ -7833,9 +7888,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.453125,
-          "wall_seconds": 0.6844439999986207,
-          "parent_peak_traced_bytes": 4738154,
+          "parent_cpu_seconds": 0.96875,
+          "wall_seconds": 1.625070299996878,
+          "parent_peak_traced_bytes": 4738186,
           "audit_product_pairs": 186,
           "audit_execution_steps": 10
         },
@@ -7843,7 +7898,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "eab6a5875f9153bdda05fdabeb7d56996e1cb7316c018c8a29f30d36d73de77b"
+        "scientific_hash": "cae6e80913b036279180ae042330ce46b7725ffdc25a88b42dca6913a68798d6"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7862,9 +7917,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -10009,10 +10065,10 @@
           "elimination": [],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "6e19fa5ea5b30c8d794909f0850d9e837f805520397a2e5d1649505d9e7191dc"
+          "binding_hash": "1ecfd542a88ac3e61d5694a13b10049d6a37aaf30c578f0de9366d6722625b47"
         },
         "probes": [],
-        "decision_frozen_hash": "f6a267c4e22cca1cc936a5c2037b282b1f65a758950cf2b526940bf4f8c938ae",
+        "decision_frozen_hash": "1677a82a9f9744cbf56e064ebeb676b95c854724a05773244013cb550312a20c",
         "deployment": {
           "word": [
             0,
@@ -10058,10 +10114,26 @@
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
           }
         },
         "audit": {
           "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
           "hazard": false,
           "hazard_averted": false,
           "shield_intervened": false,
@@ -10120,9 +10192,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.5,
-          "wall_seconds": 0.681004900005064,
-          "parent_peak_traced_bytes": 4738642,
+          "parent_cpu_seconds": 0.953125,
+          "wall_seconds": 1.394235200001276,
+          "parent_peak_traced_bytes": 4738778,
           "audit_product_pairs": 170,
           "audit_execution_steps": 11
         },
@@ -10130,7 +10202,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "9f5eed4074f47a0d937b2a0963967dd3a26aff230136f15a9a5c692654d97319"
+        "scientific_hash": "ff3975fc87f5aeb1ee7869744df554cd89135c8dca691bcdeaef43bc361ef887"
       },
       {
         "schema": "crosswire-result-v1",
@@ -10149,9 +10221,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -12319,10 +12392,10 @@
           "evidence_count": 0,
           "elimination": [],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "3bee6365a6c68f6206407d77ed22073452103e878bdff0ea193c1d84804b7de5"
+          "binding_hash": "796f186af044d34a5c9d93c07b6c3a8bac83a8fbe22fda1d44e62364da9d98fb"
         },
         "probes": [],
-        "decision_frozen_hash": "6762178949bdf978221de5e0b072149d83fbd1eb4c1cdee277d4de61a36dc2fd",
+        "decision_frozen_hash": "653275aa8aa4aa06b22a8313dd13a0fab4773ab96b4fe8d8065b4f0e5e559b95",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -12335,6 +12408,7 @@
         },
         "audit": {
           "goal_success": null,
+          "change_point": null,
           "hazard": null,
           "hazard_averted": null,
           "shield_intervened": null,
@@ -12378,9 +12452,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.46875,
-          "wall_seconds": 0.7284433000022545,
-          "parent_peak_traced_bytes": 3656114,
+          "parent_cpu_seconds": 1.0,
+          "wall_seconds": 1.4550665999995545,
+          "parent_peak_traced_bytes": 3656122,
           "audit_product_pairs": 195,
           "audit_execution_steps": 15
         },
@@ -12388,7 +12462,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "ab6f5b97d3cef312f2c212a2a47d7d398138b47670c533d55f9f2103cfc65a21"
+        "scientific_hash": "99c220e298bd799a9aa9d9ff9d3506e46c9dba79d864f0968d545e96329c7331"
       },
       {
         "schema": "crosswire-result-v1",
@@ -12407,9 +12481,10 @@
           "escalate": false,
           "probe_safety": "model_safe",
           "risk_tolerance": 0.0,
-          "instance_seed": null
+          "instance_seed": null,
+          "fault_schedule": null
         },
-        "source_hash": "c39578255ca558de26545055bbffa29750ba098650fc573658db7fee302dd079",
+        "source_hash": "7d955d86bb07253a5cf32bafc37050057b47379eee2fa664321881812eadba09",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -14577,10 +14652,10 @@
           "evidence_count": 0,
           "elimination": [],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "5d82ff7a96a5460d987b23f25521d79911a1736fc1fc598bf2d2462c99645080"
+          "binding_hash": "1af11c5e07db4b707e0808fac624a9ab57b836860c1eeb0cc3db5d060aaa4243"
         },
         "probes": [],
-        "decision_frozen_hash": "ad20b3f7dba0cec30316bdc0b1b04a42603a8630aa8eeed6f8cf463016740c7d",
+        "decision_frozen_hash": "9d1f314a70525225ea09414234f65e4ff890e4aa3b441be65e33302b65dbcf67",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -14593,6 +14668,7 @@
         },
         "audit": {
           "goal_success": null,
+          "change_point": null,
           "hazard": null,
           "hazard_averted": null,
           "shield_intervened": null,
@@ -14636,9 +14712,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.515625,
-          "wall_seconds": 0.6741077000042424,
-          "parent_peak_traced_bytes": 3656018,
+          "parent_cpu_seconds": 1.203125,
+          "wall_seconds": 1.8252441000004183,
+          "parent_peak_traced_bytes": 3656058,
           "audit_product_pairs": 187,
           "audit_execution_steps": 15
         },
@@ -14646,7 +14722,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "1d3e029e07558a8b9c306611716704c03839b57e4561a3df21a90b43ce94c226"
+        "scientific_hash": "214e4e43f6549074ae9a9e7f8e5518eaf9631e15c10ad59a7eeab8431e6fe2d9"
       }
     ],
     "summary": [
@@ -15018,7 +15094,7 @@
         "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
       }
     ],
-    "scientific_hash": "6cd97b3fc725d461cdeaba0e66144f1ce44c8a78cb88138bb68d1d8ddc0a9cc2"
+    "scientific_hash": "75b734030262bfc235ec91b7a9238ed34c7458307af60f989f118799edb54bf1"
   },
-  "payload_hash": "6aeb2e7f74e7b6384fab8149998a93f3a2e71430d9ae1ea2fb9b32b2722b3065"
+  "payload_hash": "29ec49bdfb2bb44cdc4f63538de85398f84d926e7b7dd5287dc980ed831d19a3"
 }
