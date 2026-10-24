@@ -439,7 +439,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
             if config.admission == 'adaptive':
                 from .adaptive import execute_policy
                 deployment = execute_policy(target, decision['policy'], space, survivors, cancel,
-                                            fault_schedule=config.fault_schedule)
+                                            fault_schedule=config.fault_schedule,
+                                            mode='recovery' if config.execution_mode == 'recovery' else 'adaptive')
             else:
                 from .shield import execute_deployment
                 deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,

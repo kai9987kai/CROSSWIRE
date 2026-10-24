@@ -43,7 +43,7 @@ def synthesize_policy(space: CandidateSpace, ids, node_limit=20000, cancel=None)
             return None
         for action in range(space.machine.inputs):
             word = prefix + (action,)
-            if any(space.contract.hazard in space.semantic(i, word) for i in belief):
+            if not space.probe_is_safe(belief, word):
                 continue
             partitions = {}
             for i in belief:
@@ -135,8 +135,58 @@ def verify_policy(space: CandidateSpace, ids, policy) -> dict:
                      'stationarity, deterministic reset and truthful anchors. Not semantic grounding.'}
 
 
-def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, fault_schedule=None) -> dict:
+def policy_metrics(space: CandidateSpace, ids, policy) -> dict:
+    """Compute structural and information-theoretic properties of a certified contingent policy tree."""
+    import math
+    ids = space._ids(ids)
+    cert = verify_policy(space, ids, policy)
+    if not cert['valid']:
+        return {'valid': False, 'reason': cert['reason']}
+
+    def count_nodes(node):
+        if not isinstance(node, dict) or 'stop' in node:
+            return 0, 0
+        branches = node.get('branches', {})
+        ins, mb = 1, len(branches)
+        for child in branches.values():
+            ci, cmb = count_nodes(child)
+            ins += ci
+            mb = max(mb, cmb)
+        return ins, mb
+
+    internal_nodes, max_branching = count_nodes(policy)
+    depths = []
+    leaf_buckets = {}
+    for aid in ids:
+        node, word = policy, ()
+        while 'action' in node:
+            word += (node['action'],)
+            out = str(space.predict(aid, word)[-1])
+            node = node['branches'][out]
+        depths.append(len(word))
+        leaf_buckets[word] = leaf_buckets.get(word, 0) + 1
+
+    n = len(ids)
+    leaf_sizes = sorted(leaf_buckets.values(), reverse=True)
+    info_gain = -sum((c / n) * math.log2(c / n) for c in leaf_sizes) if n else 0.0
+    return {
+        'valid': True,
+        'candidate_count': n,
+        'internal_nodes': internal_nodes,
+        'leaf_count': cert['leaves'],
+        'best_case_steps': min(depths) if depths else 0,
+        'worst_case_steps': cert['worst_case_steps'],
+        'expected_steps': round(sum(depths) / n, 6) if n else 0.0,
+        'max_branching_factor': max_branching,
+        'leaf_belief_sizes': leaf_sizes,
+        'information_gain_bits': round(info_gain, 6),
+    }
+
+
+def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, fault_schedule=None, mode='adaptive') -> dict:
     """Verify before reset, then execute only certified observation branches."""
+    if mode not in ('adaptive', 'shielded', 'recovery'):
+        raise ValueError('Unsupported adaptive execution mode')
     if hasattr(target, 'set_phase'):
         target.set_phase('deployment')
     ids = space._ids(ids)
@@ -157,7 +207,8 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, faul
             cp_det_latency = step_idx - cp_step
 
     deployment = {'word': None, 'executed_word': [], 'outputs': [], 'complete': False,
-                  'mode': 'adaptive', 'shield_status': 'ACTIVE', 'intervened': False,
+                  'mode': 'adaptive' if mode in ('adaptive', 'shielded') else 'recovery',
+                  'shield_status': 'ACTIVE', 'intervened': False,
                   'hazard_averted': False, 'reasons': [], 'survivor_history': [len(ids)],
                   'target_steps': 0, 'resets': 0, 'target_calls': 0, 'error': None,
                   'certificate': certificate}
@@ -170,7 +221,7 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, faul
             _cancelled(cancel)
             action = node['action']
             word = tuple(deployment['executed_word']) + (action,)
-            if not active or any(space.contract.hazard in space.semantic(i, word) for i in active):
+            if not active or not space.probe_is_safe(active, word):
                 _check_cp(len(deployment['executed_word']))
                 deployment.update(intervened=True, shield_status='INTERVENED_MODEL_RISK')
                 deployment['reasons'].append('No unanimously safe continuation')
@@ -188,6 +239,22 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, faul
             node = node['branches'][str(raw)]
         else:
             deployment.update(complete=True, shield_status='COMPLETED')
+        if deployment['intervened'] and mode == 'recovery':
+            from .shield import RuntimeShield
+            shield = RuntimeShield(space, ids, space.contract, mode='recovery', cancel=cancel, fault_schedule=fault_schedule)
+            shield.history_words = list(deployment['executed_word'])
+            shield.history_outputs = list(deployment['outputs'])
+            shield.active_survivors = active
+            shield.survivor_counts = list(deployment['survivor_history'])
+            shield.status = deployment['shield_status']
+            shield.intervened = True
+            shield.recover(target)
+            deployment['executed_word'] = list(shield.history_words)
+            deployment['outputs'] = list(shield.history_outputs)
+            deployment['survivor_history'] = list(shield.survivor_counts)
+            deployment['shield_status'] = shield.status
+            deployment['reasons'].extend(shield.reasons)
+            deployment['recovery'] = shield.recovery_record()
     except InterfaceError as exc:
         deployment['error'] = {'code': exc.code, 'message': str(exc)}
         deployment['shield_status'] = 'INTERFACE_ERROR'

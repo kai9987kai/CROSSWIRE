@@ -352,3 +352,80 @@ def execute_deployment(target: TargetProcess, planned_word: list[int], space: Ca
         deployment["target_calls"] = target.counts["target_calls"] - previous_counts["target_calls"]
 
     return deployment
+
+
+def synthesize_safe_return(space: CandidateSpace, survivors, prefix=(), max_length: int | None = None) -> dict:
+    """Synthesize a certified hazard-free return-to-initial (soft reset) or stabilizing suffix.
+
+    Searches for the shortest action suffix `w_ret` within the remaining horizon such that:
+    1. `prefix + w_ret` is hazard-free under every surviving model in `survivors`.
+    2. `prefix + w_ret` returns the reference state machine to `space.machine.initial` across
+       every surviving model (certified soft return-to-home).
+    If no return-to-initial path exists within the horizon, falls back to the shortest
+    universally hazard-free holding step if one exists.
+    """
+    survivors = space._ids(survivors)
+    prefix = tuple(prefix)
+    if not survivors:
+        return {
+            'certified': False, 'return_to_initial': False, 'word': None,
+            'reason': 'empty_belief', 'candidate_count': 0,
+        }
+    if prefix and not space.probe_is_safe(survivors, prefix):
+        return {
+            'certified': False, 'return_to_initial': False, 'word': None,
+            'reason': 'prefix_already_hazardous', 'candidate_count': len(survivors),
+        }
+
+    def _end_state(input_map, full_word):
+        state = space.machine.initial
+        for sym in full_word:
+            state, out = space.machine.transitions[state][input_map[sym]]
+            if out == space.contract.hazard:
+                return None
+        return state
+
+    if hasattr(space, 'decompose_id'):
+        active_maps = [space.input_perms[i_idx] for i_idx in sorted({space.decompose_id(i)[0] for i in survivors})]
+    else:
+        seen_maps = []
+        for i in survivors:
+            im = space.adapters[i].input_map
+            if im not in seen_maps:
+                seen_maps.append(im)
+        active_maps = seen_maps
+
+    if all(_end_state(im, prefix) == space.machine.initial for im in active_maps):
+        return {
+            'certified': True, 'return_to_initial': True, 'word': [],
+            'reason': 'already_at_initial', 'candidate_count': len(survivors),
+        }
+
+    rem = max(0, space.contract.horizon - len(prefix)) if max_length is None else max(0, int(max_length))
+    if rem <= 0:
+        return {
+            'certified': False, 'return_to_initial': False, 'word': None,
+            'reason': 'horizon_exhausted', 'candidate_count': len(survivors),
+        }
+
+    for length in range(1, rem + 1):
+        for cand in product(range(space.machine.inputs), repeat=length):
+            full = prefix + cand
+            if all(_end_state(im, full) == space.machine.initial for im in active_maps):
+                return {
+                    'certified': True, 'return_to_initial': True, 'word': list(cand),
+                    'reason': 'certified_return_to_initial', 'candidate_count': len(survivors),
+                }
+
+    for action in range(space.machine.inputs):
+        full = prefix + (action,)
+        if all(_end_state(im, full) is not None for im in active_maps):
+            return {
+                'certified': True, 'return_to_initial': False, 'word': [action],
+                'reason': 'certified_safe_hold', 'candidate_count': len(survivors),
+            }
+
+    return {
+        'certified': False, 'return_to_initial': False, 'word': None,
+        'reason': 'no_safe_continuation', 'candidate_count': len(survivors),
+    }
