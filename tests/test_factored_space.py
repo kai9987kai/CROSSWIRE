@@ -13,6 +13,8 @@ def test_factored_space_decomposition_and_composition_bijection():
     assert space.total_adapters == 720
     assert space.static_count == 144
     assert space.temporal_count == 576
+    assert space.level_ids('static') == tuple(range(144))
+    assert space.level_ids('temporal') == tuple(range(720))
 
     for aid in range(space.total_adapters):
         i_idx, o_idx, delay, init_o = space.decompose_id(aid)
@@ -56,10 +58,15 @@ def test_factored_space_exact_parity_on_latch():
     assert target_aid in surv_fact
     assert len(surv_fact) > 0
 
-    # Test plan exact match
-    plan_flat = cs_flat.plan(surv_flat, 'robust')
-    plan_fact = cs_fact.plan(surv_fact, 'robust')
-    assert plan_flat == plan_fact
+    # Test ambiguity, probe_is_safe, and all admission modes exact match
+    assert cs_flat.ambiguity(surv_flat) == cs_fact.ambiguity(surv_fact)
+    for word in ((0,), (1,), (2,), (0, 1)):
+        assert cs_flat.probe_is_safe(surv_flat, word) == cs_fact.probe_is_safe(surv_fact, word)
+
+    for mode in ('robust', 'risk_controlled', 'one_best', 'unique', 'identity', 'abstain', 'fit'):
+        plan_flat = cs_flat.plan(surv_flat, mode, transcripts=evidence, anchors=anchors, risk_tolerance=0.25)
+        plan_fact = cs_fact.plan(surv_fact, mode, transcripts=evidence, anchors=anchors, risk_tolerance=0.25)
+        assert plan_flat == plan_fact
 
 
 def test_factored_space_exact_parity_on_routing():
@@ -81,6 +88,9 @@ def test_factored_space_exact_parity_on_routing():
     surv_fact = cs_fact.survivors(evidence, anchors)
     assert surv_flat == surv_fact
     assert target_aid in surv_fact
+
+    for policy in ('fixed', 'task', 'entropy', 'ec2', 'branching', 'counterexample'):
+        assert cs_flat.choose_probe(surv_flat, policy, 3, set(), safe_only=True) == cs_fact.choose_probe(surv_fact, policy, 3, set(), safe_only=True)
 
 
 def test_factored_space_lazy_adapters_proxy():
@@ -160,6 +170,14 @@ def test_factored_space_scaling_17280_models():
     assert summary['output_permutations'] == 120
     assert summary['compression_ratio'] == 120.0
 
+    # Factored symbolic probe_is_safe over all 17,280 models evaluates only 24 input factors
+    all_ids = cs_large.level_ids('temporal')
+    t_safe0 = time.perf_counter()
+    is_safe = cs_large.probe_is_safe(all_ids, (0,))
+    t_safe1 = time.perf_counter()
+    assert is_safe is False
+    assert t_safe1 - t_safe0 < 0.05
+
     # Pruning on 17,280 space
     evidence = [{'word': [0, 1, 2], 'outputs': [0, 1, 2], 'complete': True}]
     anchors = {0: 0, 1: 1, 2: 2}
@@ -177,3 +195,7 @@ def test_factored_space_scaling_17280_models():
     for s in survivors:
         pred = cs_large.predict(s, (0, 1, 2))
         assert pred == (0, 1, 2)
+
+    # Factored risk_controlled and robust planning over surviving models
+    plan_res = cs_large.plan(survivors, 'risk_controlled', risk_tolerance=0.5)
+    assert 'status' in plan_res
