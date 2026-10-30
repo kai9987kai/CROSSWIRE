@@ -156,15 +156,17 @@ def policy_metrics(space: CandidateSpace, ids, policy) -> dict:
 
     internal_nodes, max_branching = count_nodes(policy)
     depths = []
+    # Equal action words can reach distinct leaves after different observations.
     leaf_buckets = {}
     for aid in ids:
-        node, word = policy, ()
+        node, word, path = policy, (), ()
         while 'action' in node:
             word += (node['action'],)
             out = str(space.predict(aid, word)[-1])
+            path += ((node['action'], out),)
             node = node['branches'][out]
         depths.append(len(word))
-        leaf_buckets[word] = leaf_buckets.get(word, 0) + 1
+        leaf_buckets[path] = leaf_buckets.get(path, 0) + 1
 
     n = len(ids)
     leaf_sizes = sorted(leaf_buckets.values(), reverse=True)
@@ -201,7 +203,8 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, faul
 
     def _check_cp(step_idx):
         nonlocal cp_detected, cp_det_step, cp_det_latency
-        if fault_schedule and cp_step is not None and step_idx >= cp_step and not cp_detected:
+        if (fault_schedule and fault_schedule.get('phase', 'deployment') in ('deployment', 'always')
+                and cp_step is not None and step_idx >= cp_step and not cp_detected):
             cp_detected = True
             cp_det_step = step_idx
             cp_det_latency = step_idx - cp_step

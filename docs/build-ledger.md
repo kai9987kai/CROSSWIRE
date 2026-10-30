@@ -102,3 +102,12 @@ Ruling: parallelize disjoint core, target-protocol and browser files — active 
   - Certified Soft Return-to-Home Stabilization (`crosswire/shield.py`): added `synthesize_safe_return` to synthesize shortest universally hazard-free suffixes that return the reference state machine to its initial standby state $q_0$ across all surviving input factors.
   - Workbench UI Analytics (`crosswire/web/app.js`): added contingent policy tree structural summaries and empirical version-space information gain (bits resolved across queries). Verified with 6 tests in `tests/test_advanced_features.py`.
   - Full Test Suite Passing: 357/357 tests passing across 30 test modules.
+
+## 2026-10-30 — Resilience workflows and evidence integrity
+
+- Completed fault controls and study schedule grids, canonical condition isolation, phase-correct private audit/export, and composable scheduled sensor/semantic transformations.
+- Corrected observation-leaf information metrics, soft-return horizon validation, and larger output-alphabet contract evaluation.
+- Reports validate historical receipt digests and retain explicit integrity-only scope; direct-script execution works from a fresh checkout. Existing strict source-bound replay/import remains intact.
+- Final pre-publication full suite: 539 passed in 300.10 seconds, including direct-script CLI regressions. Browser desktop/mobile, fresh eight-run public checking/exact replay, all 14 study integrity/report checks, wheel/sdist archive inspection and clean outside-checkout installed-wheel checks passed.
+- Independent integrated code review found no remaining Important findings. Historical receipts are unchanged; new evidence lives in `reports/resilience-workflows-receipt.json` and `reports/resilience-workflows.md`.
+- This entry records local validation. Publication and hosted CI status are tracked separately in Git and GitHub Actions; factored runtime integration and automatic soft-return dispatch are not claimed. See `docs/verification-resilience-workflows.md` for exact scope and negative-control outcomes.

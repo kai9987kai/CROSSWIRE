@@ -5,3 +5,4 @@ recursive-include research *.md *.json
 recursive-include reports *.md *.json
 include tools/report.py
 include tools/check_workbench.cjs
+include tools/check_distribution.py

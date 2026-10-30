@@ -38,12 +38,11 @@ jobs:
 
       - name: Verify package installation
         run: |
-          pip install dist/*.whl --force-reinstall
+          python -I tools/check_distribution.py --wheel-dir dist
 
       - name: Verify scientific receipt replay
         run: |
-          python -m crosswire verify reports/pilot-calibration-safe-receipt.json
-          python -m crosswire verify reports/pilot-calibration-unrestricted-receipt.json
+          python -m crosswire verify reports/resilience-workflows-receipt.json
 
   browser:
     runs-on: ubuntu-latest

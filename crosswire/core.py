@@ -89,7 +89,9 @@ class Contract:
     def accepts(self, outputs):
         outputs = tuple(outputs)
         for symbol in outputs:
-            _integer(symbol, 'semantic output', maximum=3)
+            # The owning Machine validates its alphabet; contracts may also be
+            # used with larger alphabets than the original four-symbol fixtures.
+            _integer(symbol, 'semantic output')
         return bool(outputs) and outputs[-1] == self.goal and self.hazard not in outputs
 
     def to_dict(self):

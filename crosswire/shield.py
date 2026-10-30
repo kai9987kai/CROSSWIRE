@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from itertools import product
 from typing import Callable
-from .core import CandidateSpace, Contract
+from .core import CandidateSpace, Contract, _integer, _word
 from .interfaces import InterfaceError, TargetProcess
 
 
@@ -60,7 +60,8 @@ class RuntimeShield:
         self.replanned_suffix: tuple[int, ...] | None = None
 
     def _check_change_point_detection(self, current_step_index: int):
-        if self.fault_schedule and self.change_point_step is not None:
+        if (self.fault_schedule and self.fault_schedule.get('phase', 'deployment') in ('deployment', 'always')
+                and self.change_point_step is not None):
             if current_step_index >= self.change_point_step and not self.change_point_detected:
                 self.change_point_detected = True
                 self.detection_step = current_step_index
@@ -363,9 +364,15 @@ def synthesize_safe_return(space: CandidateSpace, survivors, prefix=(), max_leng
        every surviving model (certified soft return-to-home).
     If no return-to-initial path exists within the horizon, falls back to the shortest
     universally hazard-free holding step if one exists.
+    ``max_length`` is an optional nonnegative integer that can only narrow the
+    remaining contract horizon; a prefix beyond that horizon is invalid.
     """
     survivors = space._ids(survivors)
-    prefix = tuple(prefix)
+    prefix = _word(prefix, space.machine.inputs)
+    if max_length is not None:
+        _integer(max_length, 'max_length')
+    if len(prefix) > space.contract.horizon:
+        raise ValueError('prefix exceeds the contract horizon')
     if not survivors:
         return {
             'certified': False, 'return_to_initial': False, 'word': None,
@@ -401,7 +408,9 @@ def synthesize_safe_return(space: CandidateSpace, survivors, prefix=(), max_leng
             'reason': 'already_at_initial', 'candidate_count': len(survivors),
         }
 
-    rem = max(0, space.contract.horizon - len(prefix)) if max_length is None else max(0, int(max_length))
+    rem = space.contract.horizon - len(prefix)
+    if max_length is not None:
+        rem = min(rem, max_length)
     if rem <= 0:
         return {
             'certified': False, 'return_to_initial': False, 'word': None,

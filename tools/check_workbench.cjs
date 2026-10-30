@@ -32,12 +32,43 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         assert.equal(await page.locator('#instance_seed').count(), 1, 'Workbench must expose a distinct structural instance seed');
         assert.equal(await page.isDisabled('#instance_seed'), true, 'Legacy families cannot set a structural instance seed');
         assert.match(await page.locator('label[for="seed"]').textContent(), /label/i, 'The nuisance seed must be labeled as label variation');
+        assert.equal(await page.inputValue('#fault_type'), 'off', 'Fault injection must default to the nominal control');
+        for (const id of ['fault_step', 'fault_phase', 'fault_value']) assert.equal(await page.isDisabled(`#${id}`), true);
+        assert.equal(await page.evaluate(() => config().fault_schedule), null);
+        assert.deepEqual(await page.evaluate(() => studyConfig().fault_schedules), [null]);
+        assert.match(await page.textContent('#fault-onset-help'), /zero-based/i);
+        await page.selectOption('#fault_type', 'stuck_output');
+        for (const id of ['fault_step', 'fault_phase', 'fault_value']) assert.equal(await page.isEnabled(`#${id}`), true);
+        for (const value of ['-1', '1.5', '']) {
+            await page.fill('#fault_step', value);
+            assert.equal(await page.locator('#fault_step').evaluate(el => el.checkValidity()), false, `Onset ${value} must fail native validation`);
+        }
+        await page.fill('#fault_step', '0');
+        for (const value of ['-1', '4', '1.5', '']) {
+            await page.fill('#fault_value', value);
+            assert.equal(await page.locator('#fault_value').evaluate(el => el.checkValidity()), false, `Stuck output ${value} must fail native validation`);
+        }
+        await page.fill('#fault_value', '3');
+        for (const phase of ['deployment', 'calibration', 'always']) {
+            await page.selectOption('#fault_phase', phase);
+            assert.deepEqual(await page.evaluate(() => config().fault_schedule), {type:'stuck_output',step:0,phase,value:3});
+        }
+        for (const type of ['sensor_drift', 'actuator_swap', 'delay_spike', 'semantic_swap']) {
+            await page.selectOption('#fault_type', type);
+            assert.equal(await page.isDisabled('#fault_value'), true, 'Only a stuck output uses a configured symbol');
+            assert.deepEqual(await page.evaluate(() => config().fault_schedule), {type,step:0,phase:'always'});
+        }
+        await page.fill('#fault_step', '-1');
+        await page.selectOption('#fault_type', 'off');
+        assert.equal(await page.evaluate(() => config().fault_schedule), null, 'Turning a fault off must omit retained inactive settings');
+        assert.deepEqual(await page.evaluate(() => studyConfig().fault_schedules), [null]);
+        assert.equal(await page.locator('#run-form').evaluate(el => el.checkValidity()), true, 'Inactive invalid fault fields must not block a nominal run');
         if (process.argv.includes('--controls-only')) {
             await page.evaluate(() => {
                 const fixture = document.createElement('section');fixture.id='fixture-results';document.body.append(fixture);
                 fixture.append(renderCertificate({valid:true,kind:'robust',model_diagnostics:{inclusion_status:'UNKNOWN',enabled_classes:['static'],classes:{static:{candidate_count:2,scored_symbols:1,unscored_symbols:0,events:[{probe_index:0,step:1,action:0,predicted_output_counts:{0:2},observed_output:0,survivors_before:2,survivors_after:2,prediction_status:'SUPPORTED'}],first_refutation:null}},reset_consistency:{status:'UNKNOWN',first_conflict:null},blind_spots:['Raw-equivalent semantic corruption remains unobservable.','<img src=x onerror=alert(1)>']}}));
                 fixture.append(renderCertificate({valid:true,kind:'unresolved',model_diagnostics:{inclusion_status:'REFUTED',enabled_classes:['static'],classes:{static:{candidate_count:0,scored_symbols:1,unscored_symbols:1,events:[{probe_index:1,step:1,action:0,predicted_output_counts:{0:2},observed_output:1,survivors_before:2,survivors_after:0,prediction_status:'UNSUPPORTED'}],first_refutation:{kind:'probe',probe_index:1,step:1,word_prefix:[0],observed_output:1,survivors_before:2}}},reset_consistency:{status:'REFUTED',first_conflict:{word_prefix:[0],previous_probe_index:0,probe_index:1}},blind_spots:[]}}));
-                renderStudy({rows:[],summary:[],paired:[],protocol:{families:['generated_protocol'],instance_seeds:[0,1],seeds:[17,18]},reliability:[{family:'generated_protocol',method:'task/robust',budget:0,requests:4,parent_clusters:2,independent_parents:2,target_any_deployment_hazard:{events:0,targets:2,rate:0,interval:[0,0.84],unknown_targets:1},target_any_calibration_hazard:{events:1,targets:2,rate:0.5,interval:null,unknown_targets:0},target_average_useful_coverage:{estimate:0.5,interval:null},conditional_selective_harm:null,inference_eligible:false,inference_reason:'Insufficient independent targets',scope:'Conditional on independent synthetic structural parents.'}]},fixture);
+                renderStudy({rows:[],summary:[],paired:[],protocol:{families:['generated_protocol'],instance_seeds:[0,1],seeds:[17,18],fault_schedules:[null,{type:'stuck_output',step:0,phase:'calibration',value:3}]},reliability:[{family:'generated_protocol',method:'task/robust',budget:0,fault_schedule:{type:'sensor_drift',step:2,phase:'always'},requests:4,parent_clusters:2,independent_parents:2,target_any_deployment_hazard:{events:0,targets:2,rate:0,interval:[0,0.84],unknown_targets:1},target_any_calibration_hazard:{events:1,targets:2,rate:0.5,interval:null,unknown_targets:0},target_average_useful_coverage:{estimate:0.5,interval:null},conditional_selective_harm:null,inference_eligible:false,inference_reason:'Insufficient independent targets',scope:'Conditional on independent synthetic structural parents.'}]},fixture);
             });
             const fixture = page.locator('#fixture-results');
             assert.match(await fixture.textContent(), /Model inclusion: UNKNOWN/);
@@ -52,8 +83,11 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
             assert.match(await fixture.textContent(), /1 unknown/);
             assert.equal(await fixture.locator('img').count(), 0, 'Model diagnostic text must use safe DOM rendering');
             assert.match(await fixture.textContent(), /0 to 0.84/);
+            assert.match(await fixture.textContent(), /No injected fault/);
+            assert.match(await fixture.textContent(), /stuck output.*zero-based step 0.*calibration.*output 3/);
+            assert.match(await fixture.textContent(), /sensor drift.*zero-based step 2.*both phases/);
             assert.deepEqual(errors, []);
-            console.log('PASS: structural seed controls, legacy-family boundary, public diagnostics, target reliability, safe DOM');
+            console.log('PASS: fault defaults and native validation, structural seed controls, legacy-family boundary, public diagnostics, target reliability, safe DOM');
             return;
         }
         assert.equal(await page.locator('#probe_safety').count(), 1, 'Workbench must expose the calibration evidence rule');
@@ -105,7 +139,7 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         const submitted = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/studies'));
         await page.click('#study-button');
         const spec = (await submitted).postDataJSON();
-        assert.deepEqual(spec, {families:['routing'],seeds:[42,43],budgets:[0],policies:['task'],admissions:['robust','adaptive'],implementations:['procedural'],anchors:false,split:'evaluation',horizon:3,temporal:false,escalate:false,execution_mode:'recovery',probe_safety:'model_safe',risk_tolerance:0});
+        assert.deepEqual(spec, {families:['routing'],seeds:[42,43],budgets:[0],policies:['task'],admissions:['robust','adaptive'],implementations:['procedural'],anchors:false,split:'evaluation',horizon:3,temporal:false,escalate:false,execution_mode:'recovery',probe_safety:'model_safe',risk_tolerance:0,fault_schedules:[null]});
         await page.waitForFunction(() => !document.querySelector('#result-view').hidden && document.querySelector('#job-panel').hidden, {timeout:60000});
         assert.match(await page.textContent('#result-content'), /parent[ _]clusters/i);
         assert.match(await page.textContent('#result-content'), /descriptive 95% interval/i);
@@ -128,6 +162,7 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         const receipt = fs.readFileSync(await download.path(), 'utf8');
         const original = JSON.parse(receipt);
         assert.equal(original.payload.rows.length, 4);
+        assert.ok(original.payload.rows.every(row => row.configuration.fault_schedule === null), 'Nominal studies must retain null fault schedules');
         for (const action of ['replay', 'import']) {
             const block = await page.request.post(base + 'api/studies', {data:{families:['latch'],seeds:[1,2,3,4,5,6,7,8],budgets:[16],policies:['fixed']}});
             const blocking = await block.json();
@@ -197,13 +232,54 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         assert.match(await page.textContent('#result-content'), /Calibration safety/);
         assert.match(await page.textContent('#result-content'), /Factored hypothesis space:/);
         assert.match(await page.textContent('#result-content'), /does not authenticate/i);
+        await page.selectOption('#family', 'latch');
+        await page.fill('#seed', '42');
+        await page.fill('#budget', '16');
+        await page.fill('#horizon', '4');
+        await page.selectOption('#execution_mode', 'shielded');
+        await page.selectOption('#probe_safety', 'unrestricted');
+        await page.selectOption('#fault_type', 'sensor_drift');
+        await page.fill('#fault_step', '1');
+        await page.selectOption('#fault_phase', 'deployment');
+        const schedule = {type:'sensor_drift',step:1,phase:'deployment'};
+        assert.match(await page.textContent('#study-description'), /sensor drift.*zero-based step 1.*deployment/i);
+        const submittedFault = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/runs'));
+        await page.click('#run-button');
+        assert.deepEqual((await submittedFault).postDataJSON().fault_schedule, schedule);
+        await page.waitForFunction(() => document.querySelector('#result-content').textContent.includes('Change-point fault') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
+        assert.deepEqual(await page.evaluate(() => state.completed.result.configuration.fault_schedule), schedule);
+        assert.equal(await page.evaluate(() => state.completed.result.deployment.change_point.detected), true);
+        assert.match(await page.textContent('#result-content'), /sensor drift.*zero-based step 1.*deployment/i);
+        await page.click('#replay-button');
+        await page.waitForFunction(() => !state.active && !state.busy && document.querySelector('#notice').textContent.includes('Replay verified') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
+        await page.selectOption('#family', 'routing');
+        await page.fill('#budget', '0');
+        await page.selectOption('#admission', 'adaptive');
+        const submittedFaultStudy = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/studies'));
+        await page.click('#study-button');
+        const faultSpec = (await submittedFaultStudy).postDataJSON();
+        assert.deepEqual(faultSpec.fault_schedules, [schedule]);
+        await page.waitForFunction(() => document.querySelector('#result-kind').textContent === 'PAIRED STUDY RECEIPT' && document.querySelector('#job-panel').hidden, null, {timeout:60000});
+        assert.match(await page.textContent('#result-content'), /sensor drift.*zero-based step 1.*deployment/i);
+        const faultDownloadPromise = page.waitForEvent('download');
+        await page.click('#export-button');
+        const faultDownload = await faultDownloadPromise;
+        const faultReceipt = JSON.parse(fs.readFileSync(await faultDownload.path(), 'utf8'));
+        assert.equal(faultReceipt.payload.rows.length, 4);
+        assert.deepEqual(faultReceipt.payload.protocol.fault_schedules, [schedule]);
+        for (const row of faultReceipt.payload.rows) assert.deepEqual(row.configuration.fault_schedule, schedule);
+        for (const row of faultReceipt.payload.summary) assert.deepEqual(row.fault_schedule, schedule);
+        await page.getByRole('button', {name:'Inspect run 1', exact:true}).click();
+        assert.match(await page.textContent('#study-run-detail'), /sensor drift.*zero-based step 1.*deployment/i);
+        await page.click('#replay-button');
+        await page.waitForFunction(() => !state.active && !state.busy && document.querySelector('#notice').textContent.includes('Replay verified') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
         await page.screenshot({path:path.join(output,'evidence-workbench-desktop.png'),fullPage:true});
         await page.setViewportSize({width:390,height:900});
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'Mobile workbench must not overflow horizontally');
         await page.screenshot({path:path.join(output,'evidence-workbench-mobile.png'),fullPage:true});
         assert.deepEqual(errors, []);
         assert.equal(serverErrors, '');
-        console.log('PASS: calibration and tolerance controls, structural instance seeds, exact legacy/generated studies, independent-target reliability, public model diagnostics, row inspection, receipt export, cancellable replay/import, responsive layout');
+        console.log('PASS: fault controls, native validation, actual fault run/study/export/replay, calibration and tolerance controls, structural instance seeds, exact nominal/generated studies, independent-target reliability, public model diagnostics, row inspection, cancellable replay/import, responsive layout');
     } finally {
         if (browser) await browser.close();
         child.kill();

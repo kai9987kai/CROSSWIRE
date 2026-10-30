@@ -1,0 +1,15 @@
+{
+  "families": ["latch"],
+  "seeds": [42],
+  "budgets": [16],
+  "policies": ["task"],
+  "admissions": ["robust"],
+  "implementations": ["procedural", "table"],
+  "execution_mode": "shielded",
+  "fault_schedules": [
+    null,
+    {"step": 2, "type": "sensor_drift", "phase": "deployment"},
+    {"step": 2, "type": "stuck_output", "phase": "deployment", "value": 0},
+    {"step": 1, "type": "semantic_swap", "phase": "deployment"}
+  ]
+}

@@ -21,6 +21,7 @@ crosswire = "crosswire.cli:main"
 
 [tool.setuptools]
 packages = ["crosswire"]
+include-package-data = false
 
 [tool.setuptools.package-data]
 crosswire = ["web/*.html", "web/*.css", "web/*.js"]

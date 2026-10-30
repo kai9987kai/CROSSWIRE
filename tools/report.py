@@ -9,20 +9,25 @@ import argparse
 from collections import defaultdict
 import json
 from pathlib import Path
+import sys
+
+# Keep the documented direct-script command usable in a fresh source checkout,
+# where Python otherwise places only tools/ (not the project root) on sys.path.
+if __package__ in (None, ''):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from crosswire.conditions import CONDITION_DEFAULTS, condition_fields, condition_key
+from crosswire.receipts import check_integrity
 
 
 def _pct(value):
     return "n/a" if value is None else f"{100 * value:.0f}%"
 
 
-_CONDITIONS = {'probe_safety': 'unrestricted', 'risk_tolerance': 0.0,
-               'execution_mode': 'open_loop', 'anchors': False, 'split': 'development',
-               'horizon': 4, 'temporal': False, 'escalate': False}
-
-
 def _conditions(record, rows):
     """Read saved conditions, recovering missing legacy fields only if unique."""
-    missing = set(_CONDITIONS) - set(record)
+    missing = set(CONDITION_DEFAULTS) - set(record)
+    recorded = condition_key(record)
     matches = []
     if missing:
         for row in rows:
@@ -37,15 +42,16 @@ def _conditions(record, rows):
                   ('fixed_admission' in record and cfg.get('admission') != record['fixed_admission']) or
                   ('fixed_policy' in record and cfg.get('policy') != record['fixed_policy'])):
                 continue
-            if all(key not in record or cfg.get(key, default) == record[key]
-                   for key, default in _CONDITIONS.items()):
-                matches.append(cfg)
+            candidate = condition_key(cfg)
+            if all(key not in record or candidate[index] == recorded[index]
+                   for index, key in enumerate(CONDITION_DEFAULTS)):
+                matches.append(candidate)
     values = []
-    for key, default in _CONDITIONS.items():
-        possible = {cfg.get(key, default) for cfg in matches}
+    for index, key in enumerate(CONDITION_DEFAULTS):
+        possible = {candidate[index] for candidate in matches}
         if key in missing and len(possible) > 1:
             raise ValueError('Saved summary mixes unrecorded conditions; cannot render an unstratified aggregate')
-        values.append(record.get(key, next(iter(possible)) if possible else default))
+        values.append(next(iter(possible)) if key in missing and possible else recorded[index])
     return tuple(values)
 
 
@@ -56,7 +62,9 @@ def _condition_text(conditions):
         if type(value) in (int, float):
             return f'{value:g}'
         return str(value)
-    return '; '.join(f'{key}={value_text(value)}' for key, value in zip(_CONDITIONS, conditions))
+    fields = condition_fields(conditions)
+    return '; '.join(f'{key}={json.dumps(value, sort_keys=True, separators=(",", ":")) if key == "fault_schedule" else value_text(value)}'
+                     for key, value in fields.items())
 
 
 def _calls(summary):
@@ -142,11 +150,14 @@ def _reliability_tables(out, records, rows):
 
 
 def render(receipt: dict, title: str) -> str:
-    payload = receipt["payload"]
+    payload = check_integrity(receipt)
     if payload.get("schema") != "crosswire-study-v1":
         raise ValueError("Expected a study receipt")
     rows, summary = payload["rows"], payload["summary"]
     out = [f"## {title}", "",
+           '- Verification: saved envelope and scientific digests checked (integrity-only); '
+           'no target replay or independent public-model check performed. '
+           'Content hashes do not authenticate target execution or private audits.',
            f"- Runs: {len(rows)}; source hash `{payload['source_hash'][:16]}…`; "
            f"protocol hash `{payload['protocol_hash'][:16]}…`; scientific hash `{payload['scientific_hash'][:16]}…`.",
            f"- Parent clusters: {len({r['parent_instance_id'] for r in rows})} "

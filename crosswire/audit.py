@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .core import CandidateSpace, compare_adapter, words
-from .fixtures import Case, catalog, evaluate_deployment, target_machine
+from .fixtures import Case, catalog, evaluate_calibration, evaluate_deployment, target_machine
 from .identity import canonical_hash
 
 
@@ -84,7 +84,7 @@ def evaluate(case: Case, space: CandidateSpace, survivors: tuple[int, ...], deci
         if not executed:
             continue
         try:
-            item = evaluate_deployment(private, probes[:i], executed, work=work)
+            item = evaluate_calibration(private, probes[:i], executed, work=work)
             calibration_hazards += int(item["hazard"])
         except (ValueError, RuntimeError):
             pass

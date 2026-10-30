@@ -12,6 +12,7 @@ import json
 import random
 
 from .core import Contract, Machine
+from .conditions import normalize_fault_schedule
 
 
 @dataclass(frozen=True)
@@ -190,7 +191,7 @@ def make_case(family, seed=17, implementation='procedural', split='development',
     if family == 'malformed':
         private.update(fault_mode='malformed', fault_after=0)
     if fault_schedule is not None:
-        private['fault_schedule'] = dict(fault_schedule)
+        private['fault_schedule'] = normalize_fault_schedule(fault_schedule)
     parent = _digest({'source_family':source_family, 'semantic_version':1})
     design = None
     if family == 'generated_protocol':
@@ -230,6 +231,7 @@ class _Engine:
         if self.work is not None:
             self.work['resets'] = self.work.get('resets',0) + 1
         self.state, self.previous, self.parity = 0, 0, 0
+        self.fault_previous = 0
         self.semantic_events = []
         self.steps_since_reset = 0
 
@@ -264,8 +266,8 @@ class _Engine:
         actual = event
         if family in ('semantic_corruption','bypass') or (family == 'drift' and self.total_steps > 8):
             actual = {1:2,2:1}.get(event,event)
-        elif fault_type == 'semantic_swap':
-            actual = {1:2,2:1}.get(event,event)
+        if fault_type == 'semantic_swap':
+            actual = {1:2,2:1}.get(actual,actual)
         self.semantic_events.append(actual)
 
         observed = event
@@ -278,10 +280,12 @@ class _Engine:
                 observed = self.previous
             self.previous = observed
             self.parity ^= 1
-        elif fault_type == 'sensor_drift':
+        # Compose scheduled faults after the family's sensor mechanism. A second
+        # delay needs its own buffer; sharing `previous` erases one of the delays.
+        if fault_type == 'sensor_drift':
             observed = (observed + 1) % 4
         elif fault_type == 'delay_spike':
-            observed, self.previous = self.previous, event
+            observed, self.fault_previous = self.fault_previous, observed
         elif fault_type == 'stuck_output':
             observed = fault.get('value', 0)
 
@@ -429,11 +433,20 @@ def _replay_calibration(engine, probes):
 
 def evaluate_deployment(private, probes, word, work=None):
     """Privately audit deployment in the actual post-calibration experiment phase."""
+    return _evaluate_phase(private, probes, word, 'deployment', work)
+
+
+def evaluate_calibration(private, probes, word, work=None):
+    """Audit a calibration word without activating deployment-only faults."""
+    return _evaluate_phase(private, probes, word, 'calibration', work)
+
+
+def _evaluate_phase(private, probes, word, phase, work=None):
     engine = make_engine(private, work)
     try:
         _replay_calibration(engine, probes)
         if hasattr(engine, 'set_phase'):
-            engine.set_phase('deployment')
+            engine.set_phase(phase)
         outputs = []
         if isinstance(word, dict):
             node = word
@@ -462,20 +475,27 @@ def evaluate_deployment(private, probes, word, work=None):
 def target_machine(private, work=None):
     if private['family'] in ('drift','malformed'):
         return None
-    # Export the actual implementation's finite raw behavior. Observation memory
-    # belongs to the state; no learned candidate or inverse semantic map is used.
+    # Export deployment behavior after reset. Fault onset is finite-state memory,
+    # saturated once active; never omit it or silently export calibration behavior.
+    fault = private.get('fault_schedule')
+    onset = fault['step'] if fault and fault.get('phase', 'deployment') != 'calibration' else 0
+    if onset > 512:
+        # Bound the private export rather than exhausting memory for a distant
+        # schedule. Actual trajectory auditing still executes the real schedule.
+        return None
     engine = make_engine(private, work)
-    initial = (0,0,0)
+    engine.set_phase('deployment')
+    initial = (0,0,0,0,0)
     states, pending, rows = {initial:0}, deque([initial]), []
     try:
         while pending:
             state = pending.popleft()
             row = []
             for action in range(3):
-                engine.state, engine.previous, engine.parity = state
+                engine.state, engine.previous, engine.parity, engine.steps_since_reset, engine.fault_previous = state
                 engine.semantic_events.clear()
                 output = engine.step(action)
-                following = (engine.state,engine.previous,engine.parity)
+                following = (engine.state,engine.previous,engine.parity,min(engine.steps_since_reset, onset),engine.fault_previous)
                 if following not in states:
                     states[following] = len(states)
                     pending.append(following)

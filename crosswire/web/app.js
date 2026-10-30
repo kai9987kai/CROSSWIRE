@@ -13,7 +13,16 @@ async function request(path,options={}){let response;try{response=await fetch(pa
 function lock(){const busy=state.busy||!!state.active;$('run-button').disabled=busy||!state.catalog;$('study-button').disabled=busy||!state.catalog;$('import-button').disabled=busy;$('replay-button').disabled=busy||!state.completed;$('export-button').disabled=!state.completed;}
 function optionList(id,items,fallback){const select=$(id);select.replaceChildren();for(const entry of items){const value=typeof entry==='string'?entry:entry.id||entry.name||entry.value;if(!value)continue;const option=element('option',typeof entry==='object'?entry.label||labels[value]||value:labels[value]||value);option.value=value;select.append(option);}if(fallback&&Array.from(select.options).some(o=>o.value===fallback))select.value=fallback;}
 function familyDescription(){const current=state.catalog?.families.find(entry=>entry.id===$('family').value);$('family-description').textContent=current?.description||'';$('family-scope').textContent=(current?.scope||'Scope unspecified').replaceAll('_',' ');}
-function config(){const data={};for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety'])if($(name))data[name]=$(name).value;for(const name of ['seed','budget','horizon','risk_tolerance'])if($(name))data[name]=Number($(name).value);if(data.family==='generated_protocol')data.instance_seed=Number($('instance_seed').value);data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;return data;}
+function config(){
+    const data={};
+    for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety'])if($(name))data[name]=$(name).value;
+    for(const name of ['seed','budget','horizon','risk_tolerance'])if($(name))data[name]=Number($(name).value);
+    if(data.family==='generated_protocol')data.instance_seed=Number($('instance_seed').value);
+    data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;
+    data.fault_schedule=$('fault_type').value==='off'?null:{type:$('fault_type').value,step:Number($('fault_step').value),phase:$('fault_phase').value};
+    if(data.fault_schedule?.type==='stuck_output')data.fault_schedule.value=Number($('fault_value').value);
+    return data;
+}
 function studyConfig(){
     const selected=config(),adaptive=selected.admission==='adaptive';
     const spec={families:[selected.family],seeds:[selected.seed,(selected.seed+1)%4294967296],
@@ -21,7 +30,7 @@ function studyConfig(){
         policies:adaptive?[selected.policy]:selected.policy==='fixed'?['task','fixed']:[selected.policy,'fixed'],admissions:adaptive?['robust','adaptive']:[selected.admission],
         implementations:[selected.implementation],anchors:selected.anchors,split:selected.split,
         horizon:selected.horizon,temporal:selected.temporal,escalate:selected.escalate,execution_mode:selected.execution_mode,
-        probe_safety:selected.probe_safety,risk_tolerance:selected.risk_tolerance};
+        probe_safety:selected.probe_safety,risk_tolerance:selected.risk_tolerance,fault_schedules:[selected.fault_schedule]};
     if(selected.family==='generated_protocol')spec.instance_seeds=[selected.instance_seed,(selected.instance_seed+1)%4294967296];
     return spec;
 }
@@ -29,6 +38,9 @@ function selectedPolicy(){return $('policy').value;}
 function syncControls(){
     const adaptive=$('admission').value==='adaptive',risk=$('admission').value==='risk_controlled';
     $('instance_seed').disabled=$('family').value!=='generated_protocol';
+    const faultEnabled=$('fault_type').value!=='off';
+    $('fault_step').disabled=!faultEnabled;$('fault_phase').disabled=!faultEnabled;
+    $('fault_value').disabled=$('fault_type').value!=='stuck_output';
     if(adaptive&&!['shielded','recovery'].includes($('execution_mode').value))$('execution_mode').value='shielded';
     if($('escalate')&&$('escalate').checked){$('temporal').checked=false;$('temporal').disabled=true;}
     else if($('temporal')){$('temporal').disabled=false;}
@@ -39,7 +51,7 @@ function syncControls(){
     $('admission-help').textContent=adaptive?'Adaptive policies choose actions from the observed branch. Shielded or recovery execution is required.':risk?'Admission limits hazardous and goal-failing fractions of the surviving candidates under uniform weighting.':'Robust admission requires a sequence satisfying the contract for every surviving mapping. Other rules provide different guarantees; forced baselines are diagnostic.';
     if(!state.catalog)return;
     const spec=studyConfig(),runs=spec.seeds.length*spec.budgets.length*spec.policies.length*spec.admissions.length*(spec.instance_seeds?.length||1);
-    $('study-description').textContent=`${runs} runs · ${spec.families[0]}${spec.instance_seeds?` · structural seeds ${spec.instance_seeds.join(' / ')}`:''} · label seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':`${labels[selectedPolicy()]||selectedPolicy()} vs ${$('policy').value==='fixed'?'task':'fixed'} probes, using the selected admission rule.`} Horizon ${spec.horizon} · ${spec.split} · ${labels[spec.execution_mode]||spec.execution_mode} · ${spec.probe_safety==='model_safe'?'model-safe':'unrestricted'} calibration${risk?` · candidate tolerance ${spec.risk_tolerance}`:''}. Label seeds and target engines are nuisance repeats of structural parents.`;
+    $('study-description').textContent=`${runs} runs · ${spec.families[0]}${spec.instance_seeds?` · structural seeds ${spec.instance_seeds.join(' / ')}`:''} · label seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':`${labels[selectedPolicy()]||selectedPolicy()} vs ${$('policy').value==='fixed'?'task':'fixed'} probes, using the selected admission rule.`} Horizon ${spec.horizon} · ${spec.split} · ${labels[spec.execution_mode]||spec.execution_mode} · ${spec.probe_safety==='model_safe'?'model-safe':'unrestricted'} calibration${risk?` · candidate tolerance ${spec.risk_tolerance}`:''} · ${faultLabel(spec.fault_schedules[0])}. Label seeds and target engines are nuisance repeats of structural parents.`;
     if($('study-protocol'))$('study-protocol').textContent=JSON.stringify(spec,null,2);
 }
 async function startJob(path,body,kind='run'){
@@ -189,6 +201,7 @@ function renderCalibration(result){
 }
 function renderRun(result,container){
     const d=result.decision||{},audit=result.audit||{},ambiguity=result.ambiguity||{},metrics=result.metrics||{},dep=result.deployment||{};
+    container.append(element('p',`Conditions: ${conditionLabel(result.configuration)}`,'fineprint'));
     const statusGrid=element('div',null,'status-grid'),dec=element('section',null,`panel status-card${d.admitted?' good':''}`);
     dec.append(element('p','02 / FROZEN DECISION','eyebrow'),element('h2',d.status||'Status unavailable'),element('div',d.admitted?(d.policy?'Branching policy admitted':`Plan: ${word(d.word)}`):'No plan admitted','word'),element('p',`Admission: ${labels[result.configuration?.admission]||result.configuration?.admission||'—'} · ${readable(d.candidate_count??ambiguity.map_count)} candidate mappings`));
     if(d.reason)dec.append(element('p',d.reason,'fineprint'));
@@ -232,8 +245,13 @@ function renderRun(result,container){
     if(result.instance_design)receipt.append(element('h4','Structural instance design'),keyValues({structural_instance_seed:result.configuration?.instance_seed,generator:result.instance_design.generator,dynamics_hash:result.instance_design.dynamics_hash,sampling_unit:result.instance_design.sampling_unit}),rawDetails('Instance design metadata',result.instance_design));
     receipt.append(rawDetails('Configuration and baseline',{configuration:result.configuration,baseline:result.baseline}));container.append(receipt);
 }
+function faultLabel(schedule){
+    if(!schedule)return 'No injected fault';
+    return `Fault: ${String(schedule.type||'unknown').replaceAll('_',' ')} · zero-based step ${number(schedule.step)} · ${schedule.phase==='always'?'both phases':schedule.phase||'deployment'}${schedule.type==='stuck_output'?` · output ${number(schedule.value??0)}`:''}`;
+}
 function conditionLabel(cfg={}){
-    return `${cfg.split||'development'} · H${cfg.horizon??4} · ${labels[cfg.execution_mode||'open_loop']||cfg.execution_mode} · anchors ${cfg.anchors?'on':'off'} · temporal ${cfg.temporal?'on':'off'} · escalation ${cfg.escalate?'on':'off'} · ${cfg.probe_safety==='model_safe'?'model-safe':'unrestricted'} probes · candidate tolerance ${number(cfg.risk_tolerance??0)}`;
+    const fault=Array.isArray(cfg.fault_schedules)?cfg.fault_schedules.map(faultLabel).join(' / '):faultLabel(cfg.fault_schedule);
+    return `${cfg.split||'development'} · H${cfg.horizon??4} · ${labels[cfg.execution_mode||'open_loop']||cfg.execution_mode} · anchors ${cfg.anchors?'on':'off'} · temporal ${cfg.temporal?'on':'off'} · escalation ${cfg.escalate?'on':'off'} · ${cfg.probe_safety==='model_safe'?'model-safe':'unrestricted'} probes · candidate tolerance ${number(cfg.risk_tolerance??0)} · ${fault}`;
 }
 function intervalText(interval){return Array.isArray(interval)&&interval.length===2&&interval.every(value=>typeof value==='number'&&Number.isFinite(value))?interval.map(number).join(' to '):null;}
 function targetEventMetric(metric={}){

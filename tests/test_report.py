@@ -3,6 +3,7 @@ from copy import deepcopy
 
 import pytest
 
+from crosswire.identity import canonical_hash, scientific_view
 from tools.report import render
 
 
@@ -21,11 +22,20 @@ def _summary(family='latch', scope='in_family', requests=2, **changes):
 
 
 def _receipt(summary, paired=None):
-    return {'payload': {'schema': 'crosswire-study-v1', 'source_hash': 'a' * 64,
-                        'protocol_hash': 'b' * 64, 'scientific_hash': 'c' * 64,
-                        'rows': [{'parent_instance_id': f'p{i}', 'baseline': {}}
-                                 for i, _ in enumerate(summary)],
-                        'summary': summary, 'paired': paired or []}}
+    receipt = {'schema': 'crosswire-receipt-v1', 'source_hash': 'a' * 64,
+               'payload': {'schema': 'crosswire-study-v1', 'source_hash': 'a' * 64,
+                           'protocol': {}, 'protocol_hash': canonical_hash({}),
+                           'rows': [{'parent_instance_id': f'p{i}', 'baseline': {}}
+                                    for i, _ in enumerate(summary)],
+                           'summary': summary, 'paired': paired or []}}
+    return _seal(receipt)
+
+
+def _seal(receipt):
+    """Seal deliberately edited test data without requiring the current source."""
+    receipt['payload']['scientific_hash'] = canonical_hash(scientific_view(receipt['payload']))
+    receipt['payload_hash'] = canonical_hash(receipt['payload'])
+    return receipt
 
 
 def _table(text, heading):
@@ -117,6 +127,7 @@ def test_legacy_summary_recovers_execution_conditions_from_its_saved_run_rows():
     receipt['payload']['rows'][0]['configuration'] = {
         'family': 'latch', 'policy': 'task', 'admission': 'robust', 'budget': 16,
         'execution_mode': 'shielded'}
+    _seal(receipt)
     row = _table(render(receipt, 'Legacy conditions'), '### Per family')[0]
     assert 'execution_mode=shielded' in row['Conditions']
 
@@ -130,6 +141,7 @@ def test_legacy_summary_cannot_silently_pool_unrecorded_execution_conditions():
             'family': 'latch', 'policy': 'task', 'admission': 'robust', 'budget': 16,
             'execution_mode': mode}}
         for mode in ('open_loop', 'shielded')]
+    _seal(receipt)
     with pytest.raises(ValueError, match='conditions'):
         render(receipt, 'Mixed legacy conditions')
 
@@ -142,6 +154,7 @@ def test_forced_fit_diagnostics_keep_scope_budget_and_conditions():
         baseline={'fit_diagnostics': {'total_residual': 2, 'raw_mismatches': 1,
                                      'anchor_mismatches': 1, 'maps_tied_at_minimum': 3}},
         audit={'contract_satisfied': False})
+    _seal(receipt)
     row = _table(render(receipt, 'Fit'), '### Forced-fit')[0]
     assert row['Scope'] == 'control'
     assert row['Budget'] == '16'
@@ -172,6 +185,7 @@ def _reliability(**changes):
 def test_reliability_report_preserves_target_denominators_conditions_and_positive_zero_event_upper():
     receipt = _receipt([_summary()])
     receipt['payload']['reliability'] = [_reliability()]
+    _seal(receipt)
     before = deepcopy(receipt)
     rendered = render(receipt, 'Reliability')
     design = _table(rendered, '### Reliability design')[0]
@@ -217,6 +231,7 @@ def test_reliability_report_labels_unavailable_intervals_and_undefined_selective
         target_any_deployment_hazard=event, target_any_calibration_hazard=event,
         target_average_useful_coverage={'estimate': 0, 'interval': None},
         conditional_selective_harm=None)]
+    _seal(receipt)
     rendered = render(receipt, 'Descriptive')
     design = _table(rendered, '### Reliability design')[0]
     assert design['Inference eligible'] == 'false'
@@ -235,6 +250,7 @@ def test_reliability_records_keep_different_conditions_and_scopes_visible():
     second = _reliability(probe_safety='unrestricted', risk_tolerance=0,
                           scope='A different saved scope.')
     receipt['payload']['reliability'] = [first, second]
+    _seal(receipt)
     rendered = render(receipt, 'Separate reliability strata')
     design = _table(rendered, '### Reliability design')
     assert len(design) == 2
@@ -250,4 +266,151 @@ def test_legacy_report_without_reliability_keeps_existing_output():
     assert 'Reliability design' not in legacy
     assert 'Target-cluster hazard bounds' not in legacy
     receipt['payload']['reliability'] = []
-    assert render(receipt, 'Legacy') == legacy
+    _seal(receipt)
+    rendered = render(receipt, 'Legacy')
+    assert 'Reliability design' not in rendered
+    assert _table(rendered, '### Method') == _table(legacy, '### Method')
+
+
+def test_report_rejects_payload_tampering_instead_of_publishing_changed_totals():
+    receipt = _receipt([_summary()])
+    receipt['payload']['summary'][0]['successful'] = 1000
+    with pytest.raises(ValueError, match='digest mismatch'):
+        render(receipt, 'Corrupted results')
+
+
+def test_report_rejects_scientific_tampering_even_when_outer_digest_is_updated():
+    receipt = _receipt([_summary()])
+    receipt['payload']['summary'][0]['successful'] = 1000
+    receipt['payload_hash'] = canonical_hash(receipt['payload'])
+    with pytest.raises(ValueError, match='Scientific content digest mismatch'):
+        render(receipt, 'Resealed corrupt results')
+
+
+def test_report_requires_a_complete_receipt_envelope():
+    with pytest.raises(ValueError, match='receipt envelope'):
+        render({'payload': _receipt([_summary()])['payload']}, 'Unwrapped payload')
+
+
+def test_historical_report_checks_integrity_without_claiming_target_replay():
+    receipt = _receipt([_summary()])
+    before = deepcopy(receipt)
+    rendered = render(receipt, 'Historical results')
+    assert 'integrity-only' in rendered.lower()
+    assert 'no target replay' in rendered.lower()
+    assert 'authenticat' in rendered.lower()
+    assert 'a' * 16 in rendered
+    assert receipt == before
+
+
+def test_fault_schedules_keep_type_onset_phase_and_symbol_strata_separate():
+    schedules = [None,
+                 {'type': 'sensor_drift', 'step': 0},
+                 {'type': 'actuator_swap', 'step': 0},
+                 {'type': 'sensor_drift', 'step': 1},
+                 {'type': 'sensor_drift', 'step': 0, 'phase': 'calibration'},
+                 {'type': 'sensor_drift', 'step': 0, 'phase': 'always'},
+                 {'type': 'stuck_output', 'step': 0, 'value': 0},
+                 {'type': 'stuck_output', 'step': 0, 'value': 1}]
+    receipt = _receipt([_summary(fault_schedule=schedule) for schedule in schedules])
+    before = deepcopy(receipt)
+    rendered = render(receipt, 'Controlled faults')
+    for heading in ('### Method', '### Per family'):
+        records = _table(rendered, heading)
+        assert len(records) == 8
+        labels = {record['Conditions'].split('fault_schedule=', 1)[1] for record in records}
+        assert labels == {'null',
+                         '{"phase":"deployment","step":0,"type":"sensor_drift"}',
+                         '{"phase":"deployment","step":0,"type":"actuator_swap"}',
+                         '{"phase":"deployment","step":1,"type":"sensor_drift"}',
+                         '{"phase":"calibration","step":0,"type":"sensor_drift"}',
+                         '{"phase":"always","step":0,"type":"sensor_drift"}',
+                         '{"phase":"deployment","step":0,"type":"stuck_output","value":0}',
+                         '{"phase":"deployment","step":0,"type":"stuck_output","value":1}'}
+    assert receipt == before
+
+
+def test_effective_fault_defaults_pool_across_families_without_mutating_receipts():
+    receipt = _receipt([
+        _summary(fault_schedule={'type': 'sensor_drift', 'step': 0}),
+        _summary('handshake', fault_schedule={'phase': 'deployment', 'step': 0,
+                                             'type': 'sensor_drift'}),
+        _summary(fault_schedule={'type': 'stuck_output', 'step': 1}),
+        _summary('handshake', fault_schedule={'value': 0, 'phase': 'deployment',
+                                             'step': 1, 'type': 'stuck_output'})])
+    before = deepcopy(receipt)
+    records = _table(render(receipt, 'Effective fault defaults'), '### Method')
+    assert len(records) == 2
+    assert all(record['Requests'] == '4' for record in records)
+    assert any('"value":0' in record['Conditions'] for record in records)
+    assert receipt == before
+
+
+@pytest.mark.parametrize('schedules', [
+    [None, {'type': 'sensor_drift', 'step': 0}],
+    [{'type': 'sensor_drift', 'step': 0}, {'type': 'sensor_drift', 'step': 1}],
+    [{'type': 'sensor_drift', 'step': 0},
+     {'type': 'sensor_drift', 'step': 0, 'phase': 'calibration'}],
+])
+def test_legacy_summary_rejects_mixed_unrecorded_fault_conditions(schedules):
+    receipt = _receipt([_summary()])
+    receipt['payload']['rows'] = [
+        {'parent_instance_id': f'p{index}', 'baseline': {}, 'configuration': {
+            'family': 'latch', 'policy': 'task', 'admission': 'robust', 'budget': 16,
+            'fault_schedule': schedule}}
+        for index, schedule in enumerate(schedules)]
+    _seal(receipt)
+    with pytest.raises(ValueError, match='conditions'):
+        render(receipt, 'Ambiguous legacy faults')
+
+
+def test_legacy_summary_recovers_one_effective_fault_schedule_from_saved_rows():
+    receipt = _receipt([_summary()])
+    receipt['payload']['rows'] = [
+        {'parent_instance_id': 'p', 'baseline': {}, 'configuration': {
+            'family': 'latch', 'policy': 'task', 'admission': 'robust', 'budget': 16,
+            'fault_schedule': schedule}}
+        for schedule in ({'type': 'stuck_output', 'step': 1},
+                         {'type': 'stuck_output', 'step': 1, 'phase': 'deployment', 'value': 0})]
+    _seal(receipt)
+    row = _table(render(receipt, 'Legacy fault defaults'), '### Per family')[0]
+    assert 'fault_schedule={"phase":"deployment","step":1,"type":"stuck_output","value":0}' in row['Conditions']
+    nominal = _table(render(_receipt([_summary()]), 'Legacy nominal'), '### Per family')[0]
+    assert 'fault_schedule=null' in nominal['Conditions']
+
+
+def test_legacy_condition_recovery_matches_effective_nested_fault_defaults():
+    summary = _summary(fault_schedule={'type': 'stuck_output', 'step': 1})
+    summary.pop('execution_mode')
+    receipt = _receipt([summary])
+    receipt['payload']['rows'][0]['configuration'] = {
+        'family': 'latch', 'policy': 'task', 'admission': 'robust', 'budget': 16,
+        'execution_mode': 'shielded',
+        'fault_schedule': {'type': 'stuck_output', 'step': 1, 'phase': 'deployment', 'value': 0}}
+    _seal(receipt)
+    row = _table(render(receipt, 'Canonical legacy matching'), '### Per family')[0]
+    assert 'execution_mode=shielded' in row['Conditions']
+    assert 'fault_schedule={"phase":"deployment","step":1,"type":"stuck_output","value":0}' in row['Conditions']
+
+
+def test_paired_reliability_and_fit_tables_keep_canonical_fault_conditions():
+    schedule = {'type': 'stuck_output', 'step': 2, 'phase': 'calibration'}
+    pair = {'contrast': 'entropy - fixed', 'budget': 16, 'parent_clusters': 2,
+            'matched_cells': 4, 'mean_delta': 0.5, 'descriptive_95_interval': [0, 1],
+            'fixed_admission': 'fit', 'families_pooled': ['latch'], 'fault_schedule': schedule}
+    receipt = _receipt([_summary(method='task/fit', fault_schedule=schedule)], [pair])
+    receipt['payload']['rows'][0].update(
+        configuration={'family': 'latch', 'policy': 'task', 'admission': 'fit', 'budget': 16,
+                       'implementation': 'procedural', 'seed': 17, 'fault_schedule': schedule},
+        baseline={'fit_diagnostics': {'total_residual': 2, 'raw_mismatches': 1,
+                                     'anchor_mismatches': 1, 'maps_tied_at_minimum': 3}},
+        audit={'contract_satisfied': False})
+    receipt['payload']['reliability'] = [_reliability(fault_schedule=schedule)]
+    _seal(receipt)
+    before = deepcopy(receipt)
+    rendered = render(receipt, 'Fault conditions at every surface')
+    label = 'fault_schedule={"phase":"calibration","step":2,"type":"stuck_output","value":0}'
+    for heading in ('### Method', '### Per family', '### Paired',
+                    '### Forced-fit', '### Reliability design'):
+        assert all(label in row['Conditions'] for row in _table(rendered, heading))
+    assert receipt == before

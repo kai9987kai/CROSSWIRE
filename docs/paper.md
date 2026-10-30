@@ -3,7 +3,9 @@
 **Authors:** CROSSWIRE Research Lab  
 **Version:** 0.1.0 (`fef1a4e`)  
 **Repository:** [https://github.com/kai9987kai/CROSSWIRE](https://github.com/kai9987kai/CROSSWIRE)  
-**Verification Suite:** 357 Automated Tests (30 Modules) · 997 Cryptographically Signed & Replayable Empirical Executions (14 Receipt Suites)
+**Historical evidence snapshot:** 357 tests reported at the earlier revision; 997 hash-bound empirical executions in 13 receipt suites. Receipts require their recorded source revision for replay. Current local validation is recorded in [the resilience workflow report](verification-resilience-workflows.md).
+
+**Integration scope:** `FactoredCandidateSpace` and `synthesize_safe_return` are standalone library utilities with direct tests. Current run/study acquisition uses `CandidateSpace`, and runtime recovery does not call the soft-return synthesizer. The historical tables below are exploratory synthetic results, not new confirmation at the current source revision. Hashes bind saved content; they are not digital signatures or authentication of target execution.
 
 ---
 
@@ -11,7 +13,7 @@
 
 Interacting safely with an opaque, stateful black-box component whose input/output ports have undergone an unknown physical or logical permutation—and potentially a temporal buffering delay or mid-deployment fault—poses a fundamental challenge in formal methods, protocol synthesis, and cyber-physical control. Standard active automata learning algorithms such as Angluin's $L^*$ attempt to identify the complete state machine up to isomorphism, incurring prohibitive query complexity under strict interaction budgets ($B \le 16$ target calls) and frequently triggering hazardous transitions during exploratory membership queries. Conversely, forced-fit heuristic matching selects a single best-scoring hypothesis and executes open-loop plans, leading to catastrophic selective harm when the interface remains partially ambiguous or violates the declared model class.
 
-We present **CROSSWIRE** (*Certified Runtime Observation, Shielding, and Synthesis for Wired Interface Resolution and Escalation*), a self-contained formal framework and empirical research laboratory for safe active identification and control over opaque finite-state Mealy interfaces. CROSSWIRE introduces twelve tightly integrated algorithmic and verification advances:
+We present **CROSSWIRE** (*Certified Runtime Observation, Shielding, and Synthesis for Wired Interface Resolution and Escalation*), a local research laboratory for active identification and control over synthetic finite-state Mealy interfaces. The implementation includes the following runtime components and separately tested library utilities; this list does not establish research novelty:
 1. **Version-Space Consensus Planning (`robust`) & Candidate-Fraction Risk Control (`risk_controlled`):** Certifying straight-line plans that satisfy safety and goal-reachability contracts across *all* (or at least a $1 - \alpha$ fraction of) surviving candidate adapters without requiring full system identification.
 2. **Observation-Dependent Contingent Policy Trees (`adaptive`):** Synthesizing finite-horizon game-tree policies via retrograde AND/OR minimax search that branch dynamically on intermediate observations during deployment, achieving **100% zero-shot useful coverage ($B = 0$)** on symmetric routing topologies where all open-loop plans fail.
 3. **Closed-Loop Runtime Safety Shielding & Receding-Horizon Replanning (`shielded`, `replan`):** Monitoring live deployment traces step-by-step against the surviving hypothesis space, pruning contradicted adapters online, and dynamically synthesizing continuation plans from the surviving state distribution before hazards materialize.
@@ -63,9 +65,9 @@ flowchart LR
 CROSSWIRE resolves this tension by shifting the objective from *complete system identification* to *decision-focused consensus control under runtime assurance*. Specifically:
 - We formalize the **Mealy Interface Adapter Algebra** across static bijective port permutations ($\mathcal{H}_0$, $|\mathcal{H}_0| = 144$), latency-aware temporal transducers ($\mathcal{H}_1$, $|\mathcal{H}_1| = 720$), and **Factored Hypothesis Spaces** (`FactoredCandidateSpace`, $|\mathcal{P}_I \times \mathcal{P}_O| = 17,280+$) with $O(|\mathcal{I}_{\text{surv}}|)$ symbolic input-factor safety verification (Section 2).
 - We design **five active calibration policies**—fixed reset-prefix schedules (`fixed`), Shannon observation-entropy maximization (`entropy`), Equivalence-Class Edge Cutting (`ec2`), Counterexample-Guided Probing (`counterexample`), and **Interactive Within-Query Branching Calibration** (`branching`)—coupled with **BALD Mutual Information Profiles** (`information_profile`) and **Model-Safe Calibration Guards** (`probe_safety="model_safe"`) that guarantee zero calibration hazards whenever the true target lies within the hypothesis class (Section 2.9–2.10).
-- We unify **seven decision-admission regimes** (`robust`, `risk_controlled`, `adaptive`, `recovery`, `replan`, `optimistic`, `forced_fit`) with **Certified Soft Return-to-Home** (`synthesize_safe_return`) and **Online Change-Point Fault Schedules** (`fault_schedule`) that measure exact step-level fault detection latency $\Delta t$ (Section 2.6).
+- Admission rules (`robust`, `risk_controlled`, `adaptive` and declared baselines) are separate from execution modes (`open_loop`, `shielded`, `recovery`, `replan`). Change-point schedules record diagnostic detection latency; `synthesize_safe_return` is a separately tested library utility (Section 2.6).
 - We separate **private semantic audit** (`crosswire/audit.py`) from **independent public-evidence certification** (`crosswire/certificates.py`), introducing reset-prefix consistency tries, sequential pre-observation forecast diagnostics, deletion-minimal contradiction cores, and target-cluster statistical reliability (`crosswire/reliability.py`) (Section 2.11–2.12).
-- We evaluate the complete architecture across **20 mechanism families** and **997 cryptographically signed empirical runs**, establishing reproducible benchmarks across synthetic, stress, generated, robotics (`robotics_airlock`), and stateful protocol (`protocol_session`) domains (Sections 3–4).
+- Historical experiments cover **20 synthetic mechanism families** and **997 hash-bound empirical runs** across fixture, stress, generated, robotics-controller (`robotics_airlock`), and stateful protocol (`protocol_session`) models (Sections 3–4).
 
 ---
 
@@ -218,7 +220,7 @@ All experiments are governed by [`crosswire/study.py`](file:///c:/Users/kai99/De
 
 ## 4. Comprehensive Empirical Results
 
-All results below are exact values extracted from the 14 cryptographically verified study receipts in [`reports/`](file:///c:/Users/kai99/Desktop/CROSSWIRE/reports) (`997` total runs).
+The historical results below were extracted from 13 saved study receipts in `reports/` (`997` total runs). Digest consistency and exact replay against the recorded source are separate checks; these tables have not been regenerated at the current revision.
 
 ### 4.1 Study 1: Primary In-Family Benchmark (`pilot-in-family-receipt.json`, 350 Runs)
 
@@ -378,14 +380,14 @@ To establish inferential reliability beyond hand-designed fixtures, we evaluated
 
 3. **Online Change-Point Fault Injection & Certified Soft Return-to-Home:**
    - When an online `force_hazard` fault is injected at step $t_{\text{fault}} = 1$ on `robotics_airlock`, the runtime shield detects the change-point immediately upon step-1 execution ($\Delta t = 0$ detection latency) and halts before step 2.
-   - When mid-execution uncertainty or recovery is triggered on `latch` or `robotics_airlock`, [`synthesize_safe_return`](file:///c:/Users/kai99/Desktop/CROSSWIRE/crosswire/shield.py#L356-L433) synthesizes a certified 1-step hazard-free trajectory (`[0]`) that returns every surviving candidate model to $q_0$ (`returned_to_initial = True`).
+   - Direct library tests call `synthesize_safe_return` with a supplied public belief and prefix. It searches within the remaining horizon for a hazard-free return to $q_0$ (`return_to_initial = True`), or a safe holding step. Runtime shielding does not currently dispatch this utility.
 
 ---
 
 ## 5. Limitations and Scope of Formal Guarantees
 
 In accordance with rigorous scientific provenance, CROSSWIRE explicitly bounds its formal claims:
-1. **Model-Conditional Safety:** Universal safety during calibration (`probe_safety="model_safe"`) and deployment (`robust`, `adaptive`, `recovery`, `synthesize_safe_return`) holds *if and only if* the true target $M^*$ is isomorphic to a surviving member of the active hypothesis class ($\mathcal{H}_0$, $\mathcal{H}_1$, or `FactoredCandidateSpace`). As demonstrated by `semantic_corruption` (Section 4.2), an adversarial target that silently swaps internal hazard semantics while emitting valid reference observations cannot be detected prior to triggering the corrupted transition.
+1. **Model-Conditional Safety:** Finite universal checks are conditional on a surviving model representing the target, truthful semantic anchors, deterministic resets and the declared execution assumptions. Model inclusion is a sufficient premise for these checks, not a necessary condition for every safe real trajectory. As demonstrated by `semantic_corruption` (Section 4.2), a target can swap internal hazard semantics while emitting valid observations, leaving the corruption undetectable by the black-box monitor.
 2. **Candidate-Fraction vs. Probabilistic Risk:** The `risk_controlled` tolerance $\alpha$ bounds the *empirical fraction of surviving discrete hypotheses* predicting a hazard ($\text{Risk}_{\mathcal{V}}(u^*) \le \alpha$), not a Bayesian posterior probability over real-world hardware failures unless nature draws uniformly from $\mathcal{V}$.
 3. **Synthetic Generator Scope:** Statistical confidence intervals in [`crosswire/reliability.py`](file:///c:/Users/kai99/Desktop/CROSSWIRE/crosswire/reliability.py) are valid conditional on independent draws from the `crosswire-generated-protocol-v1` transition generator and do not constitute simultaneous bounds over arbitrary field hardware.
 
@@ -393,20 +395,21 @@ In accordance with rigorous scientific provenance, CROSSWIRE explicitly bounds i
 
 ## 6. Conclusion and Reproducibility
 
-CROSSWIRE demonstrates that safe, high-coverage control of opaque stateful interfaces under severe query budgets ($B \le 16$) is achievable without full system identification. By combining **model-safe active probing**, **factored version-space consensus**, **zero-shot contingent policy trees**, **closed-loop runtime shielding with receding-horizon replanning and soft return-to-home**, and **proof-carrying public-evidence certificates**, CROSSWIRE eliminates calibration and deployment hazards across all in-family, temporal, generated, robotics, and stateful protocol benchmarks while providing exact falsification witnesses when targets violate their specification class.
+CROSSWIRE explores task-directed control of synthetic opaque interfaces under bounded query budgets without full system identification. Its integrated runtime combines version-space consensus, model-safe probing, contingent policies, runtime shielding and independent public-evidence checking. Finite checks are conditional on model inclusion, deterministic resets and truthful semantic grounding. Selected synthetic studies show useful coverage and hazard interception; semantic-corruption controls expose failures that raw observations cannot detect. The factored solver and soft-return utility remain separate library capabilities.
 
 ### Reproducibility Checklist
 
-Every figure, table, and claim in this paper can be independently reproduced and audited from the repository root:
+Run current-source checks from the repository root. Historical experiments additionally require their recorded source revision:
 
 ```powershell
-# 1. Run the complete 357-test verification suite across 30 test modules
+# 1. Run the current verification suite
 .\.venv\Scripts\python.exe -m pytest -q
 
-# 2. Verify cryptographic SHA-256 provenance of all 14 empirical study receipts (997 runs)
-Get-ChildItem reports\*receipt.json | ForEach-Object {
-    .\.venv\Scripts\python.exe -m crosswire.cli verify-receipt --receipt $_.FullName
-}
+# 2. Replay the current-source resilience study (historical receipts need their original source)
+.\.venv\Scripts\python.exe -m crosswire verify reports/resilience-workflows-receipt.json
+
+# Render a historical study after source-independent digest checks (no target replay)
+.\.venv\Scripts\python.exe tools/report.py reports/pilot-independent-protocols-receipt.json
 
 # 3. Run the headless Chromium end-to-end workbench verification
 node tools/check_workbench.cjs

@@ -55,6 +55,7 @@ When independently developed controllers, agents, or tools communicate without a
 - **Classical Learning Baseline:** Pinned integration with AALpy 1.6.2 ($L^*$ algorithm) under identical target interaction budgets.
 - **Cryptographic Scientific Receipts:** Every run and study generates self-contained JSON receipts with source hash bindings and exact determinism checking.
 - **Local Browser Workbench:** Responsive UI with model-safe calibration and tolerance controls, graph inspection, mapping matrices, probe timelines, shield events, and receipt export/import. Study comparisons expose exact conditions and allow individual run inspection while retaining the parent receipt.
+- **Controlled Fault Studies:** Configure fault type, zero-based onset and phase in the workbench. Study grids include nominal controls and keep fault conditions separate throughout summaries, paired comparisons, reliability estimates and reports. Semantic swaps remain a deliberate undetectable negative control.
 
 ---
 
@@ -62,7 +63,7 @@ When independently developed controllers, agents, or tools communicate without a
 
 ### Installation
 
-Requires Python 3.12+.
+Requires Python 3.11+.
 
 ```bash
 # Clone or navigate to the directory
@@ -111,13 +112,16 @@ crosswire verify reports/delay.json
 # Execute a paired empirical study
 crosswire study --config configs/pilot-shield-shielded.json --out reports/shielded-study.json
 
+# Compare a nominal control with deployment faults using both fixture engines
+crosswire study --config configs/resilience-workflows.json --out reports/my-resilience-study.json
+
 # Inspect available fixture families
 crosswire catalog
 ```
 
 Model-safe calibration depends on the enabled finite hypothesis class, stationarity, deterministic resets, and truthful anchors. It can stop without probing when every raw action could be hazardous. `NO_ELIGIBLE_SAFE_PROBE` describes the bounded probe pool and remaining call cap, not a proof that no safe experiment exists. Calibration and deployment hazards remain separate private-audit measurements. The optional AALpy baseline does not support guarded calibration and rejects that combination.
 
-Use `crosswire check <receipt>` for independent public-model checking and `crosswire verify <receipt>` for actual target replay. Receipts bind their original Python source revision; historical receipts require that revision to replay. Current safety experiments and research boundaries are documented in [the calibration upgrade notes](research/2026-10-23-safe-calibration.md).
+Use `crosswire check <receipt>` for independent public-model checking and `crosswire verify <receipt>` for actual target replay. Receipts bind their original Python source revision; historical receipts require that revision to replay. `python tools/report.py <study-receipt>` validates saved digests before rendering, including historical receipts, but does not replay targets or authenticate private audits. Current safety experiments and research boundaries are documented in [the calibration upgrade notes](research/2026-10-23-safe-calibration.md).
 
 ---
 
@@ -142,7 +146,7 @@ Historical pilot findings across synthetic fixture environments are listed below
 ## Documentation & Research
 
 - [Standalone Research Paper](docs/paper.md): Comprehensive theoretical formulation, experimental methodology, empirical tables, and epistemological bounds.
-- [Current Verification Report](docs/verification-safe-calibration.md): 261 passing tests, packaging checks, browser flows and replayed calibration pilots. [Historical verification](docs/verification.md) retains earlier evidence.
+- [Current Verification Report](docs/verification-resilience-workflows.md): Local tests, fault-study replay, browser workflows and isolated package checks. [Calibration verification](docs/verification-safe-calibration.md) and [earlier verification](docs/verification.md) retain historical evidence.
 - [Pre-Implementation Design Specification](docs/superpowers/specs/2026-10-22-crosswire-design.md): The approved design specification.
 - [Portfolio Research & Prior Art Reviews](research/portfolio-index.md): Source code reviews and commit hashes of all 26 related repositories.
 - [Recent Research Context](research/recent-research.md): Representation stitching, active automata learning, and interface theory context.

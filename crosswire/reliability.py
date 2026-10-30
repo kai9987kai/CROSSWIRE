@@ -7,11 +7,7 @@ section 7.2.4.1; bounded target averages use Hoeffding's inequality (1963).
 """
 from collections import defaultdict
 import math
-
-
-_CONDITIONS = ('anchors', 'split', 'horizon', 'execution_mode', 'temporal',
-               'escalate', 'probe_safety', 'risk_tolerance')
-_DEFAULTS = (False, 'development', 4, 'open_loop', False, False, 'unrestricted', 0.0)
+from .conditions import condition_key, condition_fields
 
 
 def _binomial_cdf(events, trials, probability):
@@ -78,7 +74,7 @@ def reliability_summary(rows, confidence=0.95):
     groups = defaultdict(list)
     for row in rows:
         cfg = row['configuration']
-        conditions = tuple(cfg.get(key, default) for key, default in zip(_CONDITIONS, _DEFAULTS))
+        conditions = condition_key(cfg)
         groups[(cfg['policy'] + '/' + cfg['admission'], cfg['family'], cfg['budget'], conditions)].append(row)
     output = []
     for (method, family, budget, conditions), members in sorted(groups.items()):
@@ -132,7 +128,7 @@ def reliability_summary(rows, confidence=0.95):
             useful_interval = [max(0.0, useful_mean - radius), min(1.0, useful_mean + radius)]
         output.append({
             'method': method, 'family': family, 'budget': budget,
-            **dict(zip(_CONDITIONS, conditions)), 'confidence': confidence,
+            **condition_fields(conditions), 'confidence': confidence,
             'requests': len(members), 'unique_nuisance_requests': sum(len(cells) for cells in parents.values()),
             'parent_clusters': targets,
             'independent_parents': targets if family == 'generated_protocol' and declared else 0,

@@ -16,6 +16,7 @@ from .core import CandidateSpace, Contract, Machine
 from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
+from .conditions import condition_key, condition_fields, normalize_fault_schedule
 
 POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
@@ -58,6 +59,7 @@ class RunConfig:
             raise ValueError("Unknown run fields or non-object configuration")
         instance = cls(**values)
         instance.check()
+        object.__setattr__(instance, 'fault_schedule', normalize_fault_schedule(instance.fault_schedule))
         return instance
 
     def check(self) -> None:
@@ -103,16 +105,7 @@ class RunConfig:
             raise ValueError('The AALpy baseline does not support adaptive admission')
         if self.policy == 'aalpy' and self.escalate:
             raise ValueError('The AALpy baseline does not support model escalation')
-        if self.fault_schedule is not None:
-            if not isinstance(self.fault_schedule, dict):
-                raise ValueError('fault_schedule must be a dict or None')
-            if 'step' not in self.fault_schedule or 'type' not in self.fault_schedule:
-                raise ValueError("fault_schedule must specify 'step' and 'type'")
-            if type(self.fault_schedule['step']) is not int or self.fault_schedule['step'] < 0:
-                raise ValueError("fault_schedule 'step' must be a non-negative integer")
-            valid_faults = ('sensor_drift', 'actuator_swap', 'delay_spike', 'stuck_output', 'semantic_swap')
-            if self.fault_schedule['type'] not in valid_faults:
-                raise ValueError(f"fault_schedule 'type' must be one of {valid_faults}")
+        normalize_fault_schedule(self.fault_schedule)
 
 
 def _check_cancel(cancel: Callable[[], bool] | None) -> None:
@@ -328,7 +321,7 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
 
 def run(config: RunConfig, cancel: Callable[[], bool] | None = None, progress: Callable | None = None) -> dict:
     """A single serialized experiment; targets are always closed on cancellation."""
-    config.check()
+    config = RunConfig.from_dict(asdict(config))
     with _RUN_LOCK:
         return _run(config, cancel, progress)
 
@@ -480,14 +473,9 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         tracemalloc.stop()
 
 
-_CONDITION_FIELDS = ('anchors', 'split', 'horizon', 'execution_mode', 'temporal', 'escalate', 'probe_safety', 'risk_tolerance')
-_CONDITION_DEFAULTS = (False, 'development', 4, 'open_loop', False, False, 'unrestricted', 0.0)
-
-
 def _condition(configuration: dict) -> tuple:
     """Comparable scientific conditions, with defaults for legacy row inputs."""
-    return tuple(configuration.get(key, default)
-                 for key, default in zip(_CONDITION_FIELDS, _CONDITION_DEFAULTS))
+    return condition_key(configuration)
 
 
 def summarize(rows: list[dict]) -> list[dict]:
@@ -507,7 +495,7 @@ def summarize(rows: list[dict]) -> list[dict]:
         abstained = n - admitted
         result.append({
             "method": method, "family": family, "scope": scopes[family], "budget": budget, "requests": n,
-            **dict(zip(_CONDITION_FIELDS, conditions)),
+            **condition_fields(conditions),
             "admitted": admitted, "successful": success, "harmful": harm,
             "hazardous": sum(r["audit"]["hazard"] is True for r in members),
             "hazards_averted": sum(r["audit"].get("hazard_averted") is True for r in members),
@@ -598,7 +586,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
                     'comparison_axis': axis,
                     'fixed_admission' if axis == 'policy' else 'fixed_policy': fixed,
                     'outcome': 'useful_coverage', 'budget': budget,
-                    **dict(zip(_CONDITION_FIELDS, conditions)),
+                    **condition_fields(conditions),
                     'budget_unit': 'target calls (resets + actions)',
                     'parent_clusters': len(delta),
                     'matched_cells': sum(len(v) for v in per_parent.values()),
@@ -613,7 +601,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
 
 STUDY_DEFAULTS = {"families": ["latch", "symmetric", "neutral"], "seeds": [17], "budgets": [0, 8],
                   "policies": ["random", "task"], "admissions": ["robust"], "implementations": ["procedural"],
-                  'instance_seeds': [None]}
+                  'instance_seeds': [None], 'fault_schedules': [None]}
 
 
 def study_configs(spec: dict) -> list[RunConfig]:
@@ -621,7 +609,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
         raise ValueError("Study must be an object")
     allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
                "anchors", "split", "horizon", "execution_mode", "temporal", "escalate", "probe_safety", "risk_tolerance",
-               'instance_seeds'}
+               'instance_seeds', 'fault_schedules'}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -629,6 +617,8 @@ def study_configs(spec: dict) -> list[RunConfig]:
         values = spec.get(key, default)
         if not isinstance(values, list) or not 1 <= len(values) <= 64:
             raise ValueError(f"{key} must contain 1-64 entries")
+        if key == 'fault_schedules':
+            values = [normalize_fault_schedule(value) for value in values]
         if len({canonical_hash(v) for v in values}) != len(values):
             raise ValueError(f"Duplicate {key} inflate repeated observations")
         dimensions.append(values)
@@ -637,7 +627,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
         total *= len(values)
     if total > 512:
         raise ValueError("Study exceeds 512 runs; split the protocol explicitly")
-    configs = [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation", 'instance_seed'), values),
+    configs = [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation", 'instance_seed', 'fault_schedule'), values),
                                          anchors=spec.get("anchors", False), split=spec.get("split", "development"),
                                          horizon=spec.get("horizon", 4),
                                          execution_mode=spec.get("execution_mode", "open_loop"),

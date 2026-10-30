@@ -1,6 +1,6 @@
 # CROSSWIRE priority roadmap
 
-The user's order is the implementation order. Every priority on the 10-point roadmap has been implemented, verified with unit and end-to-end tests, and backed by reproducible local checks.
+The user's order is the implementation order. The table records implemented capabilities and their validation scope; library utilities, integrated runtime workflows, local checks and hosted CI execution are distinct. Current follow-through is recorded in [the resilience workflow verification report](verification-resilience-workflows.md).
 
 | Priority | Milestone | Current phase and completion criterion |
 |---|---|---|
@@ -16,5 +16,9 @@ The user's order is the implementation order. Every priority on the 10-point roa
 | 10 | CI and reproducible releases | Completed: Dual-OS GitHub Actions workflow (`.github/workflows/ci.yml`) on Ubuntu and Windows across Python 3.11 and 3.12, testing automated suite, clean wheel build and install, scientific receipt replay, and headless Playwright Chromium workbench checks. |
 
 ## Evidence policy
+
+The factored solver and soft-return synthesizer are currently library utilities tested directly. Run, study and CLI acquisition still use `CandidateSpace`; dashboard factor counts describe candidate structure, not measured factored-backend compression. Soft-return synthesis is not dispatched by the runtime shield. The CI matrix is configured; configuration alone is not evidence of a successful hosted run.
+
+The 2026-10-30 increment adds controlled fault settings to studies and the workbench, canonical fault-condition analysis, phase-correct private audits, composable sensor/semantic faults, report digest validation and isolated installed-wheel checks. Historical receipt bytes remain unchanged; newly named evidence records this source revision.
 
 Keep implementation, local validation, independent target sampling, CI execution and publication distinct. Preserve historical receipt bytes and their source revisions. Never count label seeds or duplicate implementations as independent dynamics. Zero observed hazards must not produce a zero-width safety claim.

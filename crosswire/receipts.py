@@ -15,13 +15,24 @@ def pack(result: dict) -> dict:
             "payload": result, "payload_hash": canonical_hash(result)}
 
 
-def _envelope(receipt: dict) -> dict:
+def check_integrity(receipt: dict) -> dict:
+    """Check saved envelope/digests without requiring the current source revision.
+
+    This authenticates neither target execution nor private audits. It does not
+    replay the result or independently check the public-model certificate.
+    """
     if not isinstance(receipt, dict) or set(receipt) != {"schema", "source_hash", "payload", "payload_hash"}:
         raise ValueError("Incomplete receipt envelope")
-    if receipt["schema"] != "crosswire-receipt-v1" or receipt["source_hash"] != source_hash():
-        raise ValueError("Unsupported receipt or source revision; preserve the original code to replay it")
+    if receipt["schema"] != "crosswire-receipt-v1":
+        raise ValueError("Unsupported receipt envelope")
+    for field in ('source_hash', 'payload_hash'):
+        value = receipt[field]
+        if not isinstance(value, str) or len(value) != 64 or any(c not in '0123456789abcdef' for c in value):
+            raise ValueError(f'Invalid receipt {field}')
     try:
         payload = receipt["payload"]
+        if not isinstance(payload, dict):
+            raise ValueError("Unsupported payload")
         if canonical_hash(payload) != receipt["payload_hash"]:
             raise ValueError("Receipt content digest mismatch")
         if payload["schema"] not in ("crosswire-result-v1", "crosswire-study-v1"):
@@ -35,8 +46,15 @@ def _envelope(receipt: dict) -> dict:
     return payload
 
 
+def _envelope(receipt: dict) -> dict:
+    payload = check_integrity(receipt)
+    if receipt['source_hash'] != source_hash():
+        raise ValueError("Unsupported receipt or source revision; preserve the original code to replay it")
+    return payload
+
+
 def check_envelope(receipt: dict) -> dict:
-    """Cheap synchronous envelope/digest checks, without recomputing science."""
+    """Check envelope/digests and current source, without recomputing science."""
     return _envelope(receipt)
 
 

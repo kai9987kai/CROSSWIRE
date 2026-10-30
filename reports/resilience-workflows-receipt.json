@@ -1,0 +1,4301 @@
+{
+  "schema": "crosswire-receipt-v1",
+  "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+  "payload": {
+    "schema": "crosswire-study-v1",
+    "protocol": {
+      "families": [
+        "latch"
+      ],
+      "seeds": [
+        42
+      ],
+      "budgets": [
+        16
+      ],
+      "policies": [
+        "task"
+      ],
+      "admissions": [
+        "robust"
+      ],
+      "implementations": [
+        "procedural",
+        "table"
+      ],
+      "instance_seeds": [
+        null
+      ],
+      "fault_schedules": [
+        null,
+        {
+          "step": 2,
+          "type": "sensor_drift",
+          "phase": "deployment"
+        },
+        {
+          "step": 2,
+          "type": "stuck_output",
+          "phase": "deployment",
+          "value": 0
+        },
+        {
+          "step": 1,
+          "type": "semantic_swap",
+          "phase": "deployment"
+        }
+      ],
+      "execution_mode": "shielded",
+      "exploratory": true,
+      "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
+      "pre_execution_source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1"
+    },
+    "protocol_hash": "13792c47134d23492d85a756182febeb9466f412fe89365af49c1bd836658ea3",
+    "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+    "rows": [
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": null
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "1567459c4562d8be4fce93e02d39554f2dd7ed0aa056568d379d103a44b7145f",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "5ca9a9ed85c3fcf6fab6bbfac2b5302af18a15a65899637308ff604a22b0b896"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "1a6b02c4e8fd53977adf0eeea07bb5fd309019c92d479f3b2b0ed5b03c8099ca",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 65,
+          "audit_reference_steps": 208,
+          "audit_target_model_steps": 208,
+          "audit_resets": 39,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 3.515625,
+          "wall_seconds": 5.208189500000117,
+          "parent_peak_traced_bytes": 6095720,
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 65
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "84a7a2e2ae1b8ade72336add445a0244bb1ebfadec1ff5d1e961963d3bcca02e"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 2,
+            "type": "sensor_drift",
+            "phase": "deployment"
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "4388c5bfa12aed961580700fcf47649dd11fdf9983ee2e4467edde4cd71b07d1",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "e44a131b326e89644b2bcd4a9f6c5904fb24fa5caaf855d632c036f42e30bc51"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "be2ed81c0852ceaa4881ef6826942e8e0656435fdf5af9ac1312515a73a6c121",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            2
+          ],
+          "complete": false,
+          "mode": "shielded",
+          "shield_status": "INTERVENED_ANOMALY",
+          "intervened": true,
+          "hazard_averted": false,
+          "reasons": [
+            "Post-step abort at step 3: output 2 refuted all surviving adapters"
+          ],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            0
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "sensor_drift",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "sensor_drift",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          },
+          "hazard": null,
+          "hazard_averted": false,
+          "shield_intervened": true,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            2
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": false,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false,
+            "error_code": null
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 0,
+          "raw_equivalent_map_ids": [],
+          "no_map_in_class": true,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "da40fa1c22767b43ad588f52c75ccf837de0fa56ced90d7b5d01911d7eb2835e",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84,
+          "audit_reference_steps": 212,
+          "audit_target_model_steps": 212,
+          "audit_resets": 43,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 3.59375,
+          "wall_seconds": 6.5370528000003105,
+          "parent_peak_traced_bytes": 5952258,
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "3a2ec0f2f6699591f9a0dfaae2853d1b44f22d78164af77f5370265b3f24fa7d"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 2,
+            "type": "stuck_output",
+            "phase": "deployment",
+            "value": 0
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "c2537e9799d12a7b56a00acb09f25856ccdc10daa9e6208e87f06e45898c9213",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "1782cba407c44837fa3614bf19a7e0368e43b8d49bde4a5db3598200504f7e39"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "8653665e61c30e2a37cc92a0b2b3fb209e35e3af3b0b1d908e408b8612bdd9bc",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "complete": false,
+          "mode": "shielded",
+          "shield_status": "INTERVENED_ANOMALY",
+          "intervened": true,
+          "hazard_averted": false,
+          "reasons": [
+            "Post-step abort at step 3: output 3 refuted all surviving adapters"
+          ],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            0
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "stuck_output",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "stuck_output",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          },
+          "hazard": null,
+          "hazard_averted": false,
+          "shield_intervened": true,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": false,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false,
+            "error_code": null
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 0,
+          "raw_equivalent_map_ids": [],
+          "no_map_in_class": true,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "da40fa1c22767b43ad588f52c75ccf837de0fa56ced90d7b5d01911d7eb2835e",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84,
+          "audit_reference_steps": 212,
+          "audit_target_model_steps": 212,
+          "audit_resets": 43,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 3.828125,
+          "wall_seconds": 5.714295700000548,
+          "parent_peak_traced_bytes": 5706490,
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "3170687ca1790e2b63f05b806a152c67fcc1d7457aa477be5cdf4884ec3c1d6d"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "procedural",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 1,
+            "type": "semantic_swap",
+            "phase": "deployment"
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "25920c7cfe5ca4c17d3c93bc3fbc05a52844f373355315b177e0bf2b85d2d9e6",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "b9bcf865239c691a2f08763c3239349f4c25479b7001e6d577d925d8268ad94c"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "1353436b1514be1bb62153400345e73c41e089bfe7129f5d26e9632ede643c81",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 1,
+            "type": "semantic_swap",
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 1,
+            "type": "semantic_swap",
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
+          "hazard": true,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            2
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            2
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 199,
+          "audit_execution_steps": 62,
+          "audit_reference_steps": 214,
+          "audit_target_model_steps": 214,
+          "audit_resets": 35,
+          "audit_oracle_word_candidates": 6,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 3.78125,
+          "wall_seconds": 6.636345200000505,
+          "parent_peak_traced_bytes": 5706746,
+          "audit_product_pairs": 199,
+          "audit_execution_steps": 62
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "d93c38622b55216fa612999a44bde8ab9a3b6acdd76c615e7efc925116661fe6"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "table",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": null
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "362dd241f83d116affd5ebb6860effe12e05cca9b43c0d22b5c1fb74254fe509",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "39bd9bdb2b31710cc2eb73f9b7a08203da1a26ad28fffc537a5b45706a19d86d"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "845f5836caa3a3b4983e999e445d2036a5f118f3491120a3a169c1d1e253ebba",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          }
+        },
+        "audit": {
+          "goal_success": true,
+          "change_point": {
+            "scheduled": false,
+            "step": null,
+            "type": null,
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
+          "hazard": false,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": true,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 65,
+          "audit_reference_steps": 208,
+          "audit_target_model_steps": 208,
+          "audit_resets": 39,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 4.296875,
+          "wall_seconds": 5.815469400000438,
+          "parent_peak_traced_bytes": 5686130,
+          "audit_product_pairs": 187,
+          "audit_execution_steps": 65
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "328733ec7f91aab12c31289c10a724f0b4962bb682df225b9594cc49b7afe30c"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "table",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 2,
+            "type": "sensor_drift",
+            "phase": "deployment"
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "858afeaa1922205c744aa219192d8c4b48a21fea3f48ac7b2899fbba193f6c88",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "4be71a35ebbc04a8e86a74213def50162bec8bb9bd01648158878548723625c1"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "ca6d2d37142e7aa1821ce3919ce4f47c3706e74d530f223d9306b25008464f9c",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            2
+          ],
+          "complete": false,
+          "mode": "shielded",
+          "shield_status": "INTERVENED_ANOMALY",
+          "intervened": true,
+          "hazard_averted": false,
+          "reasons": [
+            "Post-step abort at step 3: output 2 refuted all surviving adapters"
+          ],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            0
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "sensor_drift",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "sensor_drift",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          },
+          "hazard": null,
+          "hazard_averted": false,
+          "shield_intervened": true,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            2
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": false,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false,
+            "error_code": null
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 0,
+          "raw_equivalent_map_ids": [],
+          "no_map_in_class": true,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "da40fa1c22767b43ad588f52c75ccf837de0fa56ced90d7b5d01911d7eb2835e",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84,
+          "audit_reference_steps": 212,
+          "audit_target_model_steps": 212,
+          "audit_resets": 43,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 4.3125,
+          "wall_seconds": 5.830080600000656,
+          "parent_peak_traced_bytes": 5685946,
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "e32f81d5859dd90f730296be91690e2736aec9f2c05c8b6892dba78e908df22e"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "table",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 2,
+            "type": "stuck_output",
+            "phase": "deployment",
+            "value": 0
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "64eec1ad936ce7ccb40134722ac4980523258ac73b0fcea1fb4f638cab89567f",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "cfbbd9746649af01e6219f2731f275dfc7f4e17612df7eec553c264a87ac07b3"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "daaef96cedb76bcb3c1e0ad50e54025bc4b1c032d9324987ffe522a48062c13f",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "complete": false,
+          "mode": "shielded",
+          "shield_status": "INTERVENED_ANOMALY",
+          "intervened": true,
+          "hazard_averted": false,
+          "reasons": [
+            "Post-step abort at step 3: output 3 refuted all surviving adapters"
+          ],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            0
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "stuck_output",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 2,
+            "type": "stuck_output",
+            "detected": true,
+            "detection_step": 2,
+            "detection_latency": 0
+          },
+          "hazard": null,
+          "hazard_averted": false,
+          "shield_intervened": true,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            3
+          ],
+          "semantic_events": [
+            3,
+            0,
+            1
+          ],
+          "deployment_audit": {
+            "completed": false,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": false,
+            "counterfactual_hazard": false,
+            "error_code": null
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            1,
+            0
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 0,
+          "raw_equivalent_map_ids": [],
+          "no_map_in_class": true,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "da40fa1c22767b43ad588f52c75ccf837de0fa56ced90d7b5d01911d7eb2835e",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84,
+          "audit_reference_steps": 212,
+          "audit_target_model_steps": 212,
+          "audit_resets": 43,
+          "audit_oracle_word_candidates": 7,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 4.109375,
+          "wall_seconds": 6.142081599999983,
+          "parent_peak_traced_bytes": 5686418,
+          "audit_product_pairs": 207,
+          "audit_execution_steps": 84
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "0fa0e8c3b3342d752300752e532380fa2b734b36ead30e4043d5812ce51d7732"
+      },
+      {
+        "schema": "crosswire-result-v1",
+        "configuration": {
+          "family": "latch",
+          "seed": 42,
+          "implementation": "table",
+          "split": "development",
+          "anchors": false,
+          "budget": 16,
+          "horizon": 4,
+          "policy": "task",
+          "admission": "robust",
+          "execution_mode": "shielded",
+          "temporal": false,
+          "escalate": false,
+          "probe_safety": "unrestricted",
+          "risk_tolerance": 0.0,
+          "instance_seed": null,
+          "fault_schedule": {
+            "step": 1,
+            "type": "semantic_swap",
+            "phase": "deployment"
+          }
+        },
+        "source_hash": "f0c070bc77cebfbd711ec6be9282ed20779d1e6aa91769619905d345f4ee20a1",
+        "reference": {
+          "name": "reference",
+          "transitions": [
+            [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                2,
+                1
+              ],
+              [
+                2,
+                1
+              ],
+              [
+                3,
+                2
+              ]
+            ],
+            [
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ],
+              [
+                3,
+                2
+              ]
+            ]
+          ],
+          "inputs": 3,
+          "outputs": 4,
+          "initial": 0
+        },
+        "contract": {
+          "goal": 1,
+          "hazard": 2,
+          "horizon": 4
+        },
+        "target_id": "e57ffde33d3b671e73e0e1045af26b9691a29079ab768271ae61735709481390",
+        "parent_instance_id": "4ba5a7845f90d38c69c89bcb0258b9fa48ade5dbc2bd40d0bdd735d8eecba2f1",
+        "anchors": {},
+        "decision": {
+          "status": "TASK_ADMISSIBLE",
+          "admitted": true,
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "candidate_count": 2,
+          "calibration": {
+            "mode": "unrestricted",
+            "stop_reason": "CONTRACT_READY",
+            "safety_model_class": "static",
+            "scope": "Bounded probe search within the remaining call cap; model-safe means hazard-free under every evidence-compatible enabled model, conditional on truthful semantics."
+          },
+          "escalation": {
+            "enabled": false,
+            "escalated": false,
+            "escalations": 0,
+            "history": [],
+            "model_class": "static",
+            "structural_complexity": 0
+          }
+        },
+        "ambiguity": {
+          "map_count": 2,
+          "observational_classes": 2,
+          "contract_classes": 2
+        },
+        "candidates": [
+          {
+            "id": 0,
+            "input_map": [
+              0,
+              1,
+              2
+            ],
+            "output_map": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "id": 69,
+            "input_map": [
+              1,
+              0,
+              2
+            ],
+            "output_map": [
+              3,
+              1,
+              2,
+              0
+            ]
+          }
+        ],
+        "evidence_certificate": {
+          "schema": "crosswire-evidence-certificate-v1",
+          "valid": true,
+          "kind": "admission",
+          "scope": "Finite public-model evidence only; conditional on target inclusion, stationarity, deterministic reset and truthful anchors; does not authenticate observations, validate private audit/runtime accounting, or establish real-world safety.",
+          "calibration_safety": {
+            "mode": "unrestricted",
+            "checked_probes": 0,
+            "safe": null,
+            "model_class": "static",
+            "scope": "Entire dispatched words checked before their outputs, including interrupted suffixes. Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; unrestricted calibration makes no safety claim."
+          },
+          "model_diagnostics": {
+            "schema": "crosswire-model-diagnostics-v1",
+            "inclusion_status": "UNKNOWN",
+            "enabled_classes": [
+              "static"
+            ],
+            "classes": {
+              "static": {
+                "inclusion_status": "UNKNOWN",
+                "model_count": 144,
+                "models_after_anchors": 144,
+                "candidate_count": 2,
+                "scored_symbols": 4,
+                "unscored_symbols": 0,
+                "first_refutation": null,
+                "events": [
+                  {
+                    "probe_index": 0,
+                    "step": 1,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 36,
+                      "1": 36,
+                      "2": 36,
+                      "3": 36
+                    },
+                    "observed_output": 0,
+                    "survivors_before": 144,
+                    "survivors_after": 36,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 1,
+                    "step": 1,
+                    "action": 1,
+                    "predicted_output_counts": {
+                      "1": 12,
+                      "2": 12,
+                      "3": 12
+                    },
+                    "observed_output": 3,
+                    "survivors_before": 36,
+                    "survivors_after": 12,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 1,
+                    "action": 2,
+                    "predicted_output_counts": {
+                      "1": 6,
+                      "2": 6
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 12,
+                    "survivors_after": 6,
+                    "prediction_status": "SUPPORTED"
+                  },
+                  {
+                    "probe_index": 2,
+                    "step": 2,
+                    "action": 0,
+                    "predicted_output_counts": {
+                      "0": 3,
+                      "1": 1,
+                      "2": 2
+                    },
+                    "observed_output": 2,
+                    "survivors_before": 6,
+                    "survivors_after": 2,
+                    "prediction_status": "SUPPORTED"
+                  }
+                ]
+              }
+            },
+            "observed_symbols": 4,
+            "reset_consistency": {
+              "status": "UNKNOWN",
+              "repeated_prefix_observations": 0,
+              "conflicting_prefix_observations": 0,
+              "first_conflict": null,
+              "scope": "Equal action prefixes after reset must have equal raw outputs in a stationary deterministic target with reliable resets. A conflict does not identify drift, stochasticity or reset failure as its cause; absence of a conflict does not establish those assumptions."
+            },
+            "scope": "Calibration observations and supplied anchors only. UNKNOWN means not refuted by the observed evidence, including when a task is admitted; it never establishes actual model inclusion. REFUTED means every enabled finite class is inconsistent. Each forecast uses only earlier evidence; outputs after class refutation are unscored. No extra target calls are made.",
+            "blind_spots": [
+              "Raw-equivalent semantic corruption, hidden privileged paths and semantic-only drift can remain undetected.",
+              "Unqueried action branches and behavior deeper than observed prefixes remain unknown.",
+              "Agreement does not authenticate observations, reset reliability or semantic anchors.",
+              "Prediction support counts are finite model counts, not calibrated probabilities or real-world safety bounds."
+            ]
+          },
+          "model_class": "static",
+          "checked_adapters": 144,
+          "candidate_count": 2,
+          "evidence_count": 3,
+          "elimination": [
+            {
+              "kind": "probe",
+              "index": 0,
+              "word": [
+                0
+              ],
+              "outputs": [
+                0
+              ],
+              "before": 144,
+              "after": 36
+            },
+            {
+              "kind": "probe",
+              "index": 1,
+              "word": [
+                1
+              ],
+              "outputs": [
+                3
+              ],
+              "before": 36,
+              "after": 12
+            },
+            {
+              "kind": "probe",
+              "index": 2,
+              "word": [
+                2,
+                0
+              ],
+              "outputs": [
+                2,
+                2
+              ],
+              "before": 12,
+              "after": 2
+            }
+          ],
+          "checked_policy_nodes": 0,
+          "reason": "Every surviving interpretation satisfies the declared finite contract",
+          "binding_hash": "9ec1c62ac50efb12d9f26549c755f80013b7d95eec5df5519ec28bfeb07d422d"
+        },
+        "probes": [
+          {
+            "word": [
+              0
+            ],
+            "outputs": [
+              0
+            ],
+            "complete": true,
+            "survivors_before": 144,
+            "survivors_after": 36
+          },
+          {
+            "word": [
+              1
+            ],
+            "outputs": [
+              3
+            ],
+            "complete": true,
+            "survivors_before": 36,
+            "survivors_after": 12
+          },
+          {
+            "word": [
+              2,
+              0
+            ],
+            "outputs": [
+              2,
+              2
+            ],
+            "complete": true,
+            "survivors_before": 12,
+            "survivors_after": 2
+          }
+        ],
+        "decision_frozen_hash": "d672fa5a15d2995af7b82ae3ed3ae668ac3b5014975d8967b8da264fb3b33e00",
+        "deployment": {
+          "word": [
+            0,
+            1,
+            0
+          ],
+          "executed_word": [
+            0,
+            1,
+            0
+          ],
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "complete": true,
+          "mode": "shielded",
+          "shield_status": "COMPLETED",
+          "intervened": false,
+          "hazard_averted": false,
+          "reasons": [],
+          "survivor_history": [
+            2,
+            2,
+            1,
+            1
+          ],
+          "target_steps": 3,
+          "resets": 1,
+          "target_calls": 4,
+          "error": null,
+          "replanned": false,
+          "replan_count": 0,
+          "replan_events": [],
+          "recovery": {
+            "requested": false,
+            "attempted": false,
+            "certified": false,
+            "succeeded": false,
+            "reason": "not_requested",
+            "action": null,
+            "candidate_count": 0,
+            "remaining_horizon": 4,
+            "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
+          },
+          "change_point": {
+            "scheduled": true,
+            "step": 1,
+            "type": "semantic_swap",
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          }
+        },
+        "audit": {
+          "goal_success": false,
+          "change_point": {
+            "scheduled": true,
+            "step": 1,
+            "type": "semantic_swap",
+            "detected": false,
+            "detection_step": null,
+            "detection_latency": null
+          },
+          "hazard": true,
+          "hazard_averted": false,
+          "shield_intervened": false,
+          "contract_satisfied": false,
+          "outputs": [
+            0,
+            3,
+            1
+          ],
+          "semantic_events": [
+            3,
+            0,
+            2
+          ],
+          "deployment_audit": {
+            "completed": true,
+            "executed_prefix_length": 3,
+            "reconstruction_matches_observed": true,
+            "prefix_hazard": true,
+            "counterfactual_hazard": true
+          },
+          "oracle_feasible": true,
+          "oracle_word": [
+            0,
+            2
+          ],
+          "true_map_retained": true,
+          "planted_raw_map_retained": true,
+          "raw_equivalent_maps_count": 1,
+          "raw_equivalent_map_ids": [
+            69
+          ],
+          "no_map_in_class": false,
+          "maps_checked": 144,
+          "counterexample": [
+            0
+          ],
+          "counterexamples_hash": "bbe13502b88c637823f36ea4d5d123ddfd7af807c2adaa81e151eba4dd7ef47f",
+          "counterexample_scope": "Witness rejecting an alternative raw map; not a violation of the admitted task plan",
+          "audit_product_pairs": 199,
+          "audit_execution_steps": 62,
+          "audit_reference_steps": 214,
+          "audit_target_model_steps": 214,
+          "audit_resets": 35,
+          "audit_oracle_word_candidates": 6,
+          "calibration_hazardous_probes": 1,
+          "assumption_limits": "Exact raw equivalence within the declared 144-map static finite class only; latent semantics are not established by raw equivalence."
+        },
+        "metrics": {
+          "target_steps": 4,
+          "resets": 3,
+          "target_calls": 7,
+          "source_steps": 144,
+          "candidate_expansions": 17280,
+          "pair_checks": 359700,
+          "anchor_facts_supplied": 0,
+          "escalations": 0,
+          "escalation_level": 0,
+          "parent_cpu_seconds": 4.84375,
+          "wall_seconds": 5.432758800000556,
+          "parent_peak_traced_bytes": 5958594,
+          "audit_product_pairs": 199,
+          "audit_execution_steps": 62
+        },
+        "baseline": {
+          "name": "task",
+          "privileged": false
+        },
+        "scientific_hash": "b8ee122caf55d572229cc2bb2f1f01890af96eebfc51beb1aa795c7a6baba17c"
+      }
+    ],
+    "summary": [
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": null,
+        "admitted": 2,
+        "successful": 2,
+        "harmful": 0,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 2,
+        "calibration_hazardous_runs": 2,
+        "mean_target_calls": 7.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 11.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 1.0,
+        "feasible_useful_coverage": 1.0,
+        "selective_harm": 0.0,
+        "population_harm": 0.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 3.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": 1.0,
+          "0.1": 1.0,
+          "0.5": 1.0,
+          "1": 1.0
+        }
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 1,
+          "type": "semantic_swap"
+        },
+        "admitted": 2,
+        "successful": 0,
+        "harmful": 2,
+        "hazardous": 2,
+        "hazards_averted": 0,
+        "shield_interventions": 0,
+        "calibration_hazardous_probes": 2,
+        "calibration_hazardous_runs": 2,
+        "mean_target_calls": 7.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 11.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 0.0,
+        "feasible_useful_coverage": 0.0,
+        "selective_harm": 1.0,
+        "population_harm": 1.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 3.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": -1.0,
+          "0.1": -1.0,
+          "0.5": -1.0,
+          "1": -1.0
+        }
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 2,
+          "type": "sensor_drift"
+        },
+        "admitted": 2,
+        "successful": 0,
+        "harmful": 2,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 2,
+        "calibration_hazardous_probes": 2,
+        "calibration_hazardous_runs": 2,
+        "mean_target_calls": 7.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 11.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 0.0,
+        "feasible_useful_coverage": 0.0,
+        "selective_harm": 1.0,
+        "population_harm": 1.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 3.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": -1.0,
+          "0.1": -1.0,
+          "0.5": -1.0,
+          "1": -1.0
+        }
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "scope": "in_family",
+        "budget": 16,
+        "requests": 2,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 2,
+          "type": "stuck_output",
+          "value": 0
+        },
+        "admitted": 2,
+        "successful": 0,
+        "harmful": 2,
+        "hazardous": 0,
+        "hazards_averted": 0,
+        "shield_interventions": 2,
+        "calibration_hazardous_probes": 2,
+        "calibration_hazardous_runs": 2,
+        "mean_target_calls": 7.0,
+        "mean_deployment_calls": 4.0,
+        "mean_total_calls": 11.0,
+        "interface_errors": 0,
+        "acquisition_interface_errors": 0,
+        "deployment_interface_errors": 0,
+        "escalated_runs": 0,
+        "recovered_runs": 0,
+        "abstained": 0,
+        "oracle_feasible": 2,
+        "admission_coverage": 1.0,
+        "useful_coverage": 0.0,
+        "feasible_useful_coverage": 0.0,
+        "selective_harm": 1.0,
+        "population_harm": 1.0,
+        "mean_target_steps": 4.0,
+        "mean_resets": 3.0,
+        "parent_clusters": 1,
+        "utility": {
+          "0": -1.0,
+          "0.1": -1.0,
+          "0.5": -1.0,
+          "1": -1.0
+        }
+      }
+    ],
+    "paired": [],
+    "reliability": [
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "budget": 16,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": null,
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 0.0,
+          "possible_rate": 0.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 1.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 0.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "budget": 16,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 1,
+          "type": "semantic_swap"
+        },
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 0.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 1.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "budget": 16,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 2,
+          "type": "sensor_drift"
+        },
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 1,
+          "rate": 0.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 0.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 1.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      },
+      {
+        "method": "task/robust",
+        "family": "latch",
+        "budget": 16,
+        "anchors": false,
+        "split": "development",
+        "horizon": 4,
+        "execution_mode": "shielded",
+        "temporal": false,
+        "escalate": false,
+        "probe_safety": "unrestricted",
+        "risk_tolerance": 0.0,
+        "fault_schedule": {
+          "phase": "deployment",
+          "step": 2,
+          "type": "stuck_output",
+          "value": 0
+        },
+        "confidence": 0.95,
+        "requests": 2,
+        "unique_nuisance_requests": 2,
+        "parent_clusters": 1,
+        "independent_parents": 0,
+        "structural_seed_collisions": 0,
+        "inference_eligible": false,
+        "inference_reason": "handpicked_fixtures",
+        "interval_status": "descriptive_handpicked_fixtures",
+        "target_any_deployment_hazard": {
+          "events": 0,
+          "targets": 1,
+          "unknown_targets": 1,
+          "rate": 0.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_any_calibration_hazard": {
+          "events": 1,
+          "targets": 1,
+          "unknown_targets": 0,
+          "rate": 1.0,
+          "possible_rate": 1.0,
+          "interval": null
+        },
+        "target_average_useful_coverage": {
+          "estimate": 0.0,
+          "interval": null
+        },
+        "conditional_selective_harm": 1.0,
+        "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
+      }
+    ],
+    "scientific_hash": "a4d9a0fa2aec1b776bc04f64535d8252c6761c4586230ca1ce131111e4a72e1f"
+  },
+  "payload_hash": "7459906cd02f986c5d11c35c8ca5f25280acfe6d59a8a225da741faf7b000b14"
+}
