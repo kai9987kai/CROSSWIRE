@@ -5,7 +5,7 @@
 **Repository:** [https://github.com/kai9987kai/CROSSWIRE](https://github.com/kai9987kai/CROSSWIRE)  
 **Historical evidence snapshot:** 357 tests reported at the earlier revision; 997 hash-bound empirical executions in 13 receipt suites. Receipts require their recorded source revision for replay. Current local validation is recorded in [the resilience workflow report](verification-resilience-workflows.md).
 
-**Integration scope:** `FactoredCandidateSpace` and `synthesize_safe_return` are standalone library utilities with direct tests. Current run/study acquisition uses `CandidateSpace`, and runtime recovery does not call the soft-return synthesizer. The historical tables below are exploratory synthetic results, not new confirmation at the current source revision. Hashes bind saved content; they are not digital signatures or authentication of target execution.
+**Integration scope:** The 2026-11-01 increment adds selectable flat/factored run/study acquisition and independently checked bounded experiment trees; see [current verification](verification-budgeted-experiments.md) and [research synthesis](../research/2026-11-01-budgeted-experiments.md). `synthesize_safe_return` remains a standalone library utility. The historical tables below are exploratory synthetic results, not new confirmation at the current source revision. Hashes bind saved content; they are not digital signatures or authentication of target execution.
 
 ---
 

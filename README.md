@@ -1,6 +1,20 @@
+---
+title: CROSSWIRE
+emoji: 🔀
+colorFrom: blue
+colorTo: green
+sdk: static
+app_file: publication/index.html
+license: mit
+short_description: Finite interface experiments, source and replayable evidence
+pinned: false
+---
+
 # CROSSWIRE: Behavioral Interoperability Under Ambiguous Black-Box Interfaces
 
 A CPU-local research laboratory and experimental benchmark for learning and verifying interface adapters between independently developed systems under unknown action and observation mappings.
+
+[GitHub source](https://github.com/kai9987kai/CROSSWIRE) · [Hugging Face source and evidence portal](https://huggingface.co/spaces/Kai9987kai/CROSSWIRE) · [Publication and verification guide](docs/publication.md). Download the full workbench and run it locally; the Hugging Face Space serves the source/evidence portal.
 
 ---
 
@@ -38,7 +52,7 @@ When independently developed controllers, agents, or tools communicate without a
 ## Key Capabilities & Architecture
 
 - **Consensus Admission vs. Point Estimation:** Requires contract satisfaction across all surviving candidate mappings, conditional on model inclusion and truthful semantic anchors.
-- **Model-Safe Calibration:** Optionally rejects calibration probes that could trigger a hazard under any surviving model. All seven finite probe policies support the constraint, including generated long counterexamples. Independent certificates check each word against its pre-probe belief; escalation guards the full enabled temporal class from the first query.
+- **Model-Safe Calibration:** Optionally rejects calibration probes that could trigger a hazard under any surviving model. All nine native finite probe policies support the constraint, including generated long counterexamples and bounded lookahead trees. Independent certificates check each word against its pre-probe belief; escalation guards the full enabled temporal class from the first query.
 - **Contract Edge Cutting (`ec2`):** An EC2-inspired heuristic partitions candidates into contract decision classes and prioritizes cross-class disagreement. The current Jaccard-weighted objective does not inherit a proved adaptive-submodularity or approximation guarantee.
 - **Receding-Horizon Dynamic Replanning Shield:** Actively monitors intermediate deployment outputs; when updated beliefs reveal upcoming plan risks, dynamically synthesizes and executes verified safe detour suffixes (`REPLANNED_ONLINE_SAFE`), achieving goal completion where static shields abort.
 - **Configurable Candidate-Fraction Admission:** `risk_controlled` checks exact hazardous and unsuccessful fractions over uniformly weighted surviving models against `risk_tolerance`. Zero requires consensus. These fractions are not calibrated probabilities of target harm or conformal risk bounds.
@@ -56,6 +70,8 @@ When independently developed controllers, agents, or tools communicate without a
 - **Cryptographic Scientific Receipts:** Every run and study generates self-contained JSON receipts with source hash bindings and exact determinism checking.
 - **Local Browser Workbench:** Responsive UI with model-safe calibration and tolerance controls, graph inspection, mapping matrices, probe timelines, shield events, and receipt export/import. Study comparisons expose exact conditions and allow individual run inspection while retaining the parent receipt.
 - **Controlled Fault Studies:** Configure fault type, zero-based onset and phase in the workbench. Study grids include nominal controls and keep fault conditions separate throughout summaries, paired comparisons, reliability estimates and reports. Semantic swaps remain a deliberate undetectable negative control.
+- **Budgeted Experiment Planning:** `lookahead` proposes depth-two query trees under the reset-plus-action cap, optimizing finite model-count task readiness. A separate checker reconstructs every branch, safety guard, readiness witness and cost before the root query is dispatched. Search caps remain explicit; hypothetical responses never become observed evidence.
+- **Selectable Factored Runtime:** `--candidate-backend factored` works through acquisition, safety envelopes, escalation, adaptive/risk-controlled admission, studies and replay. Robust planning searches bounded input-factor state products. Exact class-histogram task scoring avoids materializing every candidate pair; telemetry distinguishes structural ratios from measured storage.
 
 ---
 
@@ -100,6 +116,9 @@ crosswire run --family delay --temporal --execution_mode shielded --budget 16 --
 # Run counterexample-guided active probing (CEGP)
 crosswire run --family latch --policy counterexample --budget 16 --out reports/cegp.json
 
+# Plan bounded experiments using the factored solver
+crosswire run --family generated_protocol --instance-seed 101 --policy lookahead --candidate-backend factored --probe-safety model_safe --budget 8 --out reports/my-lookahead.json
+
 # Guard calibration before dispatch (conservative abstention is an expected result)
 crosswire run --family routing --anchors --policy entropy --probe-safety model_safe --budget 16 --out reports/safe-routing.json
 
@@ -114,6 +133,9 @@ crosswire study --config configs/pilot-shield-shielded.json --out reports/shield
 
 # Compare a nominal control with deployment faults using both fixture engines
 crosswire study --config configs/resilience-workflows.json --out reports/my-resilience-study.json
+
+# Exploratory comparison of policies and backends on generated target instances
+crosswire study --config configs/budgeted-planning-pilot.json --out reports/my-planning-pilot.json
 
 # Inspect available fixture families
 crosswire catalog
@@ -146,7 +168,8 @@ Historical pilot findings across synthetic fixture environments are listed below
 ## Documentation & Research
 
 - [Standalone Research Paper](docs/paper.md): Comprehensive theoretical formulation, experimental methodology, empirical tables, and epistemological bounds.
-- [Current Verification Report](docs/verification-resilience-workflows.md): Local tests, fault-study replay, browser workflows and isolated package checks. [Calibration verification](docs/verification-safe-calibration.md) and [earlier verification](docs/verification.md) retain historical evidence.
+- [Current Verification Report](docs/verification-budgeted-experiments.md): Bounded planning, backend parity, fresh exploratory studies, browser workflows and installed-package checks. [Resilience workflow verification](docs/verification-resilience-workflows.md), [calibration verification](docs/verification-safe-calibration.md) and [earlier verification](docs/verification.md) retain historical evidence.
+- [Research basis and limits](research/2026-11-01-budgeted-experiments.md): Verified 2024–2026 primary work and the boundaries of CROSSWIRE's finite adaptation.
 - [Pre-Implementation Design Specification](docs/superpowers/specs/2026-10-22-crosswire-design.md): The approved design specification.
 - [Portfolio Research & Prior Art Reviews](research/portfolio-index.md): Source code reviews and commit hashes of all 26 related repositories.
 - [Recent Research Context](research/recent-research.md): Representation stitching, active automata learning, and interface theory context.

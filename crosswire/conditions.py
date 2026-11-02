@@ -10,6 +10,7 @@ CONDITION_DEFAULTS = {
     'anchors': False, 'split': 'development', 'horizon': 4,
     'execution_mode': 'open_loop', 'temporal': False, 'escalate': False,
     'probe_safety': 'unrestricted', 'risk_tolerance': 0.0, 'fault_schedule': None,
+    'candidate_backend': 'flat',
 }
 FAULT_TYPES = ('sensor_drift', 'actuator_swap', 'delay_spike', 'stuck_output', 'semantic_swap')
 FAULT_PHASES = ('calibration', 'deployment', 'always')

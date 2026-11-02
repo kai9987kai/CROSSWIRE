@@ -318,7 +318,7 @@ def test_fault_schedules_keep_type_onset_phase_and_symbol_strata_separate():
     for heading in ('### Method', '### Per family'):
         records = _table(rendered, heading)
         assert len(records) == 8
-        labels = {record['Conditions'].split('fault_schedule=', 1)[1] for record in records}
+        labels = {record['Conditions'].split('fault_schedule=', 1)[1].split(';', 1)[0] for record in records}
         assert labels == {'null',
                          '{"phase":"deployment","step":0,"type":"sensor_drift"}',
                          '{"phase":"deployment","step":0,"type":"actuator_swap"}',

@@ -12,6 +12,7 @@ import uuid
 
 from . import __version__
 from .fixtures import catalog
+from .backends import CANDIDATE_BACKENDS
 from .receipts import check_envelope, pack, replay, validate
 from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, Cancelled, RunConfig, run, run_study
 
@@ -172,6 +173,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, {'version': __version__, 'families': catalog(), 'policies': POLICIES,
                                  'admissions': ADMISSIONS, 'execution_modes': EXECUTION_MODES,
                                  'probe_safety_modes': PROBE_SAFETY_MODES,
+                                 'candidate_backends': CANDIDATE_BACKENDS,
                                  'defaults': asdict(RunConfig())})
             elif path.startswith('/api/runs/'):
                 parts = path.strip('/').split('/')

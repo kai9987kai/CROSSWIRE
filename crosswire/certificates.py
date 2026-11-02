@@ -199,6 +199,10 @@ def check_result(result: dict) -> dict:
         decision, config = result['decision'], result['configuration']
         if not isinstance(decision, dict) or not isinstance(config, dict):
             raise ValueError('Invalid configuration or decision')
+        candidate_backend = config.get('candidate_backend', 'flat')
+        if candidate_backend not in ('flat', 'factored'):
+            raise ValueError('Unknown candidate backend declaration')
+        report['declared_candidate_backend'] = candidate_backend
         safety_mode = config.get('probe_safety', 'unrestricted')
         if safety_mode not in ('unrestricted', 'model_safe'):
             raise ValueError('Unknown calibration safety mode')
@@ -244,6 +248,8 @@ def check_result(result: dict) -> dict:
         if not isinstance(probes, list) or len(probes) > 512:
             raise ValueError('Invalid or oversized probe collection')
         observed_probes = []
+        experiment_checks = []
+        spent_calls = 0
         for index, probe in enumerate(probes):
             if not isinstance(probe, dict) or type(probe.get('complete')) is not bool:
                 raise ValueError('Probe must declare boolean completeness')
@@ -251,6 +257,55 @@ def check_result(result: dict) -> dict:
             outputs = _sequence(probe['outputs'], machine.outputs, 'probe outputs')
             if len(outputs) > len(word) or (probe['complete'] and len(word) != len(outputs)):
                 raise ValueError('Probe word/output lengths differ')
+            planning = probe.get('planning')
+            if config.get('policy') == 'lookahead':
+                from .experiment_checks import verify_experiment_tree
+                if not isinstance(planning, dict):
+                    raise ValueError('Lookahead probes require independently checked planning evidence')
+                call_cap = _int(config.get('budget'), 513, 'lookahead call cap')
+                remaining = call_cap - spent_calls
+                if type(planning.get('remaining_calls')) is not int or planning['remaining_calls'] != remaining:
+                    raise ValueError('Experiment planning budget differs from prior target calls')
+                if (type(planning.get('node_limit')) is not int or planning['node_limit'] != 2048
+                        or type(planning.get('depth_limit')) is not int or planning['depth_limit'] != 2
+                        or type(planning.get('expanded_nodes')) is not int
+                        or not 0 <= planning['expanded_nodes'] <= planning['node_limit']
+                        or type(planning.get('search_complete')) is not bool
+                        or planning.get('selection') not in ('lookahead', 'one_query_fallback')):
+                    raise ValueError('Invalid bounded experiment search metadata')
+                prior = [{'word': list(w), 'outputs': list(o), 'complete': True}
+                         for w, o in observed_probes if o]
+                static = _adapters(machine, False)
+                static_compatible = [a for a in static
+                                     if all(a['output_map'][semantic] == raw for raw, semantic in normalized_anchors)
+                                     and all(_trace(machine, a, w)[0] == o for w, o in observed_probes)]
+                planning_temporal = temporal or (config.get('escalate') is True and (
+                    safety_mode == 'model_safe' or not static_compatible))
+                if planning.get('model_class') != ('temporal' if planning_temporal else 'static'):
+                    raise ValueError('Experiment class differs from enabled pre-probe evidence')
+                if type(planning.get('safe_only')) is not bool or planning['safe_only'] != (safety_mode == 'model_safe'):
+                    raise ValueError('Experiment safety declaration differs from configuration')
+                tree = planning.get('tree')
+                if (not isinstance(tree, dict) or tree.get('kind') != 'query'
+                        or canonical_hash(tree.get('word')) != canonical_hash(list(word))
+                        or canonical_hash(planning.get('word')) != canonical_hash(list(word))):
+                    raise ValueError('Dispatched query differs from the proposed experiment root')
+                checked = verify_experiment_tree(result['reference'], result['contract'], tree,
+                                                 temporal=planning_temporal, evidence=prior,
+                                                 anchors=anchors, budget=remaining,
+                                                 safe_only=safety_mode == 'model_safe')
+                if not checked['valid']:
+                    raise ValueError('Invalid experiment tree: ' + checked['reason'])
+                expected_objective = {key: checked[key] for key in (
+                    'ready_models', 'largest_unresolved_belief', 'terminal_squared_beliefs', 'worst_case_calls')}
+                if canonical_hash(planning.get('objective')) != canonical_hash(expected_objective):
+                    raise ValueError('Experiment objective differs from independently derived branches')
+                if canonical_hash(planning.get('certificate')) != canonical_hash(checked):
+                    raise ValueError('Stored experiment certificate differs from independent checking')
+                experiment_checks.append(checked)
+            elif planning is not None:
+                raise ValueError('Unexpected experiment tree on a different probe policy')
+            spent_calls += 1 + len(word)
             observed_probes.append((word[:len(outputs)], outputs))
             if safety_mode == 'model_safe':
                 if not word or not safety_belief or any(
@@ -277,6 +332,11 @@ def check_result(result: dict) -> dict:
             'scope': 'Entire dispatched words checked before their outputs, including interrupted suffixes. '
                      'Conditional on enabled model inclusion, stationarity, reset semantics and truthful anchors; '
                      'unrestricted calibration makes no safety claim.'}
+        if config.get('policy') == 'lookahead':
+            report['experiment_planning'] = {
+                'checked_trees': len(experiment_checks), 'checks': experiment_checks,
+                'scope': 'Hypothetical finite-model branches, readiness, guards and reset/action costs only; '
+                         'does not certify search optimality, target execution or semantic grounding.'}
         report['model_diagnostics'] = _model_diagnostics(
             machine, normalized_anchors, observed_probes, safety_temporal)
 

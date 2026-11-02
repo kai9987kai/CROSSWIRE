@@ -1,0 +1,27 @@
+# Budgeted experiments and a usable factored backend
+
+## Intent and research basis
+
+The user requests a substantive project-wide advance grounded in recent research. This increment retains the CPU-local finite Mealy adapter laboratory and makes two complementary capabilities usable: bounded task-directed experiment trees, and a selectable factored candidate backend.
+
+Fortz et al., *A Research Agenda for Active Automata Learning* (accepted 3 February 2026), distinguishes finding counterexamples from establishing conformance and calls for explicit assumptions and structured testing: https://tneele.com/static/papers/sttt2026_al_agenda.pdf. Vaandrager and Melse, *New Fault Domains for Conformance Testing of Finite State Machines* (CONCUR, 18 August 2025), demonstrates how coverage depends on declared fault domains: https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CONCUR.2025.34. Kruger, Junges and Rot, *Small Test Suites for Active Automata Learning* (TACAS, 5 April 2024), exploits test structure and combines test-generation experts: https://link.springer.com/chapter/10.1007/978-3-031-57249-4_6.
+
+These sources motivate the engineering choices; this implementation is not a reproduction of their algorithms or a new theorem. Other considered directions were recoverability-preserving exploration and symbolic/compositional alphabets. Those require additional backup-controller or alphabet/interface assumptions. The selected scope advances the current candidate model without introducing those assumptions.
+
+## Selected behavior
+
+- `candidate_backend` is `flat` (default) or `factored`. `candidate_backends` is a bounded study dimension. Every acquisition, safety-envelope, escalation, zero-budget and AALpy candidate-construction path retains the choice. The independent checker validates the declaration but reconstructs its own candidates.
+- Backend conditions remain separate in all analyses and reports. Actual backend telemetry distinguishes structural factor counts, cached objects and prediction work; structural ratios do not claim measured memory compression. Export only surviving adapters. Public checking and private audit remain exhaustive and separately scoped.
+- Default task probing aggregates exact rational Jaccard separation over contract classes instead of materializing every candidate pair. Deterministic ties use the existing shortest/lexicographic probe order. Factored predictions cache consistently and validate IDs before cache lookup.
+- Factored robust planning may search a bounded product of unique input-factor states, preserving shortest/lexicographic successful words. Check goal outputs before visited-state pruning. Search limits and cancellation never become impossibility proofs.
+- New `lookahead` policy builds a depth-two query tree from the existing length-1..3 probe bank. A query costs one reset plus all its actions. Each node partitions its current belief by the complete predicted raw response. A ready leaf has a common hazard-free goal-reaching sequence within the deployment horizon. Other leaves are unresolved.
+- Search ranks trees by the number of uniformly weighted root models reaching ready leaves, then smaller largest unresolved belief, smaller sum of squared terminal belief sizes, lower worst-case calls, and the existing shortest/lexicographic word order. This is a model-count planning objective, not a calibrated probability of target success.
+- Search has a deterministic 2,048-node expansion cap and checks cancellation. A limit is recorded as incomplete search; the best fully constructed tree may still be dispatched. If no tree was completed, a deterministic one-query informative tree is the fallback. No unknown search result claims impossibility or optimality.
+- In model-safe mode every hypothetical query is hazard-free for its branch belief. Escalating calibration plans against the full enabled temporal safety class from the start. Actual execution dispatches only the root query, then replans from observed evidence; the complete proposed tree and its independent finite check are recorded with the probe.
+- The independent experiment checker reconstructs all candidate permutations, predictions, branch beliefs, readiness and reset/action costs from the public reference, anchors and prior observed prefixes. It rejects omitted/extra branches, unsupported ready leaves, unsafe queries and over-budget paths. It neither authenticates target responses nor learns semantics.
+
+## Integration and evidence
+
+Expose the policy and backend through CLI, catalog and workbench, display planning scope/search-limit diagnostics, and retain backend conditions in summaries, reliability, paired comparisons and reports. Use new named receipts; preserve historical bytes. Evaluate a small frozen exploratory comparison with nominal, guarded, temporal and semantic-corruption controls, separate structural parents from nuisance repeats, and report negative findings and computation costs.
+
+Keep the dependency-free Python 3.11+ runtime, existing 3-input/4-output end-to-end bounds, source-bound replay, freeze-before-audit protocol and semantic negative controls. Larger-alphabet library tests do not become real-system scaling claims. Complete focused regressions, full pytest, browser run/study/export/replay, public checking, fresh exact replay, installed-wheel checks and independent review. No automatic publication is implied by this new request.

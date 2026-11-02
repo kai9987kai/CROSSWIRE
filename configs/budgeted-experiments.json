@@ -1,0 +1,10 @@
+{
+  "families": ["latch"],
+  "seeds": [17],
+  "budgets": [2, 4],
+  "policies": ["entropy", "lookahead"],
+  "admissions": ["robust"],
+  "candidate_backends": ["flat", "factored"],
+  "implementations": ["procedural"],
+  "execution_mode": "shielded"
+}

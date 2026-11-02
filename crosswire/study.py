@@ -17,8 +17,9 @@ from .fixtures import catalog, make_case, oracle_plan
 from .interfaces import InterfaceError, TargetProcess
 from .identity import canonical_hash, scientific_view, source_hash
 from .conditions import condition_key, condition_fields, normalize_fault_schedule
+from .backends import CANDIDATE_BACKENDS, make_space, backend_summary
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching", "lookahead")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
 EXECUTION_MODES = ("open_loop", "shielded", "recovery", "replan")
 PROBE_SAFETY_MODES = ('unrestricted', 'model_safe')
@@ -48,6 +49,7 @@ class RunConfig:
     risk_tolerance: float = 0.0
     instance_seed: int | None = None
     fault_schedule: dict | None = None
+    candidate_backend: str = 'flat'
 
     def __post_init__(self):
         if self.family == 'generated_protocol' and self.instance_seed is None:
@@ -97,6 +99,8 @@ class RunConfig:
             raise ValueError("Unknown implementation or split")
         if self.policy not in POLICIES or self.admission not in ADMISSIONS:
             raise ValueError("Unknown probe/admission policy")
+        if self.candidate_backend not in CANDIDATE_BACKENDS:
+            raise ValueError('Unknown candidate_backend')
         if self.admission == 'adaptive' and self.execution_mode not in ('shielded', 'recovery'):
             raise ValueError('Adaptive admission requires shielded or recovery execution')
         if self.policy == 'aalpy' and self.temporal:
@@ -145,9 +149,9 @@ def fit_diagnostics(space: CandidateSpace, evidence: list[dict], anchors: dict) 
 def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: dict,
              cancel: Callable[[], bool] | None, progress: Callable | None, temporal: bool = False,
              admission: str = 'robust', escalate: bool = False, probe_safety: str = 'unrestricted',
-             step: Callable | None = None, reset: Callable | None = None):
+             step: Callable | None = None, reset: Callable | None = None, candidate_backend: str = 'flat'):
     """This function receives no Case, private map, target states or family label."""
-    space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
+    space = make_space(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), candidate_backend, temporal)
     anchors = {int(k): int(v) for k, v in public.get("anchors", {}).items()}
     probes: list[dict] = []
     survivors = space.survivors(probes, anchors)
@@ -158,7 +162,7 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
     safe_mode = probe_safety == 'model_safe'
     # An enabled larger class must be guarded before it becomes necessary for
     # fitting. Static predictions alone cannot protect a delayed target.
-    safety_space = (CandidateSpace(space.machine, space.contract, temporal=True)
+    safety_space = (make_space(space.machine, space.contract, candidate_backend, temporal=True)
                     if safe_mode and escalate else space)
     stop_reason = 'CALL_CAP'
     # `budget` is the shared system-call cap: every reset and every action
@@ -250,8 +254,29 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
                 stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
                 break
         else:
-            word = selection_space.choose_probe(selection_ids, policy, remaining_actions, seen,
-                                                seed=92821 + len(probes), safe_only=safe_mode)
+            planning = None
+            if policy == 'lookahead':
+                from .experiments import synthesize_experiment
+                from .experiment_checks import verify_experiment_tree
+                planning = synthesize_experiment(selection_space, selection_ids,
+                                                budget - counts['target_calls'], seen=seen,
+                                                safe_only=safe_mode, cancel=cancel)
+                word = tuple(planning['word']) if planning['word'] is not None else None
+                if word is not None:
+                    checked = verify_experiment_tree(public['reference'], public['contract'], planning['tree'],
+                                                     temporal=selection_space.temporal,
+                                                     evidence=fit_evidence(probes), anchors=anchors,
+                                                     budget=planning['remaining_calls'], safe_only=safe_mode)
+                    if not checked['valid']:
+                        raise RuntimeError('Independent experiment check failed: ' + checked['reason'])
+                    for key, value in planning['objective'].items():
+                        if checked[key] != value:
+                            raise RuntimeError('Independent experiment objective differs from synthesis')
+                    planning.update(certificate=checked, model_class='temporal' if selection_space.temporal else 'static',
+                                    safe_only=safe_mode)
+            else:
+                word = selection_space.choose_probe(selection_ids, policy, remaining_actions, seen,
+                                                    seed=92821 + len(probes), safe_only=safe_mode)
             if word is None:
                 stop_reason = 'NO_ELIGIBLE_SAFE_PROBE' if safe_mode else 'NO_INFORMATIVE_PROBE'
                 break
@@ -266,6 +291,8 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
                 outputs = getattr(exc, 'trace', {}).get('outputs', [])
             entry = {"word": list(word), "outputs": list(outputs), "complete": complete,
                      "survivors_before": before}
+            if planning is not None:
+                entry['planning'] = planning
             if safe_mode:
                 entry['safety'] = {'model_class': 'temporal' if selection_space.temporal else 'static',
                                    'candidate_count': len(selection_ids), 'model_safe': True}
@@ -281,7 +308,7 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
             if escalate and not space.temporal:
                 # Autonomous Model-Class Escalation: static refuted -> escalate to temporal
                 previous_work = dict(space.work)
-                space = CandidateSpace(space.machine, space.contract, temporal=True)
+                space = make_space(space.machine, space.contract, candidate_backend, temporal=True)
                 # Rebuilding a larger hypothesis class does not erase the work
                 # already spent refuting the smaller one.
                 space.work.update(previous_work)
@@ -302,8 +329,8 @@ def _acquire(public: dict, policy: str, budget: int, query: Callable, counts: di
     if safety_space is not space and safe_mode:
         # Count the independent envelope selection work as well as fitting and
         # any discarded static search work. No target calls are hidden here.
-        for key in space.work:
-            space.work[key] += safety_space.work[key]
+        for key, value in safety_space.work.items():
+            space.work[key] = space.work.get(key, 0) + value
     escalation_info = {
         "enabled": escalate,
         "escalated": escalated,
@@ -347,7 +374,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         if config.policy == "aalpy" and config.admission != "oracle":
             from .baselines import acquire_aalpy
             target = resources.enter_context(TargetProcess(case.private))
-            space, survivors, probes, error, detail = acquire_aalpy(public, config.budget, target, cancel)
+            space, survivors, probes, error, detail = acquire_aalpy(public, config.budget, target, cancel,
+                                                                  candidate_backend=config.candidate_backend)
             counts = dict(target.counts)
             baseline.update(detail)
             escalation_info = {
@@ -360,11 +388,12 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                 public, config.policy, config.budget, target.query, target.counts, cancel, progress,
                 temporal=temporal, admission=config.admission, escalate=config.escalate,
                 probe_safety=config.probe_safety,
-                step=target.step, reset=target.reset
+                step=target.step, reset=target.reset, candidate_backend=config.candidate_backend
             )
             counts = dict(target.counts)
         else:
-            space = CandidateSpace(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]), temporal=temporal)
+            space = make_space(Machine.from_dict(public["reference"]), Contract.from_dict(public["contract"]),
+                               config.candidate_backend, temporal=temporal)
             survivors = space.survivors([], {int(k): int(v) for k, v in public.get("anchors", {}).items()})
             probes, error = [], None
             escalation_info = {
@@ -407,7 +436,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                 "scope": "No adapter in the checked finite hypothesis class can explain the public evidence."
             }
         from .certificates import check_result
-        candidates = [a.to_dict() for a in space.adapters if a.id in survivors]
+        candidates = [space.adapters[identifier].to_dict() for identifier in survivors]
         evidence_certificate = check_result({
             'schema': 'crosswire-result-v1', 'configuration': asdict(config),
             'reference': public['reference'], 'contract': public['contract'],
@@ -417,6 +446,8 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         if not evidence_certificate['valid']:
             raise RuntimeError('Independent public-evidence check failed: ' + evidence_certificate['reason'])
         ambiguity = space.ambiguity(survivors)
+        backend = backend_summary(space, survivors)
+        backend['measurement_stage'] = 'after_public_check_before_deployment_and_private_audit'
         # The digest is constructed before importing/calling the private auditor.
         frozen = canonical_hash({"decision": decision, "probes": probes, "reference": public["reference"],
                                  "contract": public["contract"], "target_id": public['target_id'],
@@ -445,6 +476,7 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
         work = dict(space.work)
         result = {
             "schema": "crosswire-result-v1", "configuration": asdict(config),
+            'backend': backend,
             'source_hash': frozen_source,
             "reference": public["reference"], "contract": public["contract"],
             "target_id": public["target_id"], "parent_instance_id": public["parent_instance_id"],
@@ -601,7 +633,7 @@ def paired_comparisons(rows: list[dict]) -> list[dict]:
 
 STUDY_DEFAULTS = {"families": ["latch", "symmetric", "neutral"], "seeds": [17], "budgets": [0, 8],
                   "policies": ["random", "task"], "admissions": ["robust"], "implementations": ["procedural"],
-                  'instance_seeds': [None], 'fault_schedules': [None]}
+                  'instance_seeds': [None], 'fault_schedules': [None], 'candidate_backends': ['flat']}
 
 
 def study_configs(spec: dict) -> list[RunConfig]:
@@ -609,7 +641,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
         raise ValueError("Study must be an object")
     allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
                "anchors", "split", "horizon", "execution_mode", "temporal", "escalate", "probe_safety", "risk_tolerance",
-               'instance_seeds', 'fault_schedules'}
+               'instance_seeds', 'fault_schedules', 'candidate_backends'}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -627,7 +659,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
         total *= len(values)
     if total > 512:
         raise ValueError("Study exceeds 512 runs; split the protocol explicitly")
-    configs = [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation", 'instance_seed', 'fault_schedule'), values),
+    configs = [RunConfig.from_dict(dict(zip(("family", "seed", "budget", "policy", "admission", "implementation", 'instance_seed', 'fault_schedule', 'candidate_backend'), values),
                                          anchors=spec.get("anchors", False), split=spec.get("split", "development"),
                                          horizon=spec.get("horizon", 4),
                                          execution_mode=spec.get("execution_mode", "open_loop"),

@@ -1,0 +1,11 @@
+{
+  "families": ["latch", "delay", "semantic_corruption"],
+  "seeds": [42],
+  "budgets": [16],
+  "policies": ["entropy", "lookahead"],
+  "admissions": ["robust"],
+  "candidate_backends": ["flat", "factored"],
+  "implementations": ["procedural"],
+  "temporal": true,
+  "execution_mode": "shielded"
+}

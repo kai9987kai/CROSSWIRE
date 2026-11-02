@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const state = {catalog:null, active:null, completed:null, busy:false};
-const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',ec2:'Equivalence class edge cutting (EC2)',branching:'Adaptive within-query branching',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',risk_controlled:'Risk-controlled version space',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield',replan:'Receding-horizon replanning shield'};
+const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',ec2:'Equivalence class edge cutting (EC2)',branching:'Adaptive within-query branching',lookahead:'Budgeted experiment lookahead',flat:'Flat · exhaustive candidates',factored:'Factored · lazy candidates',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',risk_controlled:'Risk-controlled version space',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield',replan:'Receding-horizon replanning shield'};
 function element(tag, text, cls){const node=document.createElement(tag);if(text!==undefined&&text!==null)node.textContent=String(text);if(cls)node.className=cls;return node;}
 function svgElement(tag, attrs={}, text){const node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));if(text!==undefined)node.textContent=String(text);return node;}
 function readable(value){if(value===null||value===undefined)return 'Not available';if(typeof value==='boolean')return value?'Yes':'No';if(typeof value==='object')return JSON.stringify(value);return String(value);}
@@ -15,7 +15,7 @@ function optionList(id,items,fallback){const select=$(id);select.replaceChildren
 function familyDescription(){const current=state.catalog?.families.find(entry=>entry.id===$('family').value);$('family-description').textContent=current?.description||'';$('family-scope').textContent=(current?.scope||'Scope unspecified').replaceAll('_',' ');}
 function config(){
     const data={};
-    for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety'])if($(name))data[name]=$(name).value;
+    for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety','candidate_backend'])if($(name))data[name]=$(name).value;
     for(const name of ['seed','budget','horizon','risk_tolerance'])if($(name))data[name]=Number($(name).value);
     if(data.family==='generated_protocol')data.instance_seed=Number($('instance_seed').value);
     data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;
@@ -30,7 +30,7 @@ function studyConfig(){
         policies:adaptive?[selected.policy]:selected.policy==='fixed'?['task','fixed']:[selected.policy,'fixed'],admissions:adaptive?['robust','adaptive']:[selected.admission],
         implementations:[selected.implementation],anchors:selected.anchors,split:selected.split,
         horizon:selected.horizon,temporal:selected.temporal,escalate:selected.escalate,execution_mode:selected.execution_mode,
-        probe_safety:selected.probe_safety,risk_tolerance:selected.risk_tolerance,fault_schedules:[selected.fault_schedule]};
+        probe_safety:selected.probe_safety,risk_tolerance:selected.risk_tolerance,fault_schedules:[selected.fault_schedule],candidate_backends:[selected.candidate_backend]};
     if(selected.family==='generated_protocol')spec.instance_seeds=[selected.instance_seed,(selected.instance_seed+1)%4294967296];
     return spec;
 }
@@ -48,10 +48,11 @@ function syncControls(){
     $('risk_tolerance').disabled=!risk;if(!risk)$('risk_tolerance').value='0';
     const incompatible=$('policy').value==='aalpy'&&(adaptive||$('temporal').checked||$('escalate').checked||$('probe_safety').value==='model_safe');
     $('policy').setCustomValidity(incompatible?'AALpy requires unrestricted calibration, a static model without escalation, and a non-adaptive admission rule.':'');
+    $('policy-help').textContent=$('policy').value==='lookahead'?'Depth-two query planning uses a model-count objective, not a calibrated target success probability. Each query costs a reset plus its actions. Only the root query is executed before replanning.':'Probe selection uses public reference predictions and observed evidence.';
     $('admission-help').textContent=adaptive?'Adaptive policies choose actions from the observed branch. Shielded or recovery execution is required.':risk?'Admission limits hazardous and goal-failing fractions of the surviving candidates under uniform weighting.':'Robust admission requires a sequence satisfying the contract for every surviving mapping. Other rules provide different guarantees; forced baselines are diagnostic.';
     if(!state.catalog)return;
     const spec=studyConfig(),runs=spec.seeds.length*spec.budgets.length*spec.policies.length*spec.admissions.length*(spec.instance_seeds?.length||1);
-    $('study-description').textContent=`${runs} runs · ${spec.families[0]}${spec.instance_seeds?` · structural seeds ${spec.instance_seeds.join(' / ')}`:''} · label seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':`${labels[selectedPolicy()]||selectedPolicy()} vs ${$('policy').value==='fixed'?'task':'fixed'} probes, using the selected admission rule.`} Horizon ${spec.horizon} · ${spec.split} · ${labels[spec.execution_mode]||spec.execution_mode} · ${spec.probe_safety==='model_safe'?'model-safe':'unrestricted'} calibration${risk?` · candidate tolerance ${spec.risk_tolerance}`:''} · ${faultLabel(spec.fault_schedules[0])}. Label seeds and target engines are nuisance repeats of structural parents.`;
+    $('study-description').textContent=`${runs} runs · ${spec.families[0]}${spec.instance_seeds?` · structural seeds ${spec.instance_seeds.join(' / ')}`:''} · label seeds ${spec.seeds.join(' / ')} · call budgets ${spec.budgets.join(' / ')}. ${adaptive?'Robust vs adaptive admission, using the selected probe policy.':`${labels[selectedPolicy()]||selectedPolicy()} vs ${$('policy').value==='fixed'?'task':'fixed'} probes, using the selected admission rule.`} Horizon ${spec.horizon} · ${spec.split} · ${labels[spec.execution_mode]||spec.execution_mode} · backend ${spec.candidate_backends[0]} · ${spec.probe_safety==='model_safe'?'model-safe':'unrestricted'} calibration${risk?` · candidate tolerance ${spec.risk_tolerance}`:''} · ${faultLabel(spec.fault_schedules[0])}. Label seeds and target engines are nuisance repeats of structural parents.`;
     if($('study-protocol'))$('study-protocol').textContent=JSON.stringify(spec,null,2);
 }
 async function startJob(path,body,kind='run'){
@@ -199,6 +200,30 @@ function renderCalibration(result){
     if(check.scope||acquisition.scope)section.append(element('p',check.scope||acquisition.scope,'fineprint'));
     return section;
 }
+function renderBackend(backend){
+    const section=panel('Candidate backend','RUNTIME TELEMETRY');
+    section.append(element('p','The worker reports the representation used for this run. Structural factor ratios describe the model class; they are not measured memory compression.','fineprint'));
+    const fields=Object.fromEntries(Object.entries(backend).filter(([,value])=>value===null||typeof value!=='object'));
+    section.append(keyValues(fields));
+    if(backend.work&&typeof backend.work==='object')section.append(element('h4','Prediction work'),keyValues(backend.work));
+    section.append(rawDetails('Inspect backend telemetry',backend));
+    return section;
+}
+function renderPlanning(probes){
+    const section=panel('Budgeted experiment planning','PUBLIC FINITE-MODEL CHECK');
+    section.append(element('p','Each proposal contains hypothetical future queries and responses. Only its root query is dispatched; the worker replans after observing the target. The objective counts uniformly weighted candidate models, not a calibrated target success probability.','fineprint planning-objective'));
+    for(const [index,probe] of probes.entries()){
+        const planning=probe.planning;if(!planning)continue;
+        const certificate=planning.certificate||{},block=element('article',null,'planning-proposal');
+        block.append(element('h4',`Probe ${index+1} proposal`),element('p',`Uniformly weighted models reaching ready leaves: ${number(certificate.ready_models)} / ${number(certificate.candidate_count)}. Proposed worst-case query cost: ${number(certificate.worst_case_calls)} reset/action calls.`,'fineprint'));
+        block.append(keyValues({expanded_nodes:planning.expanded_nodes,node_limit:planning.node_limit,depth_limit:planning.depth_limit,search_complete:planning.search_complete,selection:planning.selection,remaining_calls:planning.remaining_calls,model_class:planning.model_class,model_safe:planning.safe_only}));
+        block.append(element('p',`Independent finite check: ${certificate.valid===true?'passed':certificate.valid===false?'failed':'unavailable'}. This checks the proposal under its declared model class, not target truth or private semantics.`,'fineprint'));
+        if(planning.search_complete===false)block.append(element('p','Incomplete search: the selected completed proposal or deterministic fallback does not establish optimality or absence of a better experiment.','fineprint'));
+        if(certificate.scope)block.append(element('p',certificate.scope,'fineprint'));
+        block.append(rawDetails('Inspect independent experiment check',certificate));section.append(block);
+    }
+    return section;
+}
 function renderRun(result,container){
     const d=result.decision||{},audit=result.audit||{},ambiguity=result.ambiguity||{},metrics=result.metrics||{},dep=result.deployment||{};
     container.append(element('p',`Conditions: ${conditionLabel(result.configuration)}`,'fineprint'));
@@ -216,6 +241,7 @@ function renderRun(result,container){
     if(dep.recovery?.succeeded)outcome.append(element('p','Simplex fail-safe recovery successfully executed without hazard.','fineprint'));
     if(dep.replanned)outcome.append(element('p',`Replanned online: ${dep.replan_count||1} safe detours executed.`,'fineprint'));
     statusGrid.append(dec,outcome);container.append(statusGrid);
+    if(result.backend)container.append(renderBackend(result.backend));
     container.append(metricCards([['Surviving mappings',ambiguity.map_count],['Observation classes',ambiguity.observational_classes],['Contract classes',ambiguity.contract_classes],['Acquisition calls',metrics.target_calls],['Deployment calls',metrics.deployment_calls??dep.target_calls],['Total target calls',metrics.total_calls??(Number.isFinite(metrics.target_calls)&&Number.isFinite(dep.target_calls)?metrics.target_calls+dep.target_calls:null)],['Hazardous calibration probes',audit.calibration_hazardous_probes],['Deployment hazard',audit.hazard],['Deployment mode',labels[result.configuration?.execution_mode]||result.configuration?.execution_mode]]));
     if(d.policy)container.append(renderPolicy(d,dep));
     if(d.admitted||dep.executed_word?.length)container.append(renderDeployment(dep));
@@ -224,7 +250,7 @@ function renderRun(result,container){
     reference.append(drawGraph(result.reference),element('p',`Goal symbol ${readable(result.contract?.goal)} · Hazard symbol ${readable(result.contract?.hazard)} · Horizon ${readable(result.contract?.horizon)}. Amber ring marks the initial state.`,'fineprint'));
     const candidates=Array.isArray(result.candidates)?result.candidates:[],mapping=panel('Candidate mappings',`${candidates.length} RETAINED`),temporal=result.configuration?.temporal||candidates.some(c=>c.delay);
     const activeInputFactors=new Set(candidates.map(c=>JSON.stringify(c.input_map))).size,activeOutputFactors=new Set(candidates.map(c=>JSON.stringify(c.output_map))).size;
-    mapping.append(element('p',`Input maps: target → reference. Output maps: reference → target. IDs are opaque symbols. Factored hypothesis space: ${activeInputFactors} active input factors × ${activeOutputFactors} active output factors.`,'fineprint'));
+    mapping.append(element('p',`Input maps: target → reference. Output maps: reference → target. IDs are opaque symbols. Structural factors among surviving adapters: ${activeInputFactors} active input factors × ${activeOutputFactors} active output factors. These counts apply to either backend.`,'fineprint'));
     if(temporal)mapping.append(element('p','Delay is measured in steps. Initial output is the reference symbol buffered by a delayed adapter; its output map gives the first raw symbol.','fineprint'));
     if(candidates.length)mapping.append(table(temporal?['ID','Input map','Output map','Delay','Initial output']:['ID','Input map','Output map'],candidates.slice(0,200).map(c=>temporal?[c.id,word(c.input_map),word(c.output_map),c.delay||0,c.delay?c.init_output:'—']:[c.id,word(c.input_map),word(c.output_map)])));
     else mapping.append(element('p','No candidate mappings retained.','fineprint'));
@@ -235,6 +261,7 @@ function renderRun(result,container){
     if(probes.length){const firstBefore=Array.isArray(probes[0].survivors_before)?probes[0].survivors_before.length:probes[0].survivors_before,lastAfter=Array.isArray(probes[probes.length-1].survivors_after)?probes[probes.length-1].survivors_after.length:probes[probes.length-1].survivors_after;if(Number.isFinite(firstBefore)&&Number.isFinite(lastAfter)&&firstBefore>0){const infoBits=lastAfter>0?Math.max(0,Math.log2(firstBefore/lastAfter)):Math.log2(firstBefore);timeline.append(element('p',`Version-space reduction: ${firstBefore} → ${lastAfter} mappings (${number(infoBits)} bits of uncertainty resolved across ${probes.length} queries).`,'fineprint'));}}
     probes.forEach((probe,i)=>{const item=element('li'),info=element('div',null,'probe-code');info.append(element('div',`in  ${word(probe.word)}`),element('div',`out ${word(probe.outputs)}`,'muted'));const count=element('div',null,'probe-count');count.append(element('div',`${Array.isArray(probe.survivors_before)?probe.survivors_before.length:readable(probe.survivors_before)} → ${Array.isArray(probe.survivors_after)?probe.survivors_after.length:readable(probe.survivors_after)}`),element('div',probe.complete===true?'Complete':'Incomplete'));if(probe.safety)count.append(element('div',probe.safety.model_safe===true?`Model-safe · ${number(probe.safety.candidate_count)} maps`:'Safety check unavailable'));item.append(element('span',String(i+1).padStart(2,'0'),'probe-index'),info,count);list.append(item);});
     timeline.append(probes.length?list:element('p','No acquisition probes were executed.','fineprint'));container.append(timeline);
+    if(probes.some(probe=>probe.planning))container.append(renderPlanning(probes));
     container.append(renderCalibration(result));
     const bottom=element('div',null,'two-panels'),cost=panel('Measured work','SEPARATE COST DOMAINS');cost.append(keyValues(metrics));
     const checks=panel('Audit & assumption checks','POST-DECISION');checks.append(keyValues(Object.fromEntries(Object.entries(audit).filter(([,v])=>v===null||typeof v!=='object'))));
@@ -251,7 +278,8 @@ function faultLabel(schedule){
 }
 function conditionLabel(cfg={}){
     const fault=Array.isArray(cfg.fault_schedules)?cfg.fault_schedules.map(faultLabel).join(' / '):faultLabel(cfg.fault_schedule);
-    return `${cfg.split||'development'} · H${cfg.horizon??4} · ${labels[cfg.execution_mode||'open_loop']||cfg.execution_mode} · anchors ${cfg.anchors?'on':'off'} · temporal ${cfg.temporal?'on':'off'} · escalation ${cfg.escalate?'on':'off'} · ${cfg.probe_safety==='model_safe'?'model-safe':'unrestricted'} probes · candidate tolerance ${number(cfg.risk_tolerance??0)} · ${fault}`;
+    const backend=Array.isArray(cfg.candidate_backends)?cfg.candidate_backends.join(' / '):cfg.candidate_backend||'flat';
+    return `${cfg.split||'development'} · H${cfg.horizon??4} · ${labels[cfg.execution_mode||'open_loop']||cfg.execution_mode} · backend ${backend} · anchors ${cfg.anchors?'on':'off'} · temporal ${cfg.temporal?'on':'off'} · escalation ${cfg.escalate?'on':'off'} · ${cfg.probe_safety==='model_safe'?'model-safe':'unrestricted'} probes · candidate tolerance ${number(cfg.risk_tolerance??0)} · ${fault}`;
 }
 function intervalText(interval){return Array.isArray(interval)&&interval.length===2&&interval.every(value=>typeof value==='number'&&Number.isFinite(value))?interval.map(number).join(' to '):null;}
 function targetEventMetric(metric={}){
@@ -321,5 +349,18 @@ $('receipt-file').addEventListener('change',async event=>{
     }catch(error){notice(`Import failed: ${error.message} The last completed result is preserved.`);}
     finally{state.busy=false;lock();}
 });
-async function initialize(){if(location.protocol==='file:'){notice('HTTP worker unavailable: this page was opened directly from a file. Start CROSSWIRE and open the local HTTP address.');$('connection').textContent='HTTP server required';return;}try{const catalog=await request('/api/catalog');if(!Array.isArray(catalog.families)||!Array.isArray(catalog.policies)||!Array.isArray(catalog.admissions))throw new Error('The server catalog is malformed or unsupported.');state.catalog=catalog;const defaults=catalog.defaults||{};optionList('family',catalog.families,defaults.family||'latch');optionList('policy',catalog.policies,defaults.policy||'task');optionList('admission',catalog.admissions,defaults.admission||'robust');if(catalog.execution_modes)optionList('execution_mode',catalog.execution_modes,defaults.execution_mode||'open_loop');for(const name of ['seed','budget','horizon','implementation','split','probe_safety','risk_tolerance'])if(defaults[name]!==undefined&&$(name))$(name).value=defaults[name];if($('anchors'))$('anchors').checked=defaults.anchors===true;if($('temporal'))$('temporal').checked=defaults.temporal===true;if($('escalate'))$('escalate').checked=defaults.escalate===true;familyDescription();syncControls();$('connection').textContent=`Local worker · ${catalog.version||'connected'}`;$('connection-dot').classList.add('online');lock();}catch(error){notice(error.message);$('connection').textContent='Worker unavailable';}}
+async function initialize(){
+    if(location.protocol==='file:'){notice('HTTP worker unavailable: this page was opened directly from a file. Start CROSSWIRE and open the local HTTP address.');$('connection').textContent='HTTP server required';return;}
+    try{
+        const catalog=await request('/api/catalog');
+        if(!Array.isArray(catalog.families)||!Array.isArray(catalog.policies)||!Array.isArray(catalog.admissions))throw new Error('The server catalog is malformed or unsupported.');
+        state.catalog=catalog;const defaults=catalog.defaults||{};
+        optionList('family',catalog.families,defaults.family||'latch');optionList('policy',catalog.policies,defaults.policy||'task');optionList('admission',catalog.admissions,defaults.admission||'robust');
+        if(catalog.execution_modes)optionList('execution_mode',catalog.execution_modes,defaults.execution_mode||'open_loop');
+        if(catalog.candidate_backends)optionList('candidate_backend',catalog.candidate_backends,defaults.candidate_backend||'flat');
+        for(const name of ['seed','budget','horizon','implementation','split','probe_safety','risk_tolerance'])if(defaults[name]!==undefined&&$(name))$(name).value=defaults[name];
+        if($('anchors'))$('anchors').checked=defaults.anchors===true;if($('temporal'))$('temporal').checked=defaults.temporal===true;if($('escalate'))$('escalate').checked=defaults.escalate===true;
+        familyDescription();syncControls();$('connection').textContent=`Local worker · ${catalog.version||'connected'}`;$('connection-dot').classList.add('online');lock();
+    }catch(error){notice(error.message);$('connection').textContent='Worker unavailable';}
+}
 initialize();

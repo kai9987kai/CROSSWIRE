@@ -46,6 +46,7 @@ expected = json.loads(sys.argv[2])
 if not sys.flags.isolated or Path(sys.prefix).resolve() != environment:
     raise RuntimeError('Package check must use isolated Python from the temporary virtual environment')
 import crosswire
+from crosswire.certificates import check_result
 from crosswire.identity import source_hash
 from crosswire.receipts import pack, replay
 from crosswire.study import RunConfig, run
@@ -63,7 +64,9 @@ if assets != expected['web_assets']:
 # This zero-acquisition-budget fixture still deploys an observation-dependent
 # policy, exercising the installed target-worker subprocess and private audit.
 result = run(RunConfig(family='routing', budget=0, admission='adaptive',
-                       execution_mode='shielded'))
+                       execution_mode='shielded', candidate_backend='factored'))
+if result.get('backend', {}).get('backend') != 'factored':
+    raise RuntimeError('Installed zero-budget deployment did not use the factored backend')
 if not result['decision']['admitted'] or result['audit']['contract_satisfied'] is not True:
     raise RuntimeError('Installed zero-budget adaptive deployment did not succeed')
 if result['metrics']['target_calls'] != 0 or result['deployment']['target_calls'] <= 0:
@@ -72,11 +75,35 @@ receipt = pack(result)
 checked = replay(receipt)
 if checked['valid'] is not True:
     raise RuntimeError('Installed scientific receipt did not replay exactly')
+
+# Exercise the installed bounded experiment planner and independent public
+# checker using a real query, while retaining the strict acquisition-call cap.
+lookahead = run(RunConfig(family='latch', budget=2, policy='lookahead',
+                          candidate_backend='factored'))
+if lookahead.get('backend', {}).get('backend') != 'factored':
+    raise RuntimeError('Installed lookahead run did not use the factored backend')
+planned = [probe for probe in lookahead['probes'] if probe.get('planning')]
+if not planned or any(probe['planning'].get('certificate', {}).get('valid') is not True
+                      for probe in planned):
+    raise RuntimeError('Installed lookahead run has no independently certified experiment probe')
+if not 0 < lookahead['metrics']['target_calls'] <= 2:
+    raise RuntimeError('Installed lookahead acquisition did not respect its two-call cap')
+if check_result(lookahead)['valid'] is not True:
+    raise RuntimeError('Installed lookahead public evidence did not pass independent checking')
+if replay(pack(lookahead))['valid'] is not True:
+    raise RuntimeError('Installed lookahead scientific receipt did not replay exactly')
 print(json.dumps({'package': str(package), 'isolated': bool(sys.flags.isolated),
                   'source_hash': source_hash(), 'web_assets': assets,
+                  'candidate_backend': result['backend']['backend'],
                   'acquisition_calls': result['metrics']['target_calls'],
                   'deployment_calls': result['deployment']['target_calls'],
-                  'scientific_hash': result['scientific_hash'], 'replay_valid': True}))
+                  'scientific_hash': result['scientific_hash'], 'replay_valid': True,
+                  'lookahead': {'candidate_backend': lookahead['backend']['backend'],
+                                'policy': lookahead['configuration']['policy'],
+                                'acquisition_calls': lookahead['metrics']['target_calls'],
+                                'planned_probes': len(planned), 'public_check_valid': True,
+                                'scientific_hash': lookahead['scientific_hash'],
+                                'replay_valid': True}}))
 '''
 
 

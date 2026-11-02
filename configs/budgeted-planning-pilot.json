@@ -1,0 +1,13 @@
+{
+  "families": ["generated_protocol"],
+  "instance_seeds": [101, 102],
+  "seeds": [17],
+  "budgets": [4, 8],
+  "policies": ["entropy", "branching", "lookahead"],
+  "admissions": ["robust"],
+  "candidate_backends": ["flat", "factored"],
+  "implementations": ["procedural"],
+  "split": "evaluation",
+  "probe_safety": "model_safe",
+  "execution_mode": "shielded"
+}

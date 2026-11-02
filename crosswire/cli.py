@@ -10,6 +10,7 @@ import sys
 
 from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, RunConfig, run, run_study
 from .fixtures import catalog
+from .backends import CANDIDATE_BACKENDS
 from .receipts import check_envelope, pack, replay
 
 
@@ -38,6 +39,9 @@ def main(argv=None):
         one.add_argument('--' + name, default=defaults[name], type=int)
     one.add_argument('--instance-seed', '--instance_seed', type=int, default=defaults['instance_seed'],
                      help='Structural seed for generated_protocol; --seed changes opaque labels only')
+    one.add_argument('--candidate-backend', '--candidate_backend', choices=CANDIDATE_BACKENDS,
+                     default=defaults['candidate_backend'],
+                     help='Candidate representation: exhaustive flat or lazy factored (same finite model class)')
     one.add_argument('--anchors', action='store_true')
     one.add_argument('--temporal', action='store_true')
     one.add_argument('--escalate', action='store_true')

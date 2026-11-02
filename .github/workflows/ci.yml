@@ -42,7 +42,7 @@ jobs:
 
       - name: Verify scientific receipt replay
         run: |
-          python -m crosswire verify reports/resilience-workflows-receipt.json
+          python -m crosswire verify reports/budgeted-experiments-receipt.json
 
   browser:
     runs-on: ubuntu-latest

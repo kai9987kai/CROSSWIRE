@@ -16,10 +16,14 @@ class InterfaceError(RuntimeError):
 
 
 class TargetProcess:
-    def __init__(self, private, timeout=2.0):
+    def __init__(self, private, timeout=2.0, *, startup_timeout=10.0):
         if isinstance(timeout,bool) or not isinstance(timeout,(int,float)) or not math.isfinite(timeout) or timeout <= 0 or timeout > 30:
             raise ValueError('timeout must be finite and between zero and 30 seconds')
+        if (isinstance(startup_timeout, bool) or not isinstance(startup_timeout, (int, float))
+                or not math.isfinite(startup_timeout) or not 0 < startup_timeout <= 30):
+            raise ValueError('startup_timeout must be finite and between zero and 30 seconds')
         self.timeout = timeout
+        self.startup_timeout = startup_timeout
         self.counts = dict(reset_attempts=0,step_attempts=0,reset_successes=0,step_successes=0,target_calls=0)
         self.last_trace = {'word':[],'outputs':[],'complete':False}
         self._sequence, self._closed = 0, False
@@ -32,7 +36,9 @@ class TargetProcess:
         self._reader = threading.Thread(target=self._read, daemon=True)
         self._reader.start()
         try:
-            self._request('init', config=private)
+            # Interpreter/module startup is not a reset or action attempt. Keep
+            # its bounded handshake separate from the strict per-call deadline.
+            self._request('init', request_timeout=self.startup_timeout, config=private)
         except BaseException:
             self.close()
             raise
@@ -51,7 +57,7 @@ class TargetProcess:
         except (OSError, ValueError):
             self._responses.put(('error','worker_exit'))
 
-    def _request(self, operation, **payload):
+    def _request(self, operation, *, request_timeout=None, **payload):
         try:
             if self._closed:
                 raise InterfaceError('closed')
@@ -60,7 +66,8 @@ class TargetProcess:
             encoded = (json.dumps(message,separators=(',',':'),allow_nan=False)+'\n').encode('utf-8')
             if len(encoded)>16384:
                 raise InterfaceError('invalid_request')
-            deadline = time.monotonic() + self.timeout
+            limit = self.timeout if request_timeout is None else request_timeout
+            deadline = time.monotonic() + limit
             written = queue.Queue(maxsize=1)
             def write():
                 try:
@@ -71,7 +78,7 @@ class TargetProcess:
                     written.put(error)
             threading.Thread(target=write,daemon=True).start()
             try:
-                if written.get(timeout=self.timeout) is not None:
+                if written.get(timeout=limit) is not None:
                     raise InterfaceError('worker_exit')
                 kind, raw = self._responses.get(timeout=max(0,deadline-time.monotonic()))
             except queue.Empty:

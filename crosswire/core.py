@@ -2,12 +2,14 @@
 
 Only public reference data and raw transcripts enter CandidateSpace. Work counts
 are cumulative: new reference transition executions, new adapter/word expansions,
-and actual candidate-pair comparisons. Cached results incur none of those costs.
+and represented candidate-pair comparisons, including histogram-aggregated pairs.
+Cached results incur none of those costs; pair counts are not primitive CPU operations.
 """
 
 from collections import Counter, deque
 from dataclasses import dataclass
-from itertools import combinations, permutations, product
+from fractions import Fraction
+from itertools import permutations, product
 import math
 from random import Random
 
@@ -296,7 +298,11 @@ class CandidateSpace:
         return None
 
     def _weighted_separation(self, classes, word, weights):
-        """Sum of weights of survivor pairs separated by ``word`` (class-level, O(N + C^2 P))."""
+        """Sum separated-pair weights by class histograms, O(N + C^2 P).
+
+        ``pair_checks`` retains the represented candidate-pair count; the
+        histogram arithmetic does not execute an individual comparison per pair.
+        """
         counts = []
         for _, members in classes:
             tally = {}
@@ -304,7 +310,7 @@ class CandidateSpace:
                 p = self.predict(identifier, word)
                 tally[p] = tally.get(p, 0) + 1
             counts.append((len(members), tally))
-        total = 0.0
+        total = 0
         for i in range(len(counts)):
             for j in range(i + 1, len(counts)):
                 w = weights[i][j]
@@ -540,28 +546,15 @@ class CandidateSpace:
                 if score > best_score:
                     best, best_score = word, score
             return best
-        best, best_score = None, 0
-        pairs = tuple(combinations(ids, 2))
-        weighted_pairs = []
-        for a, b in pairs:
-            if policy == 'task':
-                pair = (a, b)
-                if pair not in self._pair_weights:
-                    sa, sb = self.safe_words(a), self.safe_words(b)
-                    self._pair_weights[pair] = len(sa ^ sb) / max(1, len(sa | sb))
-                weight = self._pair_weights[pair]
-            else:
-                weight = 1
-            if weight:
-                weighted_pairs.append((a, b, weight))
+        # Task weights are equal within each pair of contract classes. Count
+        # separated candidate pairs by response histograms, without allocating
+        # the quadratic pair list. Rational scores give deterministic ties.
+        classes = self._decision_classes(ids)
+        weights = [[Fraction(len(sa ^ sb), max(1, len(sa | sb))) for sb, _ in classes]
+                   for sa, _ in classes]
+        best, best_score = None, Fraction(0)
         for word in eligible:
-            predictions = {i: self.predict(i, word) for i in ids}
-            total = 0.0
-            self.work['pair_checks'] += len(weighted_pairs)
-            for a, b, weight in weighted_pairs:
-                if predictions[a] != predictions[b]:
-                    total += weight
-            score = total / (1 + len(word))
+            score = self._weighted_separation(classes, word, weights) / (1 + len(word))
             if score > best_score:
                 best, best_score = word, score
         return best
@@ -769,15 +762,24 @@ class FactoredCandidateSpace(CandidateSpace):
         self._input_traces = {}
         self._safe_input_factors = {}
         self._adapter_cache = {}
+        self._predictions = {}
+        self._robust_plans = {}
         self._signatures = {}
         self._pair_weights = {}
-        self._deployment = words(machine.inputs, contract.horizon)
+        self._deployment_words = None
         self._probes = words(machine.inputs, 3)
         self._adapters_proxy = _LazyAdapters(self)
 
     @property
     def adapters(self):
         return self._adapters_proxy
+
+    @property
+    def _deployment(self):
+        """Compatibility word bank, materialized only for exhaustive consumers."""
+        if self._deployment_words is None:
+            self._deployment_words = words(self.machine.inputs, self.contract.horizon)
+        return self._deployment_words
 
     def decompose_id(self, identifier: int) -> tuple[int, int, int, int]:
         """Convert linear adapter id into (input_perm_idx, output_perm_idx, delay, init_output)."""
@@ -796,12 +798,21 @@ class FactoredCandidateSpace(CandidateSpace):
 
     def compose_id(self, i_idx: int, o_idx: int, delay: int = 0, init_output: int = 0) -> int:
         """Compose (input_perm_idx, output_perm_idx, delay, init_output) into canonical linear id."""
+        _integer(i_idx, 'input factor', maximum=self.num_input_perms - 1)
+        _integer(o_idx, 'output factor', maximum=self.num_output_perms - 1)
+        _integer(delay, 'delay', maximum=1)
+        _integer(init_output, 'init_output', maximum=self.machine.outputs - 1)
         if delay == 0:
+            if init_output:
+                raise ValueError('static adapter init_output must be zero')
             return i_idx * self.num_output_perms + o_idx
+        if not self.temporal:
+            raise ValueError('temporal candidates are not enabled')
         pair_idx = i_idx * self.num_output_perms + o_idx
         return self.static_count + pair_idx * self.machine.outputs + init_output
 
     def adapter(self, identifier: int) -> Adapter:
+        _integer(identifier, 'adapter id', maximum=self.total_adapters - 1)
         if identifier not in self._adapter_cache:
             i_idx, o_idx, delay, init_output = self.decompose_id(identifier)
             self._adapter_cache[identifier] = Adapter(
@@ -852,18 +863,18 @@ class FactoredCandidateSpace(CandidateSpace):
     def predict(self, identifier: int, word: tuple[int, ...]) -> tuple[int, ...]:
         i_idx, o_idx, delay, init_o = self.decompose_id(identifier)
         word = _word(word, self.machine.inputs)
+        key = (identifier, word)
+        if key in self._predictions:
+            return self._predictions[key]
         semantic = self._input_trace(i_idx, word)
         out_map = self.output_perms[o_idx]
         self.work['candidate_expansions'] += 1
         if delay == 0:
-            return tuple(out_map[s] for s in semantic)
-        preds = []
-        for t in range(len(semantic)):
-            if t == 0:
-                preds.append(out_map[init_o])
-            else:
-                preds.append(out_map[semantic[t - 1]])
-        return tuple(preds)
+            result = tuple(out_map[s] for s in semantic)
+        else:
+            result = tuple(out_map[init_o if t == 0 else semantic[t - 1]] for t in range(len(semantic)))
+        self._predictions[key] = result
+        return result
 
     def safe_words(self, identifier: int) -> frozenset:
         i_idx, _, _, _ = self.decompose_id(identifier)
@@ -925,13 +936,16 @@ class FactoredCandidateSpace(CandidateSpace):
 
         return tuple(sorted(surviving_ids))
 
-    def plan(self, ids, mode='robust', transcripts=None, anchors=None, risk_tolerance=0.0, *, admission=None):
+    def plan(self, ids, mode='robust', transcripts=None, anchors=None, risk_tolerance=0.0, *, admission=None,
+             node_limit=20000, cancel=None):
         if admission is not None:
             mode = admission
         if mode not in ('robust', 'one_best', 'unique', 'fit', 'identity', 'abstain', 'risk_controlled'):
             raise ValueError('unknown admission mode')
         if type(risk_tolerance) not in (int, float) or not 0 <= risk_tolerance < 1:
             raise ValueError('risk_tolerance must be a finite number in [0, 1)')
+        _integer(node_limit, 'node_limit', 1)
+        self._check_plan_cancel(cancel)
         ids = self._ids(ids)
         if mode == 'risk_controlled':
             if not ids:
@@ -972,13 +986,12 @@ class FactoredCandidateSpace(CandidateSpace):
         if mode == 'robust':
             if not ids:
                 return {'status': 'FAMILY_CONTRADICTED', 'admitted': False, 'word': None, 'candidate_count': 0}
-            active_i = sorted({self.decompose_id(i)[0] for i in ids})
-            common = set(self._safe_for_input_factor(active_i[0]))
-            for i_idx in active_i[1:]:
-                common &= self._safe_for_input_factor(i_idx)
-                if not common:
-                    break
-            chosen = min(common, key=lambda w: (len(w), w)) if common else None
+            active_i = tuple(sorted({self.decompose_id(i)[0] for i in ids}))
+            chosen, complete, expanded = self._robust_word(active_i, node_limit, cancel)
+            if not complete:
+                return {'status': 'SEARCH_LIMIT', 'admitted': False, 'word': None, 'candidate_count': len(ids),
+                        'search': {'complete': False, 'expanded_nodes': expanded, 'node_limit': node_limit,
+                                   'horizon': self.contract.horizon, 'strategy': 'input_factor_product_bfs'}}
             status = ('IDENTIFIED' if len(ids) == 1 else 'TASK_ADMISSIBLE') if chosen is not None else 'UNRESOLVED'
             return {'status': status, 'admitted': chosen is not None, 'word': list(chosen) if chosen is not None else None,
                     'candidate_count': len(ids)}
@@ -991,8 +1004,51 @@ class FactoredCandidateSpace(CandidateSpace):
                     'candidate_count': len(ids)}
         return super().plan(ids, mode=mode, transcripts=transcripts, anchors=anchors, risk_tolerance=risk_tolerance)
 
+    @staticmethod
+    def _check_plan_cancel(cancel):
+        if cancel and cancel():
+            from .study import Cancelled
+            raise Cancelled('Factored planning cancelled')
+
+    def _robust_word(self, active_i, node_limit, cancel):
+        """Search safe joint input-factor states in shortest/lexicographic order."""
+        if active_i in self._robust_plans:
+            return self._robust_plans[active_i], True, 0
+        input_maps = tuple(self.input_perms[i] for i in active_i)
+        start = (self.machine.initial,) * len(input_maps)
+        pending, visited = deque([(start, ())]), {start}
+        expanded = 0
+        while pending:
+            self._check_plan_cancel(cancel)
+            if expanded >= node_limit:
+                return None, False, expanded
+            states, prefix = pending.popleft()
+            expanded += 1
+            for action in range(self.machine.inputs):
+                self._check_plan_cancel(cancel)
+                next_states, goal = [], True
+                for state, input_map in zip(states, input_maps):
+                    following, output = self.machine.transitions[state][input_map[action]]
+                    self.work['source_steps'] += 1
+                    if output == self.contract.hazard:
+                        break
+                    next_states.append(following)
+                    goal = goal and output == self.contract.goal
+                else:
+                    word = prefix + (action,)
+                    # A goal edge can return to an already visited state.
+                    if goal:
+                        self._robust_plans[active_i] = word
+                        return word, True, expanded
+                    following = tuple(next_states)
+                    if len(word) < self.contract.horizon and following not in visited:
+                        visited.add(following)
+                        pending.append((following, word))
+        self._robust_plans[active_i] = None
+        return None, True, expanded
+
     def factor_summary(self, survivors=None) -> dict:
-        """Report factored structure, memory footprint, and active factor counts."""
+        """Report structural factor counts; the ratio is not measured memory compression."""
         if survivors is None:
             survivors = tuple(range(self.total_adapters))
         else:
@@ -1018,4 +1074,5 @@ class FactoredCandidateSpace(CandidateSpace):
             'active_output_factors': len(active_o),
             'active_delay_modes': sorted(active_delay),
             'compression_ratio': round(self.total_adapters / max(1, (self.num_input_perms + self.num_output_perms)), 2),
+            'compression_ratio_scope': 'Structural candidate/factor ratio; not measured memory compression.',
         }

@@ -13,22 +13,33 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
 
 (async () => {
     const child = spawn(python, ['-m', 'crosswire', 'serve', '--port', '0'], {cwd:root, windowsHide:true, stdio:['ignore','pipe','pipe']});
-    let browser, serverErrors = '';
+    let browser, page, output, base, serverErrors = '';
+    const errors = [];
     child.stderr.on('data', value => serverErrors += value);
     try {
-        const base = await new Promise((resolve, reject) => {
+        base = await new Promise((resolve, reject) => {
             const timer = setTimeout(() => reject(new Error('Workbench server did not start')), 15000);
             child.stdout.once('data', value => {clearTimeout(timer);resolve(String(value).trim());});
             child.once('error', reject);
             child.once('exit', code => {clearTimeout(timer);reject(new Error(`Server exited: ${code} ${serverErrors}`));});
         });
         browser = await playwright.chromium.launch({headless:true});
-        const page = await browser.newPage({viewport:{width:1440,height:1000}}), errors = [];
-        const output = path.join(root,'output/playwright');
+        page = await browser.newPage({viewport:{width:1440,height:1000}});
+        output = path.join(root,'output/playwright');
         fs.mkdirSync(output,{recursive:true});
         page.on('pageerror', error => errors.push(error.message));
         await page.goto(base);
         await page.waitForFunction(() => !document.querySelector('#run-button').disabled);
+        assert.equal(await page.inputValue('#candidate_backend'), 'flat', 'Nominal runs must retain the exhaustive backend by default');
+        assert.match(await page.locator('label[for="candidate_backend"]').textContent(), /backend/i);
+        await page.selectOption('#candidate_backend', 'factored');
+        await page.selectOption('#policy', 'lookahead');
+        assert.equal(await page.evaluate(() => config().candidate_backend), 'factored');
+        assert.deepEqual(await page.evaluate(() => studyConfig().candidate_backends), ['factored']);
+        assert.match(await page.textContent('#study-description'), /factored/i);
+        assert.match(await page.textContent('#policy-help'), /model.count.*not.*calibrated/i);
+        await page.selectOption('#candidate_backend', 'flat');
+        await page.selectOption('#policy', 'task');
         assert.equal(await page.locator('#instance_seed').count(), 1, 'Workbench must expose a distinct structural instance seed');
         assert.equal(await page.isDisabled('#instance_seed'), true, 'Legacy families cannot set a structural instance seed');
         assert.match(await page.locator('label[for="seed"]').textContent(), /label/i, 'The nuisance seed must be labeled as label variation');
@@ -69,6 +80,8 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
                 fixture.append(renderCertificate({valid:true,kind:'robust',model_diagnostics:{inclusion_status:'UNKNOWN',enabled_classes:['static'],classes:{static:{candidate_count:2,scored_symbols:1,unscored_symbols:0,events:[{probe_index:0,step:1,action:0,predicted_output_counts:{0:2},observed_output:0,survivors_before:2,survivors_after:2,prediction_status:'SUPPORTED'}],first_refutation:null}},reset_consistency:{status:'UNKNOWN',first_conflict:null},blind_spots:['Raw-equivalent semantic corruption remains unobservable.','<img src=x onerror=alert(1)>']}}));
                 fixture.append(renderCertificate({valid:true,kind:'unresolved',model_diagnostics:{inclusion_status:'REFUTED',enabled_classes:['static'],classes:{static:{candidate_count:0,scored_symbols:1,unscored_symbols:1,events:[{probe_index:1,step:1,action:0,predicted_output_counts:{0:2},observed_output:1,survivors_before:2,survivors_after:0,prediction_status:'UNSUPPORTED'}],first_refutation:{kind:'probe',probe_index:1,step:1,word_prefix:[0],observed_output:1,survivors_before:2}}},reset_consistency:{status:'REFUTED',first_conflict:{word_prefix:[0],previous_probe_index:0,probe_index:1}},blind_spots:[]}}));
                 renderStudy({rows:[],summary:[],paired:[],protocol:{families:['generated_protocol'],instance_seeds:[0,1],seeds:[17,18],fault_schedules:[null,{type:'stuck_output',step:0,phase:'calibration',value:3}]},reliability:[{family:'generated_protocol',method:'task/robust',budget:0,fault_schedule:{type:'sensor_drift',step:2,phase:'always'},requests:4,parent_clusters:2,independent_parents:2,target_any_deployment_hazard:{events:0,targets:2,rate:0,interval:[0,0.84],unknown_targets:1},target_any_calibration_hazard:{events:1,targets:2,rate:0.5,interval:null,unknown_targets:0},target_average_useful_coverage:{estimate:0.5,interval:null},conditional_selective_harm:null,inference_eligible:false,inference_reason:'Insufficient independent targets',scope:'Conditional on independent synthetic structural parents.'}]},fixture);
+                fixture.append(renderBackend({backend:'factored',cached_adapters:4,total_candidates:144,cached_predictions:12}));
+                fixture.append(renderPlanning([{planning:{expanded_nodes:2048,node_limit:2048,depth_limit:2,search_complete:false,selection:'fallback',certificate:{valid:true,ready_models:3,candidate_count:12,worst_case_calls:5},tree:{private:'PRIVATE_TREE_SENTINEL'}}}]));
             });
             const fixture = page.locator('#fixture-results');
             assert.match(await fixture.textContent(), /Model inclusion: UNKNOWN/);
@@ -86,6 +99,15 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
             assert.match(await fixture.textContent(), /No injected fault/);
             assert.match(await fixture.textContent(), /stuck output.*zero-based step 0.*calibration.*output 3/);
             assert.match(await fixture.textContent(), /sensor drift.*zero-based step 2.*both phases/);
+            assert.match(await fixture.textContent(), /backend flat/i, 'Legacy omitted backends must display the flat default');
+            assert.match(await fixture.textContent(), /Candidate backend/);
+            assert.match(await fixture.textContent(), /cached adapters.*4/i);
+            assert.match(await fixture.textContent(), /cached predictions.*12/i);
+            assert.match(await fixture.textContent(), /Budgeted experiment planning/);
+            assert.match(await fixture.textContent(), /3 \/ 12/);
+            assert.match(await fixture.textContent(), /incomplete search/i);
+            assert.match(await fixture.textContent(), /not a calibrated.*probability/i);
+            assert.doesNotMatch(await fixture.textContent(), /PRIVATE_TREE_SENTINEL/);
             assert.deepEqual(errors, []);
             console.log('PASS: fault defaults and native validation, structural seed controls, legacy-family boundary, public diagnostics, target reliability, safe DOM');
             return;
@@ -139,8 +161,8 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         const submitted = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/studies'));
         await page.click('#study-button');
         const spec = (await submitted).postDataJSON();
-        assert.deepEqual(spec, {families:['routing'],seeds:[42,43],budgets:[0],policies:['task'],admissions:['robust','adaptive'],implementations:['procedural'],anchors:false,split:'evaluation',horizon:3,temporal:false,escalate:false,execution_mode:'recovery',probe_safety:'model_safe',risk_tolerance:0,fault_schedules:[null]});
-        await page.waitForFunction(() => !document.querySelector('#result-view').hidden && document.querySelector('#job-panel').hidden, {timeout:60000});
+        assert.deepEqual(spec, {families:['routing'],seeds:[42,43],budgets:[0],policies:['task'],admissions:['robust','adaptive'],implementations:['procedural'],anchors:false,split:'evaluation',horizon:3,temporal:false,escalate:false,execution_mode:'recovery',probe_safety:'model_safe',risk_tolerance:0,fault_schedules:[null],candidate_backends:['flat']});
+        await page.waitForFunction(() => !document.querySelector('#result-view').hidden && document.querySelector('#job-panel').hidden, null, {timeout:60000});
         assert.match(await page.textContent('#result-content'), /parent[ _]clusters/i);
         assert.match(await page.textContent('#result-content'), /descriptive 95% interval/i);
         assert.match(await page.textContent('#result-content'), /model.safe/i);
@@ -181,7 +203,7 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
             await page.click('#cancel-button');
             await cancelRequest;
             await page.request.post(base + `api/runs/${blocking.id}/cancel`, {data:{}});
-            await page.waitForFunction(() => document.querySelector('#job-panel').hidden, {timeout:60000});
+            await page.waitForFunction(() => document.querySelector('#job-panel').hidden, null, {timeout:60000});
             assert.match(await page.textContent('#notice'), /cancelled/i);
             assert.equal(await page.isVisible('#result-view'), true, 'Cancellation preserves previous complete evidence');
         }
@@ -193,7 +215,7 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         const submittedGenerated = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/studies'));
         await page.click('#study-button');
         assert.deepEqual((await submittedGenerated).postDataJSON(), {...spec,families:['generated_protocol'],instance_seeds:[1,2]});
-        await page.waitForFunction(() => document.querySelector('#result-content').textContent.includes('8 run results') && document.querySelector('#job-panel').hidden, {timeout:60000});
+        await page.waitForFunction(() => document.querySelector('#result-content').textContent.includes('8 run results') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
         assert.match(await page.textContent('#result-content'), /Independent-target reliability/);
         assert.match(await page.textContent('#result-content'), /Independent parents/);
         assert.match(await page.textContent('#result-content'), /independent generator draws assumed/);
@@ -220,17 +242,17 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         const submittedRisk = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/runs'));
         await page.click('#run-button');
         assert.equal((await submittedRisk).postDataJSON().risk_tolerance, 0.25, 'The selected candidate fraction must reach the scientific worker');
-        await page.waitForFunction(() => document.querySelector('#result-kind').textContent === 'EXPERIMENT RECEIPT' && document.querySelector('#job-panel').hidden, {timeout:60000});
+        await page.waitForFunction(() => document.querySelector('#result-kind').textContent === 'EXPERIMENT RECEIPT' && document.querySelector('#job-panel').hidden, null, {timeout:60000});
         assert.match(await page.textContent('#result-content'), /no plan selected; candidate rates are undefined/i);
         assert.match(await page.textContent('#result-content'), /Configured tolerance 0.25/);
         assert.doesNotMatch(await page.textContent('#result-content'), /Uniformly weighted candidate fractions: hazardous/);
         await page.selectOption('#family', 'symmetric');
         await page.selectOption('#admission', 'robust');
         await page.click('#run-button');
-        await page.waitForFunction(() => document.querySelector('#result-content').textContent.includes('Admission: Robust sequence across survivors') && document.querySelector('#job-panel').hidden, {timeout:60000});
+        await page.waitForFunction(() => document.querySelector('#result-content').textContent.includes('Admission: Robust sequence across survivors') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
         assert.match(await page.textContent('#result-content'), /Public model evidence/);
         assert.match(await page.textContent('#result-content'), /Calibration safety/);
-        assert.match(await page.textContent('#result-content'), /Factored hypothesis space:/);
+        assert.match(await page.textContent('#result-content'), /Structural factors among surviving adapters:/);
         assert.match(await page.textContent('#result-content'), /does not authenticate/i);
         await page.selectOption('#family', 'latch');
         await page.fill('#seed', '42');
@@ -273,13 +295,79 @@ const python = process.env.CROSSWIRE_PYTHON || (fs.existsSync(venvPython) ? venv
         assert.match(await page.textContent('#study-run-detail'), /sensor drift.*zero-based step 1.*deployment/i);
         await page.click('#replay-button');
         await page.waitForFunction(() => !state.active && !state.busy && document.querySelector('#notice').textContent.includes('Replay verified') && document.querySelector('#job-panel').hidden, null, {timeout:60000});
+        await page.selectOption('#fault_type', 'off');
+        await page.selectOption('#candidate_backend', 'factored');
+        await page.selectOption('#policy', 'lookahead');
+        await page.selectOption('#admission', 'robust');
+        await page.selectOption('#family', 'latch');
+        await page.fill('#budget', '4');
+        const submittedLookahead = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/runs'));
+        await page.click('#run-button');
+        const lookaheadConfiguration = (await submittedLookahead).postDataJSON();
+        assert.equal(lookaheadConfiguration.policy, 'lookahead');
+        assert.equal(lookaheadConfiguration.candidate_backend, 'factored');
+        assert.equal(lookaheadConfiguration.fault_schedule, null);
+        await page.waitForFunction(() => !state.active && !state.busy && state.completed?.result.configuration?.policy === 'lookahead', null, {timeout:60000});
+        assert.match(await page.textContent('#result-content'), /Candidate backend/);
+        assert.match(await page.textContent('#result-content'), /backend factored/i);
+        assert.match(await page.textContent('#result-content'), /Budgeted experiment planning/);
+        assert.match(await page.textContent('#result-content'), /not a calibrated.*probability/i);
+        const lookaheadDownloadPromise = page.waitForEvent('download');
+        await page.click('#export-button');
+        const lookaheadDownload = await lookaheadDownloadPromise;
+        const lookaheadReceipt = JSON.parse(fs.readFileSync(await lookaheadDownload.path(), 'utf8'));
+        assert.equal(lookaheadReceipt.payload.configuration.candidate_backend, 'factored');
+        assert.ok(lookaheadReceipt.payload.backend);
+        const plans = lookaheadReceipt.payload.probes.filter(probe => probe.planning);
+        assert.ok(plans.length > 0, 'The actual lookahead run must retain its checked experiment proposal');
+        assert.ok(plans.every(probe => probe.planning.certificate.valid === true));
+        await page.click('#replay-button');
+        await page.waitForFunction(() => !state.active && !state.busy && document.querySelector('#notice').textContent.includes('Replay verified'), null, {timeout:60000});
+        await page.fill('#budget', '2');
+        const submittedLookaheadStudy = page.waitForRequest(req => req.method() === 'POST' && req.url().endsWith('/api/studies'));
+        await page.click('#study-button');
+        const lookaheadSpec = (await submittedLookaheadStudy).postDataJSON();
+        assert.deepEqual(lookaheadSpec.candidate_backends, ['factored']);
+        assert.deepEqual(lookaheadSpec.policies, ['lookahead','fixed']);
+        await page.waitForFunction(() => !state.active && !state.busy && state.completed?.result.schema === 'crosswire-study-v1' && state.completed.result.protocol?.policies.includes('lookahead'), null, {timeout:60000});
+        const lookaheadStudyDownloadPromise = page.waitForEvent('download');
+        await page.click('#export-button');
+        const lookaheadStudyDownload = await lookaheadStudyDownloadPromise;
+        const lookaheadStudy = JSON.parse(fs.readFileSync(await lookaheadStudyDownload.path(), 'utf8')).payload;
+        assert.equal(lookaheadStudy.rows.length, 8);
+        assert.deepEqual(lookaheadStudy.protocol.candidate_backends, ['factored']);
+        assert.ok(lookaheadStudy.rows.every(row => row.configuration.candidate_backend === 'factored'));
+        assert.ok(lookaheadStudy.summary.every(row => row.candidate_backend === 'factored'));
+        const plannedRow = lookaheadStudy.rows.findIndex(row => row.probes.some(probe => probe.planning));
+        assert.ok(plannedRow >= 0, 'The small study must include executed lookahead proposals');
+        await page.getByRole('button', {name:`Inspect run ${plannedRow+1}`, exact:true}).click();
+        assert.match(await page.textContent('#study-run-detail'), /Budgeted experiment planning/);
+        assert.match(await page.textContent('#study-run-detail'), /backend factored/i);
+        await page.click('#replay-button');
+        await page.waitForFunction(() => !state.active && !state.busy && document.querySelector('#notice').textContent.includes('Replay verified'), null, {timeout:60000});
         await page.screenshot({path:path.join(output,'evidence-workbench-desktop.png'),fullPage:true});
         await page.setViewportSize({width:390,height:900});
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'Mobile workbench must not overflow horizontally');
         await page.screenshot({path:path.join(output,'evidence-workbench-mobile.png'),fullPage:true});
         assert.deepEqual(errors, []);
         assert.equal(serverErrors, '');
-        console.log('PASS: fault controls, native validation, actual fault run/study/export/replay, calibration and tolerance controls, structural instance seeds, exact nominal/generated studies, independent-target reliability, public model diagnostics, row inspection, cancellable replay/import, responsive layout');
+        console.log('PASS: backend/lookahead controls and actual factored run/study/export/replay, checked experiment planning, fault controls, native validation, actual fault run/study/export/replay, calibration and tolerance controls, structural instance seeds, independent-target reliability, public model diagnostics, row inspection, cancellable replay/import, responsive layout');
+    } catch (error) {
+        if (page && output) {
+            await page.screenshot({path:path.join(output,'failure.png'),fullPage:true}).catch(() => {});
+            const context = await page.evaluate(() => ({
+                notice:document.querySelector('#notice')?.textContent,
+                job:document.querySelector('#job-message')?.textContent,
+                status:document.querySelector('#job-status')?.textContent,
+                active:state.active, completedSchema:state.completed?.result?.schema
+            })).catch(() => ({}));
+            if(context.active?.id&&base){
+                context.serverJob=await page.request.get(base+`api/runs/${context.active.id}`).then(r=>r.json()).then(j=>({status:j.status,error:j.error,progress:j.progress})).catch(e=>({error:String(e)}));
+            }
+            fs.writeFileSync(path.join(output,'failure-context.json'),JSON.stringify({error:String(error),serverErrors,pageErrors:errors,...context},null,2));
+            console.error('Workbench failure context:',context);
+        }
+        throw error;
     } finally {
         if (browser) await browser.close();
         child.kill();

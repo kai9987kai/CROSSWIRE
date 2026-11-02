@@ -6,18 +6,19 @@ import random
 
 from .core import Machine, Contract, CandidateSpace, compare_adapter
 from .interfaces import InterfaceError
+from .backends import make_space
 
 
 class _BudgetExhausted(RuntimeError):
     pass
 
 
-def acquire_aalpy(public: dict, budget: int, target, cancel=None):
+def acquire_aalpy(public: dict, budget: int, target, cancel=None, *, candidate_backend='flat'):
     from aalpy.base import SUL, Oracle
     from aalpy.learning_algs import run_Lstar
     from .study import Cancelled, fit_evidence
 
-    space = CandidateSpace(Machine.from_dict(public['reference']), Contract.from_dict(public['contract']))
+    space = make_space(Machine.from_dict(public['reference']), Contract.from_dict(public['contract']), candidate_backend)
     anchors = {int(k): int(v) for k, v in public.get('anchors', {}).items()}
     probes, error = [], None
     detail = {'library': 'aalpy', 'version': version('aalpy'), 'model_complete': False,
