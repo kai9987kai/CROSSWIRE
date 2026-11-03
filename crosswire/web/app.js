@@ -173,7 +173,7 @@ function renderModelDiagnostics(diagnostic){
     if(Array.isArray(diagnostic.enabled_classes))section.append(element('p',`Enabled classes: ${diagnostic.enabled_classes.join(' / ')}`,'fineprint'));
     for(const [name,model] of Object.entries(diagnostic.classes||{})){
         const block=element('div',null,'diagnostic-class'),events=Array.isArray(model.events)?model.events:[],status=model.inclusion_status||(model.candidate_count===0?'REFUTED':'UNKNOWN');
-        block.append(element('h4',`${name.replaceAll('_',' ')} model class · ${status}`),keyValues({surviving_candidates:model.candidate_count,scored_symbols:model.scored_symbols,unscored_symbols:model.unscored_symbols}));
+        block.append(element('h4',`${name.replaceAll('_',' ')} model class · ${status}`),keyValues({surviving_candidates:model.candidate_count,scored_symbols:model.scored_symbols,unscored_symbols:model.unscored_symbols,cumulative_surprisal_bits:model.cumulative_surprisal_bits,mean_surprisal_bits:model.mean_symbol_surprisal_bits,martingale_e_value:model.martingale_e_value,martingale_refuted_alpha_05:model.martingale_refuted_alpha_05}));
         const first=model.first_refutation;
         if(first){
             block.append(element('p',first.kind==='anchor'?`First refutation: conflicting anchor for raw ${readable(first.raw)} and semantic ${readable(first.semantic)}.`:`First refutation: probe ${Number.isInteger(first.probe_index)?first.probe_index+1:'—'}, step ${number(first.step)}${first.word_prefix?` · prefix ${word(first.word_prefix)}`:''}. Observed raw output ${readable(first.observed_output)} had no support among ${number(first.survivors_before)} prior candidates.`,'fineprint'),rawDetails('First public refutation witness',first));

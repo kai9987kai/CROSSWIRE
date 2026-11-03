@@ -1,6 +1,6 @@
 {
   "schema": "crosswire-receipt-v1",
-  "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+  "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
   "payload": {
     "schema": "crosswire-study-v1",
     "protocol": {
@@ -43,10 +43,10 @@
       "risk_tolerance": 0.0,
       "exploratory": true,
       "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
-      "pre_execution_source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50"
+      "pre_execution_source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1"
     },
-    "protocol_hash": "e9d9e4b488644924c888e203b8354518963212756abba677c6d8f7f73268ca5c",
-    "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+    "protocol_hash": "a898390971fb2a300cb50d5315d1a390e1a4530eea2ab078bbb7d1ef842e16b6",
+    "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
     "rows": [
       {
         "schema": "crosswire-result-v1",
@@ -84,7 +84,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -245,6 +245,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 6.1699,
                 "mean_symbol_surprisal_bits": 1.5425,
+                "martingale_e_value": 0.2812,
+                "martingale_log10": -0.5509,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -389,7 +393,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "a7bbe195c442fae4eea32512f8b929125fe8e3d423ecbbe8420b3a2252f047b9",
+        "decision_frozen_hash": "49dea432d0037b4570ca1b799b2626eee367c82c3ee151d18d4af0316eb9442f",
         "deployment": {
           "word": [
             0,
@@ -516,9 +520,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.65625,
-          "wall_seconds": 0.9217492999960086,
-          "parent_peak_traced_bytes": 3562539,
+          "parent_cpu_seconds": 0.734375,
+          "wall_seconds": 1.0223030999986804,
+          "parent_peak_traced_bytes": 3562605,
           "audit_product_pairs": 195,
           "audit_execution_steps": 52
         },
@@ -526,7 +530,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "990e1f8b639f50f981e4ec4b38fb4f481f521bd83bb15f0c39b9900aafc887f9"
+        "scientific_hash": "3d7cd918cd74f364914bd9df3ef6df32b2944cf7116645c50b3d4e1068d2bf20"
       },
       {
         "schema": "crosswire-result-v1",
@@ -564,7 +568,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -725,6 +729,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 6.1699,
                 "mean_symbol_surprisal_bits": 1.5425,
+                "martingale_e_value": 0.2812,
+                "martingale_log10": -0.5509,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -869,7 +877,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "23274fa871cb8025a6cdf533c8ad1ba655c46b07c1dd2e9602a29b8b89b4b810",
+        "decision_frozen_hash": "6b816eeac7662bcffbdacc96ca4ab25a3783484859c210f344a974fb28b4d3ae",
         "deployment": {
           "word": [
             0,
@@ -996,9 +1004,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.578125,
-          "wall_seconds": 1.1383184000005713,
-          "parent_peak_traced_bytes": 3820340,
+          "parent_cpu_seconds": 0.78125,
+          "wall_seconds": 1.0494581000020844,
+          "parent_peak_traced_bytes": 3820129,
           "audit_product_pairs": 187,
           "audit_execution_steps": 64
         },
@@ -1006,7 +1014,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "b0fd478acb9ac6cd4afe08f5a8b097a1a991ef244c5d30e7ade70fe5e56736ae"
+        "scientific_hash": "88f55af12f6103d89c811ce4ef4b18da05100cc2c03f4769912d35bdade45dec"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1044,7 +1052,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1262,6 +1270,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 5.1699,
                 "mean_symbol_surprisal_bits": 1.7233,
+                "martingale_e_value": 0.5625,
+                "martingale_log10": -0.2499,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -1388,7 +1400,7 @@
             "survivors_after": 4
           }
         ],
-        "decision_frozen_hash": "98f95345df630b523f9efeff7139692ff29328992b38eb8d6ada9f437fb4dcbb",
+        "decision_frozen_hash": "845b91252b3e8023a5f00eaa9270dd9c82d45d82ff6ee3b15a20e22f5f856c3d",
         "deployment": {
           "word": [
             0,
@@ -1524,9 +1536,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.609375,
-          "wall_seconds": 0.9037586000049487,
-          "parent_peak_traced_bytes": 3784444,
+          "parent_cpu_seconds": 0.703125,
+          "wall_seconds": 1.0334129999973811,
+          "parent_peak_traced_bytes": 3784879,
           "audit_product_pairs": 192,
           "audit_execution_steps": 256
         },
@@ -1534,7 +1546,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "89476b4460d60b2e6121b0caf3863364982a676535416beaadcf835ac8ed9a74"
+        "scientific_hash": "52a974264d576e786b2bb2b07b39e60a942f0c33a3ea5e4b8839e86ecb1bca61"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1572,7 +1584,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1790,6 +1802,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 5.1699,
                 "mean_symbol_surprisal_bits": 1.7233,
+                "martingale_e_value": 0.5625,
+                "martingale_log10": -0.2499,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -1916,7 +1932,7 @@
             "survivors_after": 4
           }
         ],
-        "decision_frozen_hash": "c6b1b7e88103c2b667fc1d6e7116b5443857a916e7a7a08eae9343ef36d38f68",
+        "decision_frozen_hash": "4967f938b8063e46c277f5e36da47f8ce685316e389443e4c3579342060baecd",
         "deployment": {
           "word": [
             0,
@@ -2052,9 +2068,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.671875,
-          "wall_seconds": 0.9400683000058052,
-          "parent_peak_traced_bytes": 3783674,
+          "parent_cpu_seconds": 0.765625,
+          "wall_seconds": 1.0279998000041815,
+          "parent_peak_traced_bytes": 3783989,
           "audit_product_pairs": 192,
           "audit_execution_steps": 263
         },
@@ -2062,7 +2078,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "8e5078501a148f1a50cded5a8b89bfac4231da6ca56ac4a2308134394c7702b1"
+        "scientific_hash": "e100919c1889e4a126c8e2ddeb479fb7f2a4577a8f8d7b74c678c9c4de242ea9"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2100,7 +2116,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4221,6 +4237,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 0.0,
                 "mean_symbol_surprisal_bits": 0.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": []
               }
@@ -4251,7 +4271,7 @@
           "binding_hash": "97e4c73cba0c72d12b528193c595c3fc84e94329a103309a9ea788f4dd6419d9"
         },
         "probes": [],
-        "decision_frozen_hash": "37624633c1175df30f56276a699c3e0716afc22992939aa34cf0a58a4c45e22f",
+        "decision_frozen_hash": "536273c5000f901befb870bd54b06936c8deab20b74e2eae00ee8a247923db56",
         "deployment": {
           "word": [
             0,
@@ -4378,9 +4398,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.65625,
-          "wall_seconds": 1.0471135000043432,
-          "parent_peak_traced_bytes": 4735009,
+          "parent_cpu_seconds": 0.703125,
+          "wall_seconds": 1.016576599999098,
+          "parent_peak_traced_bytes": 4735382,
           "audit_product_pairs": 186,
           "audit_execution_steps": 10
         },
@@ -4388,7 +4408,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "768f184d270005f5c5757b5abb0c9317fac8486110efa186c4d0691133e0ece4"
+        "scientific_hash": "fdab56b023aacc99aa2ce4a291c84f4820a34ebf5013221e7c70522b95e040f3"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4426,7 +4446,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6547,6 +6567,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 0.0,
                 "mean_symbol_surprisal_bits": 0.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": []
               }
@@ -6577,7 +6601,7 @@
           "binding_hash": "41d4cff43deaf27301d9a894778ea87dfdd78db1dc2d528b4498a72d3fd26284"
         },
         "probes": [],
-        "decision_frozen_hash": "45875a82de4286c5c1180494e433545627e9b4b8a13fb7146453648c7cc28057",
+        "decision_frozen_hash": "dfd18d00e92a07899acf9d63bd7450adf2a667a3b3ac941110626f315d7abecf",
         "deployment": {
           "word": [
             0,
@@ -6704,9 +6728,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.609375,
-          "wall_seconds": 0.9189409999962663,
-          "parent_peak_traced_bytes": 4735669,
+          "parent_cpu_seconds": 0.6875,
+          "wall_seconds": 0.9300486000065575,
+          "parent_peak_traced_bytes": 4736197,
           "audit_product_pairs": 170,
           "audit_execution_steps": 11
         },
@@ -6714,7 +6738,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "263e93e5d33aace5288cc72b333af5333025c47036dae7af0982237436a29ced"
+        "scientific_hash": "afcbe8486d36f8e2dc092df2216bb713ae0a51630e907fea105aa79f5ba159ce"
       },
       {
         "schema": "crosswire-result-v1",
@@ -6752,7 +6776,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -6913,6 +6937,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 6.1699,
                 "mean_symbol_surprisal_bits": 1.5425,
+                "martingale_e_value": 0.2812,
+                "martingale_log10": -0.5509,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -7057,7 +7085,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "de53de138531616018023e11cce79edba2e23e281be42e87907b3ffbc1ab0763",
+        "decision_frozen_hash": "da04744757c6390c7b7b2baefbe78abfa382d24038ba989c651c5150648d44e8",
         "deployment": {
           "word": [
             0,
@@ -7183,9 +7211,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.625,
-          "wall_seconds": 0.9261351000022842,
-          "parent_peak_traced_bytes": 3541933,
+          "parent_cpu_seconds": 0.65625,
+          "wall_seconds": 0.9255055000030552,
+          "parent_peak_traced_bytes": 3542213,
           "audit_product_pairs": 195,
           "audit_execution_steps": 40
         },
@@ -7193,7 +7221,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "a6049b6404e5a4a0e84c53e6e84e9ec63e44792b54671601ec8b7a09306c17fe"
+        "scientific_hash": "91aa3e36d47dd6e55fc0351ffe983cf1a8568e98c2f1b0cb961d9fd7ea8d7e7d"
       },
       {
         "schema": "crosswire-result-v1",
@@ -7231,7 +7259,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "6bf8a1e9f8d3ebf63c8a528aa8970bd52342175a0f054b9476a6d4bb37a1db50",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -7392,6 +7420,10 @@
                 "unscored_symbols": 0,
                 "cumulative_surprisal_bits": 6.1699,
                 "mean_symbol_surprisal_bits": 1.5425,
+                "martingale_e_value": 0.2812,
+                "martingale_log10": -0.5509,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -7536,7 +7568,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "fcebdc6d3bb74920885bae1bf37044c51619a8318c7a259df0378c7ea4d50112",
+        "decision_frozen_hash": "49de4d01bb2981fa36c60aeeef2c92cd7f544de532e59905c064fda9b488b86e",
         "deployment": {
           "word": [
             0,
@@ -7662,9 +7694,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.640625,
-          "wall_seconds": 0.9240848999979789,
-          "parent_peak_traced_bytes": 3753742,
+          "parent_cpu_seconds": 0.59375,
+          "wall_seconds": 1.0011969999977737,
+          "parent_peak_traced_bytes": 3754375,
           "audit_product_pairs": 187,
           "audit_execution_steps": 40
         },
@@ -7672,7 +7704,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "6dcd0db5d683d5a64e695688b531e6a92da37f0852dfe37b24bb16a8f1e4cfa7"
+        "scientific_hash": "d6080c2ff4705666b1703dfe7fddd3f1327d2ed353c27fff7d981f5f5ec51643"
       }
     ],
     "summary": [
@@ -8060,7 +8092,7 @@
         "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
       }
     ],
-    "scientific_hash": "af56f663a2d4102f69e2214f40c3908294754e9e1ffcc5e723808f7617dc99aa"
+    "scientific_hash": "57aa30e92a9c97cab39c7907d429ff623e23761d194dd9b26da340ad28467d82"
   },
-  "payload_hash": "197976e20938c8330b7dfbfee0508aa9f923f9afd705404257f16c78639416c6"
+  "payload_hash": "66d5827158cc307a08f77d06dd5ced091780efd51ff57e81d7f113aee6209267"
 }

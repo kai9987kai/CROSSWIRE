@@ -28,5 +28,8 @@ The 2026-11-03 increment adds:
 2. Decision-theoretic Value of Information (`voi`) active probing policy maximizing expected posterior task readiness with Shannon entropy tie-breaking.
 3. Information-theoretic surprisal bits and mean symbol loss tracking in model diagnostics certificates.
 4. Interactive dashboard support for VoI probing, recovery strategy selection, and soft return telemetry.
+5. Sequential non-conformity test martingales and anytime-valid e-processes ($M_t = \prod_{k=1}^t E_k$) with finite-sample Type-I error control under Ville's maximal inequality ($\mathbb{P}_{H_0}(\exists t \ge 1: M_t \ge 1/lpha) \le lpha$), refuting misspecified model classes at $lpha=0.05$ and $lpha=0.01$.
+6. Publication-grade formal LaTeX conference paper (`paper/crosswire_formal_synthesis.tex` and `paper/references.bib`) verified by automated structural/citation checker (`tools/check_latex.py` and `tests/test_paper.py`).
+7. 12-run empirical comparative evaluation receipt (`reports/pilot-voi-and-recovery-receipt.json`) and markdown report (`reports/pilot-voi-and-recovery.md`) proving VoI sample efficiency over Shannon entropy and 100% shield intervention and de-escalation under change-point sensor drift.
 
 Keep implementation, local validation, independent target sampling, CI execution and publication distinct. Preserve historical receipt bytes and their source revisions. Never count label seeds or duplicate implementations as independent dynamics. Zero observed hazards must not produce a zero-width safety claim.

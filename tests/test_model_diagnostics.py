@@ -186,3 +186,26 @@ def test_nested_diagnostics_trace_each_live_model_once_per_observed_word(monkeyp
     certificates._model_diagnostics(machine, [], [((0, 1, 2), (0, 1, 2))], True)
     assert len(calls) == 720
     assert max(calls.values()) == 1
+
+
+def test_model_diagnostics_tracks_martingale_e_value():
+    probes = [{'word': [0, 1], 'outputs': [0, 1], 'complete': True}]
+    diag = _diagnostics(_result(probes=probes))
+    static = diag['classes']['static']
+    assert 'martingale_e_value' in static
+    assert 'martingale_log10' in static
+    assert 'martingale_refuted_alpha_05' in static
+    assert 'martingale_refuted_alpha_01' in static
+    assert static['martingale_e_value'] > 0.0
+    assert static['martingale_refuted_alpha_05'] is False
+    assert static['martingale_refuted_alpha_01'] is False
+
+
+def test_model_diagnostics_martingale_escalates_on_model_mismatch():
+    probes = [{'word': [0, 1], 'outputs': [0, 1], 'complete': True},
+              {'word': [0, 2, 1], 'outputs': [1, 0, 0], 'complete': True}]
+    diag = _diagnostics(_result(probes=probes))
+    static = diag['classes']['static']
+    assert static['martingale_e_value'] >= 100.0
+    assert static['martingale_refuted_alpha_05'] is True
+    assert static['martingale_refuted_alpha_01'] is True

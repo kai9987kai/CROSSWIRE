@@ -126,6 +126,10 @@ def _model_diagnostics(machine, anchors, probes, temporal):
                          'unscored_symbols': total_symbols,
                          'cumulative_surprisal_bits': 0.0,
                          'mean_symbol_surprisal_bits': 0.0,
+                         'martingale_e_value': 1.0,
+                         'martingale_log10': 0.0,
+                         'martingale_refuted_alpha_05': False,
+                         'martingale_refuted_alpha_01': False,
                          'first_refutation': first_refutation, 'events': []}
     for index, (word, outputs) in enumerate(probes):
         if not outputs:
@@ -157,12 +161,22 @@ def _model_diagnostics(machine, anchors, probes, temporal):
                     diagnostic['scored_symbols'] += 1
                     prob = counts[output] / before if supported else 1.0 / (before + 1)
                     diagnostic['cumulative_surprisal_bits'] += -math.log2(prob)
+                    if supported and counts[output] > 0:
+                        e_step = (1.0 / machine.outputs) / (counts[output] / before)
+                    else:
+                        e_step = 1e6
+                    diagnostic['martingale_e_value'] = diagnostic.get('martingale_e_value', 1.0) * e_step
                     if not belief:
                         diagnostic['first_refutation'] = {'kind': 'probe', **event,
                                                           'word_prefix': list(word[:offset + 1])}
             beliefs[name] = belief
             diagnostic['cumulative_surprisal_bits'] = round(diagnostic['cumulative_surprisal_bits'], 4)
             diagnostic['mean_symbol_surprisal_bits'] = round(diagnostic['cumulative_surprisal_bits'] / diagnostic['scored_symbols'], 4) if diagnostic['scored_symbols'] else 0.0
+            m_val = diagnostic.get('martingale_e_value', 1.0)
+            diagnostic['martingale_e_value'] = round(m_val, 4)
+            diagnostic['martingale_log10'] = round(math.log10(max(m_val, 1e-12)), 4) if m_val > 0 else -12.0
+            diagnostic['martingale_refuted_alpha_05'] = bool(m_val >= 20.0)
+            diagnostic['martingale_refuted_alpha_01'] = bool(m_val >= 100.0)
             diagnostic.update(inclusion_status='UNKNOWN' if belief else 'REFUTED',
                               candidate_count=len(belief),
                               unscored_symbols=total_symbols - diagnostic['scored_symbols'])

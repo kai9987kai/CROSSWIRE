@@ -1,6 +1,6 @@
 {
   "schema": "crosswire-receipt-v1",
-  "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+  "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
   "payload": {
     "schema": "crosswire-study-v1",
     "protocol": {
@@ -37,10 +37,10 @@
       "execution_mode": "shielded",
       "exploratory": true,
       "analysis_unit": "underlying semantic parent instance; label permutations and implementations clustered",
-      "pre_execution_source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2"
+      "pre_execution_source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1"
     },
-    "protocol_hash": "a8fb0b8d99e5660e29788f7fa9ed185d73f1b20cb70e11b3cfb09b9de2ec1895",
-    "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+    "protocol_hash": "4e44d828abda7cc478fc3ee08837cf3131f7e435c9e51531c9c10a8d997d76c3",
+    "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
     "rows": [
       {
         "schema": "crosswire-result-v1",
@@ -61,7 +61,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "flat"
+          "candidate_backend": "flat",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "flat",
@@ -77,7 +78,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -708,6 +709,12 @@
                 "candidate_count": 36,
                 "scored_symbols": 1,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 2.0,
+                "mean_symbol_surprisal_bits": 2.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -763,7 +770,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "0338f2cb0509863483bd562e962fc6f579005dc817f11b7e4f50712686149d22"
+          "binding_hash": "333a2fc4e23a90ce7b53ff08234460ef87e44c8403add4cd05caa71d2f2d10c8"
         },
         "probes": [
           {
@@ -778,7 +785,7 @@
             "survivors_after": 36
           }
         ],
-        "decision_frozen_hash": "481eb47bff667435bbe9b9c0a896d1a8d091bffb45e3f861ec966c53eac534f6",
+        "decision_frozen_hash": "cb5ab652a0cf6886f5c45315db5e297e16613724ae64abf3b1d85db8bba25464",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -836,9 +843,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.84375,
-          "wall_seconds": 3.948481500003254,
-          "parent_peak_traced_bytes": 3968063,
+          "parent_cpu_seconds": 0.609375,
+          "wall_seconds": 0.988424400005897,
+          "parent_peak_traced_bytes": 4023938,
           "audit_product_pairs": 195,
           "audit_execution_steps": 25
         },
@@ -846,7 +853,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "45f085774563ef6ad94547b1da31190aff4895b49d55148da9b98732febce4f4"
+        "scientific_hash": "54b919ea4680f2dd24fe9227d02050e728154e793f593996e50f41ed18787cc2"
       },
       {
         "schema": "crosswire-result-v1",
@@ -867,7 +874,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "factored"
+          "candidate_backend": "factored",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "factored",
@@ -883,7 +891,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -1514,6 +1522,12 @@
                 "candidate_count": 36,
                 "scored_symbols": 1,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 2.0,
+                "mean_symbol_surprisal_bits": 2.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -1569,7 +1583,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "6eb3d309d3c949ae016a52c1ca48bcfade7ebef0e9edd7d0373084edadba2c92"
+          "binding_hash": "52cfa936d13d4e457ca7e72730547e9456a794f6b20da01e9151f5f4b4aba17f"
         },
         "probes": [
           {
@@ -1584,7 +1598,7 @@
             "survivors_after": 36
           }
         ],
-        "decision_frozen_hash": "d681a850ebe3cfa219e81f6e15a712669320f08c0e332fd6a6684652e5430261",
+        "decision_frozen_hash": "078fa2174d0d20912536a8f4e80f80f57e3cbd9908e6c1055cb42c8367ea295d",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -1642,9 +1656,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.078125,
-          "wall_seconds": 0.6277026000025216,
-          "parent_peak_traced_bytes": 228351,
+          "parent_cpu_seconds": 0.109375,
+          "wall_seconds": 0.3374566999991657,
+          "parent_peak_traced_bytes": 228376,
           "audit_product_pairs": 195,
           "audit_execution_steps": 25
         },
@@ -1652,7 +1666,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "f7f18950268d17f80467b96cba02520b38aaf053533eafc2697085965a592981"
+        "scientific_hash": "43d0ba9f1c30b373180425af279be8e101fa4983bb1f7b742298cdd1d44e2197"
       },
       {
         "schema": "crosswire-result-v1",
@@ -1673,7 +1687,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "flat"
+          "candidate_backend": "flat",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "flat",
@@ -1689,7 +1704,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -2339,6 +2354,12 @@
                 "candidate_count": 36,
                 "scored_symbols": 1,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 2.0,
+                "mean_symbol_surprisal_bits": 2.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -2394,7 +2415,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "41aa4f1b003fc6864b52713df9379aceba0c1378bb3bcc9279218d64d6678e1e"
+          "binding_hash": "b8daf15ccafe50e2b5c5f483e66b86498a17d620461d19281a3acc4a5ec6ac99"
         },
         "probes": [
           {
@@ -2462,7 +2483,7 @@
             "survivors_after": 36
           }
         ],
-        "decision_frozen_hash": "c9821a79300a3b6f54ae8307842d433b2c727b6d075ae8ec28e473c969bbdabc",
+        "decision_frozen_hash": "638a82193553489e6d416c3b336762f8ef2b3926e5682d88b532449f9fa7a80b",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -2521,9 +2542,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.828125,
-          "wall_seconds": 4.968353299977025,
-          "parent_peak_traced_bytes": 3823661,
+          "parent_cpu_seconds": 0.625,
+          "wall_seconds": 0.9964005000001634,
+          "parent_peak_traced_bytes": 3824235,
           "audit_product_pairs": 195,
           "audit_execution_steps": 25
         },
@@ -2531,7 +2552,7 @@
           "name": "lookahead",
           "privileged": false
         },
-        "scientific_hash": "645e0df2d3823c3510a2d771bd95209862691ee8ee1e2adb2d3bf84fc32528af"
+        "scientific_hash": "790e253bcf1cce89a93cffc4b1f4342b184614187247eaeea27a56b2bdc539fd"
       },
       {
         "schema": "crosswire-result-v1",
@@ -2552,7 +2573,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "factored"
+          "candidate_backend": "factored",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "factored",
@@ -2568,7 +2590,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3218,6 +3240,12 @@
                 "candidate_count": 36,
                 "scored_symbols": 1,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 2.0,
+                "mean_symbol_surprisal_bits": 2.0,
+                "martingale_e_value": 1.0,
+                "martingale_log10": 0.0,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -3273,7 +3301,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "2817f228dbd5b6cc11286a75715df585cd578f15fa7c4a74f89015ae8c38ad9f"
+          "binding_hash": "aedba16e1f610ef16a393dc4d71e3f625817de899761dc9148069561a14120c7"
         },
         "probes": [
           {
@@ -3341,7 +3369,7 @@
             "survivors_after": 36
           }
         ],
-        "decision_frozen_hash": "dfc5eb425936ab35222fdda1a61c46444c4c31b203d5cbdc88a5bd6bf87d8bd4",
+        "decision_frozen_hash": "d6ce57095b097a81972137a421edf8cc234d299a7d843d4e290b346306e77ab8",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -3400,9 +3428,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.109375,
-          "wall_seconds": 3.0035852000000887,
-          "parent_peak_traced_bytes": 283876,
+          "parent_cpu_seconds": 0.125,
+          "wall_seconds": 0.36547869999776594,
+          "parent_peak_traced_bytes": 283871,
           "audit_product_pairs": 195,
           "audit_execution_steps": 25
         },
@@ -3410,7 +3438,7 @@
           "name": "lookahead",
           "privileged": false
         },
-        "scientific_hash": "e35f8a1c5037f9792834aa616953e6f5c9023842feef93f97c309e4f522f12c4"
+        "scientific_hash": "e663e080a336471c6ce67ded1473e784f21330583ad2a1dbbb21dff86644a386"
       },
       {
         "schema": "crosswire-result-v1",
@@ -3431,7 +3459,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "flat"
+          "candidate_backend": "flat",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "flat",
@@ -3447,7 +3476,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -3686,6 +3715,12 @@
                 "candidate_count": 8,
                 "scored_symbols": 2,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 4.1699,
+                "mean_symbol_surprisal_bits": 2.085,
+                "martingale_e_value": 1.125,
+                "martingale_log10": 0.0512,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -3758,7 +3793,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "1ae83c0d5c3f6de9159cc7f9dcc3bf263a5e414726cbf2ee672312041e6603c5"
+          "binding_hash": "14cb1a8a46116d3e0811c4325cf210bbfdc3a7a689a687ab8134dbbe0ae2c38a"
         },
         "probes": [
           {
@@ -3775,7 +3810,7 @@
             "survivors_after": 8
           }
         ],
-        "decision_frozen_hash": "d25be066329ddd8b58e4069e99a35eba854d87aa23bc96af749866753ebcf1cc",
+        "decision_frozen_hash": "1dd60029f1aebe1dd99bd6f3511ce966fdf05da39ca105109e6357ae5c6b6c9c",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -3833,9 +3868,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.578125,
-          "wall_seconds": 1.1085529000265524,
-          "parent_peak_traced_bytes": 3558581,
+          "parent_cpu_seconds": 0.6875,
+          "wall_seconds": 0.9503930999999284,
+          "parent_peak_traced_bytes": 3559117,
           "audit_product_pairs": 195,
           "audit_execution_steps": 31
         },
@@ -3843,7 +3878,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "61ee1e93e58f2367345d079f8383b78832c8094e4b64f1245dda4e0e69a2c0a9"
+        "scientific_hash": "cf210952aa6731af3fb1d28bd72c984d6c65a13c6cdfd5db697a6301e7674ae9"
       },
       {
         "schema": "crosswire-result-v1",
@@ -3864,7 +3899,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "factored"
+          "candidate_backend": "factored",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "factored",
@@ -3880,7 +3916,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4119,6 +4155,12 @@
                 "candidate_count": 8,
                 "scored_symbols": 2,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 4.1699,
+                "mean_symbol_surprisal_bits": 2.085,
+                "martingale_e_value": 1.125,
+                "martingale_log10": 0.0512,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -4191,7 +4233,7 @@
             }
           ],
           "reason": "No positive admission claim; not a proof of impossibility",
-          "binding_hash": "938d9692aa689046571e7a75aabed08179ed7d01bb5fef915c68ce3e54936e12"
+          "binding_hash": "72eea265d1711f37cdfe39fd8b70e970c34c5606fd7a2233446ea63ed2a5f027"
         },
         "probes": [
           {
@@ -4208,7 +4250,7 @@
             "survivors_after": 8
           }
         ],
-        "decision_frozen_hash": "190f2806a0c0c0c3b849558abf7527e3cad35eaa3d82f55398b549393103f90d",
+        "decision_frozen_hash": "7e8aae86ac60997d31d83fe9611b2a1675270c7de3c7639ba90f33a768097c14",
         "deployment": {
           "word": null,
           "outputs": [],
@@ -4266,9 +4308,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.1875,
-          "wall_seconds": 0.5068090999848209,
-          "parent_peak_traced_bytes": 1037010,
+          "parent_cpu_seconds": 0.21875,
+          "wall_seconds": 0.4642621000020881,
+          "parent_peak_traced_bytes": 1037166,
           "audit_product_pairs": 195,
           "audit_execution_steps": 31
         },
@@ -4276,7 +4318,7 @@
           "name": "entropy",
           "privileged": false
         },
-        "scientific_hash": "350c938b32ff2098ec5edce0f9518936dd8fe190d1335bfad5143db71cd41e28"
+        "scientific_hash": "6e07d60e6e85b7cc05b627e2f09908fa0edb342bcff71e1775ed0b83490923da"
       },
       {
         "schema": "crosswire-result-v1",
@@ -4297,7 +4339,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "flat"
+          "candidate_backend": "flat",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "flat",
@@ -4313,7 +4356,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -4491,6 +4534,12 @@
                 "candidate_count": 2,
                 "scored_symbols": 3,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 6.1699,
+                "mean_symbol_surprisal_bits": 2.0566,
+                "martingale_e_value": 1.125,
+                "martingale_log10": 0.0512,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -4580,7 +4629,7 @@
           ],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "b96c21d56d1b563c1c6418eec39ad08bf48f4938483a3b32d019e6ab32432e73"
+          "binding_hash": "f29ccef57b863d8629900e25b3ea80a71b9ff40493d71d3c16b9409b900a6b37"
         },
         "probes": [
           {
@@ -4964,7 +5013,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "afab328a359bc88fcfcb3745a5ab773b154467b1b18c94fb3d68a4cb6f639418",
+        "decision_frozen_hash": "23e814356a4602dca934e517812a6457630d65bb2c348a822b9e5c8cb35cd916",
         "deployment": {
           "word": [
             0,
@@ -5005,8 +5054,11 @@
             "attempted": false,
             "certified": false,
             "succeeded": false,
+            "strategy": "stabilize",
             "reason": "not_requested",
             "action": null,
+            "actions": [],
+            "return_to_initial": false,
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
@@ -5089,9 +5141,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.703125,
-          "wall_seconds": 1.2823503999970853,
-          "parent_peak_traced_bytes": 4240426,
+          "parent_cpu_seconds": 0.8125,
+          "wall_seconds": 1.1416589000000386,
+          "parent_peak_traced_bytes": 4240631,
           "audit_product_pairs": 195,
           "audit_execution_steps": 43
         },
@@ -5099,7 +5151,7 @@
           "name": "lookahead",
           "privileged": false
         },
-        "scientific_hash": "40a39998c4db7e94c77b0ee0caaa9979c73486d34f174335d62ab4d95e121c54"
+        "scientific_hash": "e2316d8ba2c75fdb741133e049a08b73617b94d700745cfc8e8a0ec03215476a"
       },
       {
         "schema": "crosswire-result-v1",
@@ -5120,7 +5172,8 @@
           "risk_tolerance": 0.0,
           "instance_seed": null,
           "fault_schedule": null,
-          "candidate_backend": "factored"
+          "candidate_backend": "factored",
+          "recovery_strategy": "stabilize"
         },
         "backend": {
           "backend": "factored",
@@ -5136,7 +5189,7 @@
           "structural_ratio_scope": "Candidate count / (input factors + output factors); not measured memory compression.",
           "measurement_stage": "after_public_check_before_deployment_and_private_audit"
         },
-        "source_hash": "1004a81c28c2969b59ced6684b6178f474d3d12787a73614c2a6a0ccc7ea76f2",
+        "source_hash": "5e8274ec5a4577237407f94379c87b7f9b774befac85cd62f1b14f11dd9c0fe1",
         "reference": {
           "name": "reference",
           "transitions": [
@@ -5314,6 +5367,12 @@
                 "candidate_count": 2,
                 "scored_symbols": 3,
                 "unscored_symbols": 0,
+                "cumulative_surprisal_bits": 6.1699,
+                "mean_symbol_surprisal_bits": 2.0566,
+                "martingale_e_value": 1.125,
+                "martingale_log10": 0.0512,
+                "martingale_refuted_alpha_05": false,
+                "martingale_refuted_alpha_01": false,
                 "first_refutation": null,
                 "events": [
                   {
@@ -5403,7 +5462,7 @@
           ],
           "checked_policy_nodes": 0,
           "reason": "Every surviving interpretation satisfies the declared finite contract",
-          "binding_hash": "c07554bb97f1e761e389f7cca5228061e7b05ff9dc859d26f2c6a901fec6aebf"
+          "binding_hash": "82b13d5105af9bdd2a06e1bc02c489149975f451b76b2ce30ee5e480bbef4306"
         },
         "probes": [
           {
@@ -5787,7 +5846,7 @@
             "survivors_after": 2
           }
         ],
-        "decision_frozen_hash": "c45c360bb958f6640fcc161ba35e9d11e0974f8be90ab219781209773d331b4a",
+        "decision_frozen_hash": "02a67977dfa68f2d5886885ff00075957e2eb4af105cec8ad91ed3501303f2ee",
         "deployment": {
           "word": [
             0,
@@ -5828,8 +5887,11 @@
             "attempted": false,
             "certified": false,
             "succeeded": false,
+            "strategy": "stabilize",
             "reason": "not_requested",
             "action": null,
+            "actions": [],
+            "return_to_initial": false,
             "candidate_count": 0,
             "remaining_horizon": 4,
             "scope": "Conditional on target inclusion in the live finite model family, stationarity, deterministic reset and truthful anchors. A consistent response does not establish real-world safety or task completion."
@@ -5912,9 +5974,9 @@
           "anchor_facts_supplied": 0,
           "escalations": 0,
           "escalation_level": 0,
-          "parent_cpu_seconds": 0.359375,
-          "wall_seconds": 0.7836030999897048,
-          "parent_peak_traced_bytes": 1842263,
+          "parent_cpu_seconds": 0.375,
+          "wall_seconds": 0.6426540999964345,
+          "parent_peak_traced_bytes": 1842978,
           "audit_product_pairs": 195,
           "audit_execution_steps": 43
         },
@@ -5922,7 +5984,7 @@
           "name": "lookahead",
           "privileged": false
         },
-        "scientific_hash": "efddd623058223f2763a9229b4ba46ce75b4dcbec112a62fa4f4ce640f8edb10"
+        "scientific_hash": "f0da21ed7a70e5268afecdc76742bee0725264cabc21c5823a80614bf7eaf462"
       }
     ],
     "summary": [
@@ -6807,7 +6869,7 @@
         "scope": "Synthetic target-cluster estimates. Intervals, when present, assume independent generator draws and an identical fixed nuisance-cell design; each interval is pointwise, not a simultaneous guarantee. Structural hashes and planned seed selection do not establish independence or real-world probabilities. Exact binomial bounds describe any hazard across the nuisance design; useful-coverage bounds are Hoeffding bounds for equal-target means. Selective harm is the ratio of equal-target failure and admission means; abstention leaves it undefined when no target admits."
       }
     ],
-    "scientific_hash": "98174018871db37abcb2fc43b9db6c16f81a541ae8bbb555c0e2320020a6bc58"
+    "scientific_hash": "a7017b79aaad5e8561cc7b39e24d1c83927435540805256d85cf29d0888f067a"
   },
-  "payload_hash": "d6c42927bf866dcec8fd44b5f46c92dc6dc20b250b9c79cc027d35081546a14c"
+  "payload_hash": "2a8cf0e08e257e99095bbdf04c57d866dbb1d586af794b965a609738495edd89"
 }
