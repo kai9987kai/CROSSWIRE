@@ -4,7 +4,7 @@ The GitHub repository is [kai9987kai/CROSSWIRE](https://github.com/kai9987kai/CR
 
 ## Source identity and artifacts
 
-The publication tag is `budgeted-experiments-2026-11-02`. GitHub and Hugging Face have different commit IDs because their repository histories differ. The Hugging Face `release-manifest.json` records the owning GitHub commit, Python source identity, study scientific hashes, artifact hashes and a SHA-256/size inventory of the published payload. Its inventory excludes the manifest itself to avoid a self-reference. The inventory hash binds that complete list; hashes identify content and do not establish scientific correctness.
+The publication tag is `crosswire-formal-synthesis-2026-11-03`. GitHub and Hugging Face have different commit IDs because their repository histories differ. The Hugging Face `release-manifest.json` records the owning GitHub commit, Python source identity, study scientific hashes, artifact hashes and a SHA-256/size inventory of the published payload. Its inventory excludes the manifest itself to avoid a self-reference. The inventory hash binds that complete list; hashes identify content and do not establish scientific correctness.
 
 The Hub source files are exported from committed Git blobs, preserving canonical line endings and historical receipt contents. Local Windows checkout line endings can differ. Build the wheel and source package from that exported snapshot, then run the isolated package checker against the same snapshot. This keeps Python modules and web assets byte-identical between the source payload and installed package.
 
