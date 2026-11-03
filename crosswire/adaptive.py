@@ -185,7 +185,7 @@ def policy_metrics(space: CandidateSpace, ids, policy) -> dict:
     }
 
 
-def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, fault_schedule=None, mode='adaptive') -> dict:
+def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, fault_schedule=None, mode='adaptive', recovery_strategy='stabilize') -> dict:
     """Verify before reset, then execute only certified observation branches."""
     if mode not in ('adaptive', 'shielded', 'recovery'):
         raise ValueError('Unsupported adaptive execution mode')
@@ -244,7 +244,8 @@ def execute_policy(target, policy, space: CandidateSpace, ids, cancel=None, faul
             deployment.update(complete=True, shield_status='COMPLETED')
         if deployment['intervened'] and mode == 'recovery':
             from .shield import RuntimeShield
-            shield = RuntimeShield(space, ids, space.contract, mode='recovery', cancel=cancel, fault_schedule=fault_schedule)
+            shield = RuntimeShield(space, ids, space.contract, mode='recovery', cancel=cancel,
+                                   fault_schedule=fault_schedule, recovery_strategy=recovery_strategy)
             shield.history_words = list(deployment['executed_word'])
             shield.history_outputs = list(deployment['outputs'])
             shield.active_survivors = active

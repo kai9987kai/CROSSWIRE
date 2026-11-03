@@ -26,14 +26,17 @@ class RuntimeShield:
 
     def __init__(self, space: CandidateSpace, initial_survivors: tuple[int, ...],
                  contract: Contract, mode: str = "shielded", cancel: Callable[[], bool] | None = None,
-                 fault_schedule: dict | None = None):
+                 fault_schedule: dict | None = None, recovery_strategy: str = "stabilize"):
         if mode not in ('open_loop', 'shielded', 'recovery', 'replan'):
             raise ValueError('Unknown execution mode')
+        if recovery_strategy not in ('stabilize', 'soft_return'):
+            raise ValueError('Unknown recovery strategy: must be "stabilize" or "soft_return"')
         self.space = space
         self.contract = contract
         self.mode = mode
         self.cancel = cancel
         self.fault_schedule = fault_schedule
+        self.recovery_strategy = recovery_strategy
         self.change_point_step = fault_schedule.get('step') if fault_schedule else None
         self.fault_type = fault_schedule.get('type') if fault_schedule else None
         self.change_point_detected = False
@@ -53,6 +56,8 @@ class RuntimeShield:
         self.recovery_succeeded = False
         self.recovery_reason = 'not_requested'
         self.recovery_action = None
+        self.recovery_actions = []
+        self.recovery_returned_to_initial = False
         self.recovery_candidate_count = 0
         self.recovery_remaining_horizon = contract.horizon
         self.replanned = False
@@ -99,7 +104,10 @@ class RuntimeShield:
     def recovery_record(self) -> dict:
         return {'requested': self.recovery_requested, 'attempted': self.recovery_attempted,
                 'certified': self.recovery_certified, 'succeeded': self.recovery_succeeded,
+                'strategy': self.recovery_strategy,
                 'reason': self.recovery_reason, 'action': self.recovery_action,
+                'actions': list(self.recovery_actions),
+                'return_to_initial': self.recovery_returned_to_initial,
                 'candidate_count': self.recovery_candidate_count,
                 'remaining_horizon': self.recovery_remaining_horizon,
                 'scope': 'Conditional on target inclusion in the live finite model family, '
@@ -107,7 +115,7 @@ class RuntimeShield:
                          'response does not establish real-world safety or task completion.'}
 
     def recover(self, target: TargetProcess) -> int | None:
-        """Execute one model-safe fallback only while the live belief remains valid.
+        """Execute one model-safe fallback or certified soft return-to-home.
 
         Refutation supplies no replacement safety model. Without an independently
         specified backup controller, the only justified response is to halt.
@@ -116,6 +124,8 @@ class RuntimeShield:
         self.recovery_succeeded = False
         self.recovery_certified = False
         self.recovery_action = None
+        self.recovery_actions = []
+        self.recovery_returned_to_initial = False
         prefix, outputs = tuple(self.history_words), tuple(self.history_outputs)
         self.active_survivors = tuple(aid for aid in self.active_survivors
                                       if self.space.predict(aid, prefix) == outputs)
@@ -129,6 +139,50 @@ class RuntimeShield:
             self.recovery_reason = 'horizon_exhausted'
             self.reasons.append('Recovery withheld: contract horizon is exhausted')
             return None
+
+        if self.recovery_strategy == 'soft_return':
+            ret = synthesize_safe_return(self.space, self.active_survivors, prefix,
+                                         max_length=self.recovery_remaining_horizon)
+            if not ret['certified']:
+                self.recovery_reason = ret['reason']
+                self.reasons.append(f"Recovery withheld: {ret['reason']}")
+                return None
+            word = ret.get('word')
+            if not word:
+                self.recovery_certified = True
+                self.recovery_succeeded = True
+                self.recovery_returned_to_initial = True
+                self.recovery_reason = 'already_at_initial'
+                self.status = 'RECOVERED_SAFE_FALLBACK'
+                self.reasons.append('Model-certified soft return: target is already at initial state')
+                return None
+            self.recovery_certified = True
+            self.recovery_actions = list(word)
+            self.recovery_action = word[0]
+            _check_cancel(self.cancel)
+            self.recovery_attempted = True
+            last_out = None
+            for act in word:
+                _check_cancel(self.cancel)
+                try:
+                    last_out = target.step(act)
+                except InterfaceError:
+                    self.recovery_reason = 'interface_error'
+                    raise
+                self._observe(act, last_out)
+                if not self.active_survivors:
+                    self.recovery_reason = 'response_contradiction'
+                    self.status = 'INTERVENED_ANOMALY'
+                    self.hazard_averted = False
+                    self.reasons.append('Recovery response contradicted every certifying model; safety is unresolved')
+                    return last_out
+            self.recovery_succeeded = True
+            self.recovery_returned_to_initial = ret.get('return_to_initial', False)
+            self.recovery_reason = 'certified_return_to_initial' if self.recovery_returned_to_initial else 'certified_safe_hold'
+            self.status = 'RECOVERED_SAFE_FALLBACK'
+            self.reasons.append('Model-certified safe return executed with responses consistent with the live belief')
+            return last_out
+
         safe_action = next((action for action in range(self.space.machine.inputs)
                             if all(self.contract.hazard not in self.space.semantic(aid, prefix + (action,))
                                    for aid in self.active_survivors)), None)
@@ -137,6 +191,7 @@ class RuntimeShield:
             self.reasons.append('Recovery withheld: no action is hazard-free under every live model')
             return None
         self.recovery_action = safe_action
+        self.recovery_actions = [safe_action]
         self.recovery_certified = True
         _check_cancel(self.cancel)
         self.recovery_attempted = True
@@ -290,11 +345,12 @@ class RuntimeShield:
 def execute_deployment(target: TargetProcess, planned_word: list[int], space: CandidateSpace,
                        survivors: tuple[int, ...], contract: Contract,
                        mode: str = "open_loop", cancel: Callable[[], bool] | None = None,
-                       fault_schedule: dict | None = None) -> dict:
+                       fault_schedule: dict | None = None, recovery_strategy: str = "stabilize") -> dict:
     """Execute deployment through the target process with optional closed-loop shielding."""
     if hasattr(target, 'set_phase'):
         target.set_phase('deployment')
-    shield = RuntimeShield(space, survivors, contract, mode=mode, cancel=cancel, fault_schedule=fault_schedule)
+    shield = RuntimeShield(space, survivors, contract, mode=mode, cancel=cancel,
+                           fault_schedule=fault_schedule, recovery_strategy=recovery_strategy)
     deployment = {
         "word": list(planned_word),
         "executed_word": [],

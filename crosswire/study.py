@@ -19,9 +19,10 @@ from .identity import canonical_hash, scientific_view, source_hash
 from .conditions import condition_key, condition_fields, normalize_fault_schedule
 from .backends import CANDIDATE_BACKENDS, make_space, backend_summary
 
-POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching", "lookahead")
+POLICIES = ("fixed", "random", "disagreement", "task", "aalpy", "counterexample", "entropy", "ec2", "branching", "lookahead", "voi")
 ADMISSIONS = ("robust", "adaptive", "one_best", "unique", "fit", "identity", "abstain", "oracle", "risk_controlled")
 EXECUTION_MODES = ("open_loop", "shielded", "recovery", "replan")
+RECOVERY_STRATEGIES = ("stabilize", "soft_return")
 PROBE_SAFETY_MODES = ('unrestricted', 'model_safe')
 _RUN_LOCK = threading.RLock()
 _PROCESS_SOURCE_HASH = source_hash()
@@ -50,6 +51,7 @@ class RunConfig:
     instance_seed: int | None = None
     fault_schedule: dict | None = None
     candidate_backend: str = 'flat'
+    recovery_strategy: str = 'stabilize'
 
     def __post_init__(self):
         if self.family == 'generated_protocol' and self.instance_seed is None:
@@ -101,6 +103,8 @@ class RunConfig:
             raise ValueError("Unknown probe/admission policy")
         if self.candidate_backend not in CANDIDATE_BACKENDS:
             raise ValueError('Unknown candidate_backend')
+        if self.recovery_strategy not in RECOVERY_STRATEGIES:
+            raise ValueError('Unknown recovery strategy')
         if self.admission == 'adaptive' and self.execution_mode not in ('shielded', 'recovery'):
             raise ValueError('Adaptive admission requires shielded or recovery execution')
         if self.policy == 'aalpy' and self.temporal:
@@ -464,12 +468,12 @@ def _run(config: RunConfig, cancel: Callable[[], bool] | None, progress: Callabl
                 from .adaptive import execute_policy
                 deployment = execute_policy(target, decision['policy'], space, survivors, cancel,
                                             fault_schedule=config.fault_schedule,
-                                            mode='recovery' if config.execution_mode == 'recovery' else 'adaptive')
+                                            mode='recovery' if config.execution_mode == 'recovery' else 'adaptive', recovery_strategy=config.recovery_strategy)
             else:
                 from .shield import execute_deployment
                 deployment = execute_deployment(target, decision['word'], space, survivors, space.contract,
                                                 mode=config.execution_mode, cancel=cancel,
-                                                fault_schedule=config.fault_schedule)
+                                                fault_schedule=config.fault_schedule, recovery_strategy=config.recovery_strategy)
         from .audit import evaluate
         audit = evaluate(case, space, survivors, decision, probes, deployment)
         peak = tracemalloc.get_traced_memory()[1]
@@ -641,7 +645,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
         raise ValueError("Study must be an object")
     allowed = {"families", "seeds", "budgets", "policies", "admissions", "implementations",
                "anchors", "split", "horizon", "execution_mode", "temporal", "escalate", "probe_safety", "risk_tolerance",
-               'instance_seeds', 'fault_schedules', 'candidate_backends'}
+               'instance_seeds', 'fault_schedules', 'candidate_backends', 'recovery_strategy'}
     if set(spec) - allowed:
         raise ValueError("Unknown study fields")
     dimensions = []
@@ -666,7 +670,7 @@ def study_configs(spec: dict) -> list[RunConfig]:
                                          temporal=spec.get("temporal", False),
                                          escalate=spec.get("escalate", False),
                                          probe_safety=spec.get('probe_safety', 'unrestricted'),
-                                         risk_tolerance=spec.get('risk_tolerance', 0.0))) for values in product(*dimensions)]
+                                         risk_tolerance=spec.get('risk_tolerance', 0.0), recovery_strategy=spec.get('recovery_strategy', 'stabilize'))) for values in product(*dimensions)]
     if len({canonical_hash(asdict(cfg)) for cfg in configs}) != len(configs):
         raise ValueError('Duplicate effective study configuration; null generated instance and zero are identical')
     return configs

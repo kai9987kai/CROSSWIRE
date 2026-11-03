@@ -350,11 +350,24 @@ class CandidateSpace:
                 'model_safe': False,
             }
         n = len(ids)
-        counts = Counter(self.predict(i, word) for i in ids)
+        partitions = {}
+        for i in ids:
+            partitions.setdefault(self.predict(i, word), []).append(i)
+        counts = {p: len(m) for p, m in partitions.items()}
         h = -sum((c / n) * math.log2(c / n) for c in counts.values())
         expected_surv = sum((c * c) / n for c in counts.values())
         worst_surv = max(counts.values())
         cost = 1 + len(word)
+        ready_mass = 0
+        for members in partitions.values():
+            common = set(self.safe_words(members[0]))
+            for mid in members[1:]:
+                if not common:
+                    break
+                common.intersection_update(self.safe_words(mid))
+            if common:
+                ready_mass += len(members)
+        expected_readiness = round(ready_mass / n, 4)
         return {
             'word': list(word),
             'cost': cost,
@@ -365,6 +378,7 @@ class CandidateSpace:
             'expected_survivors': round(expected_surv, 4),
             'worst_case_survivors': worst_surv,
             'expected_reduction_ratio': round(1.0 - (expected_surv / n), 6),
+            'expected_task_readiness': expected_readiness,
             'model_safe': self.probe_is_safe(ids, word),
         }
 
@@ -432,7 +446,7 @@ class CandidateSpace:
         return best_action
 
     def choose_probe(self, ids, policy, remaining_steps, seen, seed=0, safe_only=False):
-        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2', 'branching'):
+        if policy not in ('fixed', 'random', 'disagreement', 'task', 'counterexample', 'entropy', 'ec2', 'branching', 'voi'):
             raise ValueError('unknown probe policy')
         if type(safe_only) is not bool:
             raise TypeError('safe_only must be a boolean')
@@ -496,6 +510,44 @@ class CandidateSpace:
             if step_action is not None and (step_action,) in eligible:
                 return (step_action,)
             return eligible[0] if eligible else None
+        if policy == 'voi':
+            import math
+            n = len(ids)
+            if not ids:
+                return None
+            if n == 1:
+                return eligible[0] if eligible else None
+            best, best_score = None, (-1.0, -1.0, 0, 0)
+            for word in eligible:
+                partitions = {}
+                for i in ids:
+                    p = self.predict(i, word)
+                    partitions.setdefault(p, []).append(i)
+                cost = 1 + len(word)
+                ready_mass = 0
+                h = 0.0
+                worst_cell = 0
+                for p, members in partitions.items():
+                    m_len = len(members)
+                    if m_len > worst_cell:
+                        worst_cell = m_len
+                    prob = m_len / n
+                    h -= prob * math.log2(prob)
+                    common_safe = set(self.safe_words(members[0]))
+                    for mid in members[1:]:
+                        if not common_safe:
+                            break
+                        common_safe.intersection_update(self.safe_words(mid))
+                    if common_safe:
+                        ready_mass += m_len
+                readiness_rate = ready_mass / n
+                readiness_efficiency = readiness_rate / cost
+                entropy_efficiency = h / cost
+                score = (readiness_efficiency, entropy_efficiency, -worst_cell, -len(word))
+                self.work['pair_checks'] += n
+                if score > best_score:
+                    best, best_score = word, score
+            return best if best is not None else (eligible[0] if eligible else None)
         if policy == 'disagreement':
             best, best_score = None, 0
             n = len(ids)

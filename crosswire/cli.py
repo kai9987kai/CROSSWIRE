@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import sys
 
-from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, RunConfig, run, run_study
+from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, RECOVERY_STRATEGIES, RunConfig, run, run_study
 from .fixtures import catalog
 from .backends import CANDIDATE_BACKENDS
 from .receipts import check_envelope, pack, replay
@@ -27,10 +27,11 @@ def main(argv=None):
     commands = parser.add_subparsers(dest='command', required=True)
     one = commands.add_parser('run')
     defaults = asdict(RunConfig())
-    for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode', 'probe_safety'):
+    for name in ('family', 'implementation', 'split', 'policy', 'admission', 'execution_mode', 'probe_safety', 'recovery_strategy'):
         choices = {'family': [f['id'] for f in catalog()], 'implementation': ['table', 'procedural'],
                    'split': ['development', 'evaluation'], 'policy': POLICIES, 'admission': ADMISSIONS,
-                   'execution_mode': EXECUTION_MODES, 'probe_safety': PROBE_SAFETY_MODES}[name]
+                   'execution_mode': EXECUTION_MODES, 'probe_safety': PROBE_SAFETY_MODES,
+                   'recovery_strategy': RECOVERY_STRATEGIES}[name]
         flags = ['--' + name]
         if '_' in name:
             flags.append('--' + name.replace('_', '-'))

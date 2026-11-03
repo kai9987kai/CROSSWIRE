@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const state = {catalog:null, active:null, completed:null, busy:false};
-const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',ec2:'Equivalence class edge cutting (EC2)',branching:'Adaptive within-query branching',lookahead:'Budgeted experiment lookahead',flat:'Flat · exhaustive candidates',factored:'Factored · lazy candidates',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',risk_controlled:'Risk-controlled version space',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield',replan:'Receding-horizon replanning shield'};
+const labels = {fixed:'Fixed sequence',random:'Seeded random',disagreement:'Mapping disagreement',task:'Task disagreement',aalpy:'AALpy learner',counterexample:'Counterexample-guided (CEGP)',entropy:'Shannon entropy (InfoGain)',ec2:'Equivalence class edge cutting (EC2)',branching:'Adaptive within-query branching',lookahead:'Budgeted experiment lookahead',flat:'Flat · exhaustive candidates',factored:'Factored · lazy candidates',robust:'Robust sequence across survivors',adaptive:'Adaptive policy across survivors',risk_controlled:'Risk-controlled version space',one_best:'One best survivor',unique:'Unique mapping only',fit:'Best fit (forced baseline)',identity:'Identity (forced baseline)',abstain:'Always abstain',oracle:'Oracle (privileged)',open_loop:'Open loop (unshielded)',shielded:'Dynamic runtime shield',recovery:'Simplex recovery shield',replan:'Receding-horizon replanning shield',voi:'Value of information (VoI)',stabilize:'Stabilize hold',soft_return:'Certified soft return'};
 function element(tag, text, cls){const node=document.createElement(tag);if(text!==undefined&&text!==null)node.textContent=String(text);if(cls)node.className=cls;return node;}
 function svgElement(tag, attrs={}, text){const node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));if(text!==undefined)node.textContent=String(text);return node;}
 function readable(value){if(value===null||value===undefined)return 'Not available';if(typeof value==='boolean')return value?'Yes':'No';if(typeof value==='object')return JSON.stringify(value);return String(value);}
@@ -15,7 +15,7 @@ function optionList(id,items,fallback){const select=$(id);select.replaceChildren
 function familyDescription(){const current=state.catalog?.families.find(entry=>entry.id===$('family').value);$('family-description').textContent=current?.description||'';$('family-scope').textContent=(current?.scope||'Scope unspecified').replaceAll('_',' ');}
 function config(){
     const data={};
-    for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety','candidate_backend'])if($(name))data[name]=$(name).value;
+    for(const name of ['family','implementation','policy','admission','execution_mode','split','probe_safety','candidate_backend','recovery_strategy'])if($(name))data[name]=$(name).value;
     for(const name of ['seed','budget','horizon','risk_tolerance'])if($(name))data[name]=Number($(name).value);
     if(data.family==='generated_protocol')data.instance_seed=Number($('instance_seed').value);
     data.anchors=$('anchors').checked;data.temporal=$('temporal').checked;data.escalate=$('escalate')?$('escalate').checked:false;
@@ -45,10 +45,11 @@ function syncControls(){
     if($('escalate')&&$('escalate').checked){$('temporal').checked=false;$('temporal').disabled=true;}
     else if($('temporal')){$('temporal').disabled=false;}
     for(const option of $('execution_mode').options)option.disabled=adaptive&&!['shielded','recovery'].includes(option.value);
+    if($('recovery_strategy'))$('recovery_strategy').disabled=$('execution_mode').value!=='recovery';
     $('risk_tolerance').disabled=!risk;if(!risk)$('risk_tolerance').value='0';
     const incompatible=$('policy').value==='aalpy'&&(adaptive||$('temporal').checked||$('escalate').checked||$('probe_safety').value==='model_safe');
     $('policy').setCustomValidity(incompatible?'AALpy requires unrestricted calibration, a static model without escalation, and a non-adaptive admission rule.':'');
-    $('policy-help').textContent=$('policy').value==='lookahead'?'Depth-two query planning uses a model-count objective, not a calibrated target success probability. Each query costs a reset plus its actions. Only the root query is executed before replanning.':'Probe selection uses public reference predictions and observed evidence.';
+    $('policy-help').textContent=$('policy').value==='lookahead'?'Depth-two query planning uses a model-count objective, not a calibrated target success probability. Each query costs a reset plus its actions. Only the root query is executed before replanning.':($('policy').value==='voi'?'Value of information evaluates the exact probability that the next probe yields an admitted deployment plan.':'Probe selection uses public reference predictions and observed evidence.');
     $('admission-help').textContent=adaptive?'Adaptive policies choose actions from the observed branch. Shielded or recovery execution is required.':risk?'Admission limits hazardous and goal-failing fractions of the surviving candidates under uniform weighting.':'Robust admission requires a sequence satisfying the contract for every surviving mapping. Other rules provide different guarantees; forced baselines are diagnostic.';
     if(!state.catalog)return;
     const spec=studyConfig(),runs=spec.seeds.length*spec.budgets.length*spec.policies.length*spec.admissions.length*(spec.instance_seeds?.length||1);
@@ -238,7 +239,7 @@ function renderRun(result,container){
     outcome.append(element('p','03 / PRIVATE AUDIT','eyebrow'),element('h2',audit.contract_satisfied===true?'Contract satisfied':audit.contract_satisfied===false?'Contract violated':'No execution outcome'),element('p',`Goal reached: ${readable(audit.goal_success)} · Deployment hazard: ${readable(audit.hazard)}`),element('p',`Calibration: ${number(audit.calibration_hazardous_probes)} hazardous probes. Oracle feasible: ${readable(audit.oracle_feasible)}.`),element('p','Audit truth is withheld during acquisition.','fineprint'));
     if(dep.intervened)outcome.append(element('p',`Shield intervened: ${readable(dep.reasons?.[0]||dep.shield_status)}`,'fineprint'));
     if(audit.hazard_averted===true)outcome.append(element('p','Private counterfactual audit reports a deployment hazard averted.','fineprint'));
-    if(dep.recovery?.succeeded)outcome.append(element('p','Simplex fail-safe recovery successfully executed without hazard.','fineprint'));
+    if(dep.recovery?.succeeded)outcome.append(element('p',dep.recovery.return_to_initial?'Certified soft return-to-home: target safely restored to initial baseline state (q0).':'Simplex fail-safe recovery successfully executed without hazard.','fineprint'));
     if(dep.replanned)outcome.append(element('p',`Replanned online: ${dep.replan_count||1} safe detours executed.`,'fineprint'));
     statusGrid.append(dec,outcome);container.append(statusGrid);
     if(result.backend)container.append(renderBackend(result.backend));
@@ -358,6 +359,7 @@ async function initialize(){
         optionList('family',catalog.families,defaults.family||'latch');optionList('policy',catalog.policies,defaults.policy||'task');optionList('admission',catalog.admissions,defaults.admission||'robust');
         if(catalog.execution_modes)optionList('execution_mode',catalog.execution_modes,defaults.execution_mode||'open_loop');
         if(catalog.candidate_backends)optionList('candidate_backend',catalog.candidate_backends,defaults.candidate_backend||'flat');
+        if(catalog.recovery_strategies)optionList('recovery_strategy',catalog.recovery_strategies,defaults.recovery_strategy||'stabilize');
         for(const name of ['seed','budget','horizon','implementation','split','probe_safety','risk_tolerance'])if(defaults[name]!==undefined&&$(name))$(name).value=defaults[name];
         if($('anchors'))$('anchors').checked=defaults.anchors===true;if($('temporal'))$('temporal').checked=defaults.temporal===true;if($('escalate'))$('escalate').checked=defaults.escalate===true;
         familyDescription();syncControls();$('connection').textContent=`Local worker · ${catalog.version||'connected'}`;$('connection-dot').classList.add('online');lock();

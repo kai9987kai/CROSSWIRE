@@ -14,7 +14,7 @@ from . import __version__
 from .fixtures import catalog
 from .backends import CANDIDATE_BACKENDS
 from .receipts import check_envelope, pack, replay, validate
-from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, Cancelled, RunConfig, run, run_study
+from .study import ADMISSIONS, EXECUTION_MODES, POLICIES, PROBE_SAFETY_MODES, RECOVERY_STRATEGIES, Cancelled, RunConfig, run, run_study
 
 MAX_BODY = 20 * 1024 * 1024
 
@@ -173,7 +173,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, {'version': __version__, 'families': catalog(), 'policies': POLICIES,
                                  'admissions': ADMISSIONS, 'execution_modes': EXECUTION_MODES,
                                  'probe_safety_modes': PROBE_SAFETY_MODES,
-                                 'candidate_backends': CANDIDATE_BACKENDS,
+                                 'candidate_backends': CANDIDATE_BACKENDS, 'recovery_strategies': RECOVERY_STRATEGIES,
                                  'defaults': asdict(RunConfig())})
             elif path.startswith('/api/runs/'):
                 parts = path.strip('/').split('/')
